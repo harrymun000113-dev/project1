@@ -1,0 +1,40 @@
+<div class="modal fade" id="scoreSpecModal" tabindex="-1" aria-labelledby="scoreSpecModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="scoreSpecModalLabel">평가기준 (100점 만점)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr><th>#</th><th>지표</th><th class="text-end">배점</th><th>방향</th><th>데이터 소스</th></tr>
+          </thead>
+          <tbody id="score-spec-table-body"></tbody>
+        </table>
+        <p class="text-muted small mb-0">수요 측(시장규모·성장률·트렌드·환율) 합계 50점, 공급 여지 측(한국 점유율·상위3개국·관세율) 합계 50점.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="formulaModal" tabindex="-1" aria-labelledby="formulaModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="formulaModalLabel">수식 명세</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>최종 점수 = <code>Σ (정규화 점수 n<sub>i</sub> × 배점 w<sub>i</sub>)</code>, 여기서 <code>n<sub>i</sub> ∈ [0, 1]</code>.</p>
+        <h6>성장률 항목(3년 CAGR·1년 YoY) — 절대평가</h6>
+        <pre class="formula-pre">n = clip(g / 30, 0, 1)   # g &lt; 0% → 0점, g ≥ 30% → 만점, 그 사이는 선형</pre>
+        <h6>그 외 항목 — 후보 풀 상대 정규화 (P5~P95 클리핑 min-max)</h6>
+        <pre class="formula-pre">x' = clip(x, P5, P95)
+n  = (x' − P5) / (P95 − P5)   # '낮을수록 좋음' 항목은 1 − n</pre>
+        <p class="text-muted small mb-0">결측 항목은 중립값 0.5로 대체됩니다. 배점표는 <code>blueocean/pipeline/scoring.py</code>의
+        <code>SCORE_SPEC</code> 하나로 관리되며, 이 모달과 점수 계산이 항상 동일한 값을 씁니다.</p>
+      </div>
+    </div>
+  </div>
+</div>

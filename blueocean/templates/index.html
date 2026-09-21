@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Blue Ocean Finder — 수출 타깃국 정밀 분석{% endblock %}
+
+{% block content %}
+<header class="app-header sticky-top">
+  {% include "components/_header.html" %}
+</header>
+
+<main class="container-xl app-main">
+  <section id="hero" class="row g-4 my-2">
+    {% include "components/_hero.html" %}
+  </section>
+
+  <section id="ai-insight-wrap" class="ai-insight-section">
+    {% include "components/_ai_insight.html" %}
+  </section>
+
+  <section id="dashboard" class="row g-4 align-items-stretch my-4">
+    {% include "components/_dashboard.html" %}
+  </section>
+</main>
+
+<div id="toast-root" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+{% endblock %}

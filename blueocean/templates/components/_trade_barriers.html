@@ -1,0 +1,29 @@
+<div id="trade-barriers-card" class="card dashboard-card flex-fill">
+  <div class="card-body">
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <h6 class="card-title mb-0">Trade Barriers</h6>
+      <span id="tb-country-label" class="text-muted small">-</span>
+      <span class="badge source-badge ms-auto">KITA TradeNavi</span>
+    </div>
+
+    <div id="tb-tariff-block">
+      <div class="tb-tariff-value"><span id="tb-tariff-rate">-</span>
+        <span id="tb-tariff-type" class="badge tariff-type-badge"></span>
+      </div>
+      <div class="text-muted small" id="tb-tariff-sub">한국산 HS ------ 적용세율</div>
+      <div class="tb-score-line small">관세 점수 <span id="tb-tariff-score">-</span> / 10</div>
+    </div>
+
+    <hr>
+
+    <div id="tb-ntb-block">
+      <div class="fw-semibold small mb-1">비관세 장벽 <span id="tb-ntb-count">0</span>건</div>
+      <ul id="tb-ntb-list" class="tb-ntb-list small"></ul>
+      <button id="tb-ntb-more" type="button" class="btn btn-link btn-sm p-0 d-none"></button>
+    </div>
+
+    <div id="tb-failed" class="text-warning small d-none">⚠️ 관세 정보를 불러오지 못했습니다 (관세 점수는 중립 처리)</div>
+
+    <div class="text-muted small mt-2">조회일 <span id="tb-fetched-at">-</span></div>
+  </div>
+</div>
