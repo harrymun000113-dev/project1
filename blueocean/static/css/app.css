@@ -37,6 +37,9 @@ body {
 .app-navbar .nav-link { color: var(--text-muted); }
 .app-navbar .nav-link:hover { color: var(--text); }
 .currency-toggle .cur-usd, .currency-toggle .cur-krw { opacity: 0.5; }
+/* Bootstrap의 .disabled(pointer-events:none)와 달리 클릭 이벤트는 항상 받게 두고
+   (그래야 JS가 "국가를 먼저 선택하세요" 토스트를 띄울 수 있다), 시각적으로만 흐리게 한다. */
+.export-docx-link.is-disabled { opacity: 0.45; cursor: not-allowed; }
 .currency-toggle[data-currency="USD"] .cur-usd { opacity: 1; color: var(--accent); }
 .currency-toggle[data-currency="KRW"] .cur-krw { opacity: 1; color: var(--accent); }
 
@@ -94,6 +97,21 @@ body {
 .ai-insight-chips .badge { background: var(--panel-2); border: 1px solid var(--border); font-weight: 500; }
 @media (max-width: 991px) { .ai-insight-wrap { width: 100%; min-height: auto; } }
 
+/* AI Insight 콘텐츠 블록 (§3.4.2, v2.5) */
+.ai-insight-block { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); }
+.ai-insight-block-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.02em; margin-bottom: 4px; text-transform: uppercase; }
+.ai-insight-block-text { font-size: 0.85rem; }
+.ai-insight-list { list-style: none; padding-left: 0; margin-bottom: 0; font-size: 0.85rem; }
+.ai-insight-list li { padding: 2px 0; }
+.ai-insight-ref-badge { background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 0.62rem; margin-left: 4px; text-transform: none; font-weight: 700; vertical-align: middle; }
+.ai-insight-limitation { border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 10px; }
+
+/* 리스크 심각도 배지 (상/중/하) — 신호등 색상 */
+.risk-severity-badge { display: inline-block; min-width: 1.4em; text-align: center; border-radius: 4px; padding: 0 5px; font-size: 0.72rem; font-weight: 700; }
+.risk-severity-badge.high { background: rgba(255, 77, 94, 0.18); color: var(--danger); }
+.risk-severity-badge.mid { background: rgba(255, 176, 32, 0.18); color: #ffb020; }
+.risk-severity-badge.low { background: rgba(51, 209, 122, 0.18); color: var(--success); }
+
 /* ── Dashboard cards ────────────────────────────────────────────────── */
 .dashboard-card { background: var(--panel); border: 1px solid var(--border); color: var(--text); }
 .card-title { font-size: 0.95rem; font-weight: 700; }
@@ -126,6 +144,14 @@ body {
 .growth-btn.up { color: var(--success); }
 .growth-btn.down { color: var(--danger); }
 .growth-btn.flat { color: var(--text-muted); cursor: default; }
+.growth-outlier-badge { margin-left: 3px; font-size: 0.72rem; cursor: help; }
+
+/* 종합 조언 배너 (§3.9.0) */
+.portfolio-advice-banner {
+  background: var(--panel-2); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+  border-radius: 6px; padding: 8px 12px; margin-bottom: 10px; font-size: 0.8rem; color: var(--text);
+}
+.portfolio-advice-badge { background: var(--accent); margin-right: 6px; }
 
 /* ── Popover ────────────────────────────────────────────────────────── */
 .bof-popover {
@@ -135,6 +161,7 @@ body {
 .bof-popover-title { font-weight: 700; margin-bottom: 4px; }
 .bof-popover-row { display: flex; justify-content: space-between; gap: 12px; }
 .bof-popover hr { margin: 6px 0; border-color: var(--border); }
+.bof-popover-warning { color: #ffb020; font-size: 0.75rem; margin-top: 6px; }
 
 /* ── Flags / warnings shared ────────────────────────────────────────── */
 .data-flag-note { color: #ffb020; font-size: 0.72rem; }

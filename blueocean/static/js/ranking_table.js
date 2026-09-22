@@ -19,6 +19,13 @@ window.BOFRankingTable = (function () {
     return { icon: "–", cls: "flat", label: "증감 정보 없음" };
   }
 
+  // §3.9.1 이상치 경고 — 규칙 기반(백엔드 scoring.flag_growth_outliers)으로 이미 계산된
+  // 플래그를 data_flags에서 읽기만 한다. 여기서는 판정하지 않는다.
+  function hasGrowthOutlier(row) {
+    const flags = row.data_flags || [];
+    return flags.includes("growth_outlier_yoy") || flags.includes("growth_outlier_cagr3");
+  }
+
   function buildGrowthPopover(row) {
     const g = row.growth;
     const wrap = document.createElement("div");
@@ -35,6 +42,12 @@ window.BOFRankingTable = (function () {
     const currMoney = window.BOF.fmtMoney(g.curr_value_usd, window.BOF.state.currency, window.BOF.state.fxRate);
     trail.textContent = (g.prev_year ?? "-") + "  " + prevMoney + "  →  " + (g.curr_year ?? "-") + "  " + currMoney;
     wrap.append(title, value, trail);
+    if (hasGrowthOutlier(row)) {
+      const warn = document.createElement("div");
+      warn.className = "bof-popover-warning";
+      warn.textContent = "⚠️ 이례적인 수치입니다 (전년도 수입액이 극히 작았을 수 있음 등)";
+      wrap.appendChild(warn);
+    }
     return wrap;
   }
 
@@ -114,6 +127,14 @@ window.BOFRankingTable = (function () {
         growthBtn.disabled = true;
       }
       tdGrowth.appendChild(growthBtn);
+      if (hasGrowthOutlier(row)) {
+        const warnBadge = document.createElement("span");
+        warnBadge.className = "growth-outlier-badge";
+        warnBadge.textContent = "⚠️";
+        warnBadge.setAttribute("aria-label", "이례적인 증감률 — 기저효과 등 확인 필요");
+        warnBadge.title = "이례적인 증감률 — 기저효과 등 확인 필요";
+        tdGrowth.appendChild(warnBadge);
+      }
 
       const tdShare = document.createElement("td");
       tdShare.textContent = window.BOF.fmtSharePct(row.korea_share_pct);

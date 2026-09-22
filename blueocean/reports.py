@@ -10,9 +10,16 @@
 
 주의: "종합 순위"(rank)는 위 스키마에 없는 선택 필드다. 호출 측이 `data["rank"]`를
 추가로 넘기면 표시하고, 없으면 항상 "확인되지 않음"으로 남는다 — 지어내지 않기 위함.
+
+AI 서술(v2.6): `config.OPENAI_API_KEY`가 있으면 요약 결론·선정 이유·리스크 해석·한계점·
+등급 해석 문장을 OpenAI로 생성한다. 모델에는 `data`에 있는 값만 사실로 넘기고 "이 값만
+근거로 쓰고 새 사실을 지어내지 말라"고 못박는다. 키가 없거나 호출이 실패하면 예전과
+동일한 규칙 기반 고정 문장으로 자동 폴백한다 — 오프라인에서도 항상 보고서가 나온다.
 """
 from __future__ import annotations
 
+import json
+import logging
 from datetime import date
 
 from docx import Document
@@ -21,6 +28,10 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement, parse_xml
 from docx.oxml.ns import nsdecls, qn
 from docx.shared import Cm, Inches, Pt, RGBColor
+
+from .services import openai_client
+
+log = logging.getLogger(__name__)
 
 # ─────────────────────────────────────────────────────────────────────────
 # 색상 팔레트
@@ -329,6 +340,68 @@ def _concentration_desc(pct, sev):
 
 
 # ─────────────────────────────────────────────────────────────────────────
+# AI 서술 생성 (v2.6) — 키가 없거나 실패하면 None을 돌려주고, 호출부는 규칙 기반
+# 고정 문장으로 그대로 폴백한다.
+# ─────────────────────────────────────────────────────────────────────────
+_REPORT_SYSTEM_PROMPT = """너는 무역 통계 분석 플랫폼 "Blue Ocean Finder"의 보고서 작성 애널리스트다.
+한국 중소기업 대표가 읽을 Word 보고서에 들어갈 문장을 작성한다.
+
+반드시 지켜야 할 규칙:
+1. 반드시 지정된 JSON 스키마 하나로만 응답한다. 스키마 밖의 텍스트를 덧붙이지 않는다.
+2. 오직 사용자가 준 데이터 값만 사실로 사용한다. 경쟁사명·선례 기업·정확한 비용·기간처럼
+   데이터에 없는 사실은 절대 지어내지 않는다.
+3. 점수식·정규화 방식·데이터 소스명을 언급하지 말고 결과 중심의 쉬운 문장으로 쓴다.
+4. 관세율·경쟁 강도 해석은 "진출 금지"가 아니라 "감당 가능한 수준"이라는 톤을 유지한다.
+5. limitation은 데이터·분석 자체의 한계만 한 줄로 쓴다. 실행 리스크는 여기 넣지 않는다.
+6. 값이 "확인되지 않음"으로 주어졌으면 그 항목에 대해 추측하지 말고 정보가 없다고만 쓴다.
+7. 모든 문장은 한국어로, 한 문장씩 간결하게 쓴다."""
+
+_REPORT_RESPONSE_SCHEMA_HINT = {
+    "conclusion": "string, 1~2문장 — 요약 콜아웃용 핵심 결론",
+    "reason_growth": "string, 1문장 — 최근 1년 성장률 해석",
+    "reason_export_gap": "string, 1문장 — Export Gap 해석",
+    "reason_competition": "string, 1문장 — 상위 3개국 점유율 해석",
+    "tariff_note": "string, 1문장 — 관세율 리스크 해석 (감당 가능한 수준 톤)",
+    "competition_note": "string, 1문장 — 경쟁 강도 리스크 해석 (감당 가능한 수준 톤)",
+    "limitation": "string, 한 줄 — 데이터/분석 자체의 한계만",
+    "grade_note": "string, 1문장 — 등급 판정 해석",
+}
+
+_REPORT_FACT_KEYS = (
+    "country", "blue_ocean_score", "market_opportunity_score", "penetration_opportunity_score",
+    "growth_1y", "cagr_3y", "korea_market_share", "global_korea_share", "export_gap",
+    "tariff_rate", "top3_concentration", "item_name", "hs_code", "date",
+)
+
+
+def _ai_narrative(data: dict) -> dict | None:
+    """`data`만 근거로 서술 문장을 OpenAI로 생성한다. 키가 없거나 실패하면 None."""
+    if not openai_client.available():
+        return None
+    facts = {k: data.get(k) for k in _REPORT_FACT_KEYS}
+    user_prompt = (
+        "다음은 실제로 계산된 데이터다 (이 값만 근거로 사용하라):\n"
+        + json.dumps(facts, ensure_ascii=False)
+        + "\n\n아래 JSON 스키마와 같은 형태로만 응답하라 (값은 예시이며 실제 값으로 채울 것):\n"
+        + json.dumps(_REPORT_RESPONSE_SCHEMA_HINT, ensure_ascii=False)
+    )
+    try:
+        result = openai_client.chat_json(_REPORT_SYSTEM_PROMPT, user_prompt)
+    except Exception as e:  # AI 서술 실패가 보고서 생성 자체를 막으면 안 된다
+        log.warning("보고서 AI 서술 생성 실패, 규칙 기반 문장으로 대체: %s", e)
+        return None
+    return result if isinstance(result, dict) else None
+
+
+def _ai_text(ai: dict | None, key: str) -> str | None:
+    """`ai`에서 문자열 필드를 꺼낸다. 없거나 타입이 다르거나 비어 있으면 None(호출부가 폴백)."""
+    if not ai:
+        return None
+    value = ai.get(key)
+    return value.strip() if isinstance(value, str) and value.strip() else None
+
+
+# ─────────────────────────────────────────────────────────────────────────
 # 문서 준비
 # ─────────────────────────────────────────────────────────────────────────
 def _setup_document(doc: Document) -> None:
@@ -432,7 +505,7 @@ def _build_cover_page(doc: Document, data: dict) -> None:
 # ─────────────────────────────────────────────────────────────────────────
 # 1. 요약
 # ─────────────────────────────────────────────────────────────────────────
-def _build_section_summary(doc: Document, data: dict) -> None:
+def _build_section_summary(doc: Document, data: dict, ai: dict | None) -> None:
     add_section_heading(doc, "1. 요약")
 
     rank_val = data.get("rank")  # 정식 스키마 외 선택 필드 — 없으면 항상 "확인되지 않음"
@@ -450,46 +523,46 @@ def _build_section_summary(doc: Document, data: dict) -> None:
 
     doc.add_paragraph().paragraph_format.space_after = Pt(4)
 
-    country = safe(data.get("country"))
-    item_name = safe(data.get("item_name"))
-    score_txt = fmt(data.get("blue_ocean_score"), "점")
-    growth_txt = fmt(data.get("growth_1y"), "%", signed=True)
-    share_txt = fmt(data.get("korea_market_share"), "%")
-    conclusion = (
-        f"{country}은(는) {item_name} 품목 기준 Blue Ocean Score {score_txt}으로 분석된 시장입니다. "
-        f"최근 1년 수입 성장률은 {growth_txt}이며, 한국 점유율은 {share_txt}로 나타나 "
-        f"추가 진입 여지가 있는지 검토할 만한 것으로 판단됩니다."
-    )
+    conclusion = _ai_text(ai, "conclusion")
+    if not conclusion:
+        country = safe(data.get("country"))
+        item_name = safe(data.get("item_name"))
+        score_txt = fmt(data.get("blue_ocean_score"), "점")
+        growth_txt = fmt(data.get("growth_1y"), "%", signed=True)
+        share_txt = fmt(data.get("korea_market_share"), "%")
+        conclusion = (
+            f"{country}은(는) {item_name} 품목 기준 Blue Ocean Score {score_txt}으로 분석된 시장입니다. "
+            f"최근 1년 수입 성장률은 {growth_txt}이며, 한국 점유율은 {share_txt}로 나타나 "
+            f"추가 진입 여지가 있는지 검토할 만한 것으로 판단됩니다."
+        )
     add_callout(doc, conclusion, bg=BG_LIGHT, bar_color=NAVY_DEEP, size=9.7)
 
 
 # ─────────────────────────────────────────────────────────────────────────
 # 2. 이 시장을 선택한 이유
 # ─────────────────────────────────────────────────────────────────────────
-def _build_section_reason(doc: Document, data: dict) -> None:
+def _build_section_reason(doc: Document, data: dict, ai: dict | None) -> None:
     add_section_heading(doc, "2. 이 시장을 선택한 이유")
 
     growth_1y = data.get("growth_1y")
     export_gap = data.get("export_gap")
     top3 = data.get("top3_concentration")
 
+    reason_growth = _ai_text(ai, "reason_growth") or (
+        "이 시장은 최근 확대되는 추세로 보입니다." if isinstance(growth_1y, (int, float)) and growth_1y > 0
+        else "최근 성장률 자료를 확인한 뒤 진입 시점을 판단하는 것이 좋습니다."
+    )
+    reason_export_gap = _ai_text(ai, "reason_export_gap") or (
+        "한국의 세계 점유율 대비 이 시장에서의 점유율이 낮아, 상대적으로 진입 여지가 있는 것으로 해석됩니다."
+    )
+    reason_competition = _ai_text(ai, "reason_competition") or (
+        "소수 국가의 독점도를 가늠하는 지표로, 값이 낮을수록 신규 진입 여지가 큽니다."
+    )
+
     reasons = [
-        (
-            "최근 1년 수입 성장률",
-            f"{fmt(growth_1y, '%', signed=True)} — "
-            + ("이 시장은 최근 확대되는 추세로 보입니다." if isinstance(growth_1y, (int, float)) and growth_1y > 0
-               else "최근 성장률 자료를 확인한 뒤 진입 시점을 판단하는 것이 좋습니다."),
-        ),
-        (
-            "수출 격차 (Export Gap)",
-            f"{fmt(export_gap, '%p', signed=True)} — "
-            "한국의 세계 점유율 대비 이 시장에서의 점유율이 낮아, 상대적으로 진입 여지가 있는 것으로 해석됩니다.",
-        ),
-        (
-            "상위 3개국 점유율",
-            f"{fmt(top3, '%')} — "
-            "소수 국가의 독점도를 가늠하는 지표로, 값이 낮을수록 신규 진입 여지가 큽니다.",
-        ),
+        ("최근 1년 수입 성장률", f"{fmt(growth_1y, '%', signed=True)} — " + reason_growth),
+        ("수출 격차 (Export Gap)", f"{fmt(export_gap, '%p', signed=True)} — " + reason_export_gap),
+        ("상위 3개국 점유율", f"{fmt(top3, '%')} — " + reason_competition),
     ]
     for label, desc in reasons:
         p = doc.add_paragraph()
@@ -542,7 +615,7 @@ def _build_section_snapshot(doc: Document, data: dict) -> None:
 # ─────────────────────────────────────────────────────────────────────────
 # 4. 리스크 및 진입장벽
 # ─────────────────────────────────────────────────────────────────────────
-def _build_section_risk(doc: Document, data: dict) -> None:
+def _build_section_risk(doc: Document, data: dict, ai: dict | None) -> None:
     add_section_heading(doc, "4. 리스크 및 진입장벽")
 
     tariff = data.get("tariff_rate")
@@ -550,18 +623,23 @@ def _build_section_risk(doc: Document, data: dict) -> None:
     tariff_sev = _classify_tariff(tariff)
     top3_sev = _classify_concentration(top3)
 
+    # AI 문장은 원값이 실제로 있을 때만 쓴다 — 값이 None인데 AI가 뭔가 써 보내면
+    # (모델이 규칙을 어긴 경우) "확인되지 않음"이라는 사실을 덮어써 버리게 된다.
+    tariff_desc = (_ai_text(ai, "tariff_note") if tariff is not None else None) or _tariff_desc(tariff, tariff_sev)
+    top3_desc = (_ai_text(ai, "competition_note") if top3 is not None else None) or _concentration_desc(top3, top3_sev)
+
     rows = [
         {
             "label": "관세율",
             "value_text": fmt(tariff, "%"),
             "severity": tariff_sev,
-            "desc": _tariff_desc(tariff, tariff_sev),
+            "desc": tariff_desc,
         },
         {
             "label": "경쟁 강도\n(상위 3개국 점유율)",
             "value_text": fmt(top3, "%"),
             "severity": top3_sev,
-            "desc": _concentration_desc(top3, top3_sev),
+            "desc": top3_desc,
         },
         {
             "label": "비관세 규제",
@@ -576,9 +654,9 @@ def _build_section_risk(doc: Document, data: dict) -> None:
 # ─────────────────────────────────────────────────────────────────────────
 # 5. 데이터 한계
 # ─────────────────────────────────────────────────────────────────────────
-def _build_section_limitation(doc: Document, data: dict) -> None:
+def _build_section_limitation(doc: Document, data: dict, ai: dict | None) -> None:
     add_section_heading(doc, "5. 데이터 한계")
-    text = (
+    text = _ai_text(ai, "limitation") or (
         f"본 리포트의 관세율 수치는 {safe(data.get('date'))} 기준 조사된 값이며, "
         "결제 관행·정부지원사업 등 일부 보조 지표는 이번 산출 범위에 포함되지 않았습니다."
     )
@@ -652,26 +730,28 @@ def _build_section_contacts(doc: Document, data: dict) -> None:
 # ─────────────────────────────────────────────────────────────────────────
 # 8. 종합 결론 및 방향성 (참고용)
 # ─────────────────────────────────────────────────────────────────────────
-def _build_section_conclusion(doc: Document, data: dict) -> None:
+def _build_section_conclusion(doc: Document, data: dict, ai: dict | None) -> None:
     add_section_heading(doc, "8. 종합 결론 및 방향성")
 
     badge_p = doc.add_paragraph()
     _tight(badge_p, 0, 4)
     _run(badge_p, "참고용", size=8.5, bold=True, color=BLUE_ACCENT)
 
+    # 등급 자체(판정 기준)는 감사 가능해야 하므로 항상 규칙 기반으로 고정한다 —
+    # AI는 그 등급을 설명하는 문장(grade_note)만 자연스럽게 거들 뿐 등급을 바꾸지 않는다.
     score = data.get("blue_ocean_score")
     if score is None:
         grade, bg, text_color = "확인되지 않음", BG_LIGHT2, TEXT_SUB
         grade_desc = "Blue Ocean Score 값이 없어 등급을 판정할 수 없습니다."
     elif score >= 80:
         grade, bg, text_color = "적극 검토 가능", STATUS_GOOD_BG, STATUS_GOOD_TEXT
-        grade_desc = f"Blue Ocean Score {fmt(score, '점')}로 80점 이상 구간에 해당해 적극 검토가 가능한 수준입니다."
+        grade_desc = _ai_text(ai, "grade_note") or f"Blue Ocean Score {fmt(score, '점')}로 80점 이상 구간에 해당해 적극 검토가 가능한 수준입니다."
     elif score >= 60:
         grade, bg, text_color = "신중 접근", STATUS_WARN_BG, STATUS_WARN_TEXT
-        grade_desc = f"Blue Ocean Score {fmt(score, '점')}로 60~79점 구간에 해당해 신중한 접근이 필요합니다."
+        grade_desc = _ai_text(ai, "grade_note") or f"Blue Ocean Score {fmt(score, '점')}로 60~79점 구간에 해당해 신중한 접근이 필요합니다."
     else:
         grade, bg, text_color = "보류", STATUS_RISK_BG, STATUS_RISK_TEXT
-        grade_desc = f"Blue Ocean Score {fmt(score, '점')}로 60점 미만 구간에 해당해 진출을 보류하는 것을 검토할 만합니다."
+        grade_desc = _ai_text(ai, "grade_note") or f"Blue Ocean Score {fmt(score, '점')}로 60점 미만 구간에 해당해 진출을 보류하는 것을 검토할 만합니다."
 
     p = doc.add_paragraph()
     _tight(p, 4, 2)
@@ -702,7 +782,7 @@ def _build_appendix_formula(doc: Document) -> None:
     rows = [
         ("Market Opportunity Score", "수요 측 지표 정규화 가중합 (0~100)", "시장 규모·성장률·트렌드·환율 등 수요 측 지표를 종합한 점수"),
         ("Penetration Opportunity Score", "공급 여지 지표 정규화 가중합 (0~100)", "한국 점유율·경쟁 집중도·관세 등 공급 여지 지표를 종합한 점수"),
-        ("Blue Ocean Score", "√(Market Opportunity Score × Penetration Opportunity Score)", "두 점수의 기하평균 — 한쪽이 매우 낮으면 전체 점수도 함께 낮아짐"),
+        ("Blue Ocean Score", "(Market Opportunity Score + Penetration Opportunity Score) / 2", "두 점수의 산술평균 — 수요 측 50점 + 공급 측 50점 배점을 그대로 반영한 값"),
         ("Export Gap", "Global Korea Share(%) − Korea Market Share(%)", "한국의 세계 점유율 대비 이 시장에서의 점유율 격차(%p)"),
         ("3년 CAGR", "((T년 값 ÷ T-3년 값)^(1/3) − 1) × 100", "최근 3개년 연평균 성장률(%)"),
     ]
@@ -717,20 +797,28 @@ def _build_appendix_formula(doc: Document) -> None:
 # ─────────────────────────────────────────────────────────────────────────
 # 공개 함수
 # ─────────────────────────────────────────────────────────────────────────
-def generate_blue_ocean_report(data: dict, filename: str = "Blue_Ocean_Finder_Report.docx") -> str:
-    """`data`만으로 Blue Ocean Finder Word 보고서를 생성해 `filename`에 저장한다."""
+def generate_blue_ocean_report(data: dict, filename: str = "Blue_Ocean_Finder_Report.docx", use_ai: bool = True) -> str:
+    """`data`로 Blue Ocean Finder Word 보고서를 생성해 `filename`에 저장한다.
+
+    `use_ai=True`(기본값)이고 `config.OPENAI_API_KEY`가 있으면 요약 결론·선정 이유·
+    리스크 해석·한계점·등급 해석 문장을 OpenAI로 생성해 채운다. 키가 없거나 호출이
+    실패하면 자동으로 규칙 기반 고정 문장으로 대체되므로, 오프라인에서도 항상
+    보고서가 생성된다.
+    """
     doc = Document()
     _setup_document(doc)
 
+    ai = _ai_narrative(data) if use_ai else None
+
     _build_cover_page(doc, data)  # 내부에서 add_page_break() 호출
-    _build_section_summary(doc, data)
-    _build_section_reason(doc, data)
+    _build_section_summary(doc, data, ai)
+    _build_section_reason(doc, data, ai)
     _build_section_snapshot(doc, data)
-    _build_section_risk(doc, data)
-    _build_section_limitation(doc, data)
+    _build_section_risk(doc, data, ai)
+    _build_section_limitation(doc, data, ai)
     _build_section_next_actions(doc, data)
     _build_section_contacts(doc, data)
-    _build_section_conclusion(doc, data)
+    _build_section_conclusion(doc, data, ai)
     _build_appendix_formula(doc)
 
     doc.save(filename)

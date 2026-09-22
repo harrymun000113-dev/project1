@@ -60,6 +60,17 @@ def test_run_end_to_end_demo_mode_produces_valid_json():
     raw = json.dumps(result, allow_nan=False)
     assert json.loads(raw)["meta"]["hs6"] == "854140"
 
+    # §3.9.0 종합 조언 — 결과가 있으면 항상 recommended_iso3/reason이 채워진다.
+    advice = result["portfolio_advice"]
+    assert set(advice.keys()) == {"recommended_iso3", "reason", "generated_at"}
+    if result["top20"]:
+        assert 1 <= len(advice["recommended_iso3"]) <= 2
+        assert advice["reason"]
+
+    # §3.9.1 이상치 경고 — data_flags에 들어갈 수 있는 키가 항상 boolean 판정 결과다.
+    for row in result["top20"]:
+        assert isinstance(row["data_flags"], list)
+
 
 def test_run_ranks_are_sequential_starting_at_one():
     result = funnel.run("854140")

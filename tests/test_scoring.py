@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from blueocean.pipeline.scoring import SCORE_SPEC, normalize, score
+from blueocean.pipeline.scoring import SCORE_SPEC, flag_growth_outliers, normalize, score
 
 
 def test_weights_sum_to_100():
@@ -67,3 +67,27 @@ def test_score_missing_column_defaults_neutral_without_crashing():
     out = score(df)
     assert len(out) == 2
     assert out["score"].notna().all()
+
+
+# ── §3.9.1 이상치 경고 (규칙 기반) ───────────────────────────────────────
+def test_flag_growth_outliers_marks_values_outside_p5_p95():
+    # 18개 국가가 전부 10%로 동일하고, 1개국만 500%로 튐 -> 그 1개국만 이상치.
+    yoy = [10.0] * 18 + [500.0]
+    df = pd.DataFrame({"yoy_pct": yoy, "cagr3_pct": [10.0] * 19})
+    out = flag_growth_outliers(df)
+    assert out["growth_outlier_yoy"].iloc[-1] == True  # noqa: E712
+    assert out["growth_outlier_yoy"].iloc[:-1].sum() == 0
+    assert not out["growth_outlier_cagr3"].any()  # 전부 동일값 -> 분산 0 -> 이상치 없음
+
+
+def test_flag_growth_outliers_missing_column_defaults_to_false():
+    df = pd.DataFrame({"market_size": [1e8, 2e8]})  # yoy_pct/cagr3_pct 컬럼 자체가 없음
+    out = flag_growth_outliers(df)
+    assert not out["growth_outlier_yoy"].any()
+    assert not out["growth_outlier_cagr3"].any()
+
+
+def test_flag_growth_outliers_all_nan_column_defaults_to_false():
+    df = pd.DataFrame({"yoy_pct": [np.nan, np.nan, np.nan]})
+    out = flag_growth_outliers(df)
+    assert not out["growth_outlier_yoy"].any()

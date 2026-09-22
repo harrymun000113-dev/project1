@@ -21,6 +21,11 @@ PORT = int(os.getenv("PORT", "5000"))
 COMTRADE_API_KEYS = [k.strip() for k in os.getenv("COMTRADE_API_KEYS", "").split(",") if k.strip()]
 SERPAPI_KEY = os.getenv("SERPAPI_KEY", "").strip()
 KEXIM_API_KEY = os.getenv("KEXIM_API_KEY", "").strip()
+# .env에는 흔히 오타로 OPEN_API_KEY라고도 적혀 있어(OpenAI가 아니라 "Open API"로 착각하기
+# 쉬움) 두 이름을 다 읽는다. 정식 이름(OPENAI_API_KEY)이 있으면 그쪽을 우선한다.
+OPENAI_API_KEY = (os.getenv("OPENAI_API_KEY") or os.getenv("OPEN_API_KEY") or "").strip()
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+OPENAI_TIMEOUT_SEC = float(os.getenv("OPENAI_TIMEOUT_SEC", "20"))
 
 # ── Demo / offline mode ────────────────────────────────────────────────
 # "auto"  -> demo mode turns on automatically for any service whose key is
@@ -41,6 +46,7 @@ def _demo_for(has_key: bool) -> bool:
 DEMO_COMTRADE = _demo_for(bool(COMTRADE_API_KEYS))
 DEMO_SERPAPI = _demo_for(bool(SERPAPI_KEY))
 DEMO_KEXIM = _demo_for(bool(KEXIM_API_KEY))
+DEMO_OPENAI = _demo_for(bool(OPENAI_API_KEY))
 
 # ── Data / cache paths ─────────────────────────────────────────────────
 DATA_DIR = BASE_DIR / "data"
@@ -48,7 +54,7 @@ CACHE_DIR = Path(os.getenv("BLUEOCEAN_CACHE_DIR", str(DATA_DIR / "cache")))
 COUNTRY_CODES_CSV = DATA_DIR / "country_codes.csv"
 HS_KEYWORD_MAP_CSV = DATA_DIR / "hs_keyword_map.csv"
 
-for _sub in ("comtrade", "trends", "fx", "tariff", "analyze"):
+for _sub in ("comtrade", "trends", "fx", "tariff", "analyze", "ai_insight"):
     (CACHE_DIR / _sub).mkdir(parents=True, exist_ok=True)
 
 # 캐시 키에 포함되는 "쿼리 스키마 버전". Comtrade 호출이 실제로 무엇을 요청하는지
@@ -80,6 +86,7 @@ TTL_TRENDS = 7 * 24 * 3600
 TTL_FX = 24 * 3600
 TTL_TARIFF = 7 * 24 * 3600
 TTL_ANALYZE = 24 * 3600
+TTL_AI_INSIGHT = 24 * 3600  # AI Insight(§3.4.2)는 같은 (hs6, 국가, 데이터) 조합이면 하루 재사용
 
 # ── Business rules ───────────────────────────────────────────────────────
 HARD_CUT_USD = 10_000_000  # 1,000만 달러 하드컷 (§6.3)
@@ -156,5 +163,5 @@ DEMO_TARIFF = _demo_for(tradenavi_configured())
 # 예전 값(예: 독일 수입액이 8배로 부풀려진 값)을 계속 돌려주는 사고가 난다.
 MODE_SIGNATURE = (
     f"comtrade={DEMO_COMTRADE},serpapi={DEMO_SERPAPI},kexim={DEMO_KEXIM},tariff={DEMO_TARIFF},"
-    f"schema={COMTRADE_SCHEMA_VERSION},years={COMTRADE_YEAR_FROM}-{COMTRADE_YEAR_TO}"
+    f"openai={DEMO_OPENAI},schema={COMTRADE_SCHEMA_VERSION},years={COMTRADE_YEAR_FROM}-{COMTRADE_YEAR_TO}"
 )

@@ -15,6 +15,7 @@
     rankingBody: document.getElementById("ranking-table-body"),
     exportCsvLink: document.getElementById("export-csv-link"),
     exportHtmlLink: document.getElementById("export-html-link"),
+    exportDocxLink: document.getElementById("export-docx-link"),
     globeCanvas: document.getElementById("globe-canvas"),
     globeOriginLabel: document.getElementById("globe-origin-label"),
     chipBar: document.getElementById("target-chip-bar"),
@@ -25,6 +26,8 @@
     gapCountryLabel: document.getElementById("gap-trend-country"),
     fxCanvas: document.getElementById("fx-chart"),
     baseYearBadge: document.getElementById("rank-base-year-badge"),
+    portfolioBanner: document.getElementById("portfolio-advice-banner"),
+    portfolioText: document.getElementById("portfolio-advice-text"),
   };
 
   // ── 초기화 ───────────────────────────────────────────────────────────
@@ -67,6 +70,19 @@
     renderRankingTable();
   });
 
+  // 국가를 아직 고르지 않은 상태(비활성)에서 눌러도 아무 반응이 없어 "고장난 것처럼" 보이므로,
+  // 그 경우만 토스트로 이유를 알려주고 실제 이동은 막는다. 활성 상태일 때는 막지 않고
+  // 평범한 <a href> 다운로드로 흘려보낸다.
+  // 주의: Bootstrap의 진짜 `.disabled` 클래스는 pointer-events:none을 걸어서 클릭 이벤트
+  // 자체가 이 요소까지 도달하지 못한다(그래서 예전엔 눌러도 토스트조차 안 떴다) — 그래서
+  // 여기서는 우리가 만든 `.is-disabled`만 쓰고 pointer-events는 항상 살려 둔다.
+  els.exportDocxLink.addEventListener("click", (e) => {
+    if (els.exportDocxLink.classList.contains("is-disabled")) {
+      e.preventDefault();
+      BOF.toast("먼저 Top 20 표에서 국가를 선택해 주세요.");
+    }
+  });
+
   document.getElementById("hud-next").addEventListener("click", () => {
     const top20 = (BOF.state.data && BOF.state.data.top20) || [];
     if (!top20.length) return;
@@ -82,6 +98,11 @@
 
   BOF.on("target:selected", onTargetSelected);
 
+  // 지금 화면에 반영해야 할 "가장 최근 검색"이 몇 번째 검색인지 추적한다. 검색 A 진행 중에
+  // 검색 B를 시작하면(예: 실API라 느린 첫 검색이 끝나기 전에 다른 HS코드로 다시 검색),
+  // A가 나중에 응답이 와도 이미 낡은 검색이므로 화면을 덮어쓰면 안 된다 — 이 토큰이 그 판단 기준이다.
+  let activeSearchToken = 0;
+
   // ── HS 검색 제출 ─────────────────────────────────────────────────────
   function submitHs(raw) {
     const digits = (raw || "").replace(/\D/g, "");
@@ -90,16 +111,21 @@
       return;
     }
     els.suggestList.classList.add("d-none");
+    const token = ++activeSearchToken;
     setLoading(true);
-    fetchAnalyze(digits)
+    fetchAnalyze(digits, token)
       .then((data) => {
+        if (token !== activeSearchToken) return;  // 그 사이 다른 검색이 시작됨 -> 이 결과는 버린다
         applyAnalyzeResult(digits, data);
       })
       .catch((err) => {
+        if (token !== activeSearchToken) return;
         console.error("[BOF] analyze 실패:", err);
         BOF.toast("분석 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (token === activeSearchToken) setLoading(false);
+      });
   }
 
   function setLoading(isLoading) {
@@ -109,12 +135,12 @@
     }
   }
 
-  function fetchAnalyze(hs6) {
+  function fetchAnalyze(hs6, token) {
     return fetch("/api/analyze?hs=" + encodeURIComponent(hs6))
       .then((resp) => resp.json().then((body) => ({ status: resp.status, body })))
       .then(({ status, body }) => {
         if (status === 202 && body.job_id) {
-          return pollJob(body.job_id, body.hs6_normalized);
+          return pollJob(body.job_id, body.hs6_normalized, token);
         }
         if (body.error && body.error.code === "BAD_HS") {
           throw new Error(body.error.message);
@@ -123,9 +149,15 @@
       });
   }
 
-  function pollJob(jobId, hs6Normalized) {
+  function pollJob(jobId, hs6Normalized, token) {
     return new Promise((resolve, reject) => {
       const tick = () => {
+        if (token !== activeSearchToken) {
+          // 이미 다른 검색으로 넘어갔다 — 화면에 쓰이지 않을 결과를 계속 폴링해 서버에
+          // 불필요한 요청을 보내지 않도록 여기서 멈춘다.
+          reject(new Error("superseded"));
+          return;
+        }
         fetch("/api/jobs/" + jobId)
           .then((resp) => resp.json().then((body) => ({ status: resp.status, body })))
           .then(({ status, body }) => {
@@ -165,8 +197,10 @@
     renderChipBar(top20, firstIso3);
     renderRankingTable();
     renderBaseYearBadge(data.meta);
+    renderPortfolioAdvice(data);
     window.BOFCharts.renderBubble(els.bubbleCanvas, top20, firstIso3);
     updateExportLinks(hs6);
+    updateExportDocxLink();  // 결과가 0건이면 이전 검색의 링크가 남아있지 않도록 여기서도 갱신
 
     if (firstIso3) {
       onTargetSelected(firstIso3);
@@ -189,6 +223,7 @@
     window.BOFCharts.renderBubble(els.bubbleCanvas, top20, iso3);
     renderTradeBarriers(row);
     renderFxCard(row);
+    updateExportDocxLink();
 
     loadCountryDetail(BOF.state.hs6, iso3);
   }
@@ -271,12 +306,11 @@
       "ORIGIN: SEOUL, KOREA (37.5°N, 127.0°E) → HUNTING " + Math.min(n, 6) + " GLOBAL TARGETS";
   }
 
-  // ── AI Insight ───────────────────────────────────────────────────────
+  // ── AI Insight (§3.4.2 콘텐츠 블록) ────────────────────────────────────
   function renderAiInsight(insight, row) {
     if (!insight || !row) return;
     document.getElementById("ai-insight-country").textContent = row.name_en || "-";
-    document.getElementById("ai-insight-body").textContent = insight.body || "";
-    document.getElementById("ai-insight-action").textContent = insight.action || "";
+    document.getElementById("ai-insight-body").textContent = insight.why_market || "";
     document.getElementById("ai-insight-target").textContent =
       "Target: " + (row.name_en || "-") + (row.name_ko ? " (" + row.name_ko + ")" : "");
 
@@ -293,6 +327,83 @@
       badge.textContent = c.label + " " + c.value;
       chipsWrap.appendChild(badge);
     });
+
+    renderInsightReference(insight.reference);
+    renderInsightList("ai-insight-contacts-block", "ai-insight-contacts", insight.contacts, (c) =>
+      (c.type ? "[" + c.type + "] " : "") + (c.name || "") + (c.note ? " — " + c.note : "")
+    );
+    renderInsightList("ai-insight-timeline-block", "ai-insight-timeline", insight.prep_timeline, (t) =>
+      (t.due ? t.due + " — " : "") + (t.milestone || "")
+    );
+    renderInsightRisks(insight.risks);
+    renderInsightList("ai-insight-gov-block", "ai-insight-gov", insight.gov_programs, (g) =>
+      (g.name || "") + (g.note ? " — " + g.note : "")
+    );
+
+    const limitationEl = document.getElementById("ai-insight-limitation");
+    if (insight.limitation) {
+      limitationEl.textContent = "한계점: " + insight.limitation;
+      limitationEl.classList.remove("d-none");
+    } else {
+      limitationEl.classList.add("d-none");
+    }
+  }
+
+  // 레퍼런스(선례) 블록 — 선례가 있으면 사례를, 없으면 "왜 없는지" 사유를 보여준다 (§3.4.2 #4).
+  function renderInsightReference(reference) {
+    const block = document.getElementById("ai-insight-reference-block");
+    const textEl = document.getElementById("ai-insight-reference");
+    if (!reference || (!reference.exists && !reference.reason_if_none)) {
+      block.classList.add("d-none");
+      return;
+    }
+    if (reference.exists) {
+      textEl.textContent = (reference.examples || []).join(", ") || "선례가 확인되었습니다.";
+    } else {
+      textEl.textContent = reference.reason_if_none || "아직 확인된 선례가 없습니다.";
+    }
+    block.classList.remove("d-none");
+  }
+
+  // 접촉 채널·준비 타임라인·정부지원사업처럼 "항목 배열 -> <li> 목록" 형태로 그리는 블록 공통 처리.
+  // 배열이 비어 있으면 블록 자체를 숨긴다 — 빈 placeholder를 보여주지 않는다는 §3.4.2 원칙.
+  function renderInsightList(blockId, listId, items, formatter) {
+    const block = document.getElementById(blockId);
+    const listEl = document.getElementById(listId);
+    listEl.innerHTML = "";
+    if (!items || !items.length) {
+      block.classList.add("d-none");
+      return;
+    }
+    items.forEach((item) => {
+      const li = document.createElement("li");
+      li.textContent = formatter(item);
+      listEl.appendChild(li);
+    });
+    block.classList.remove("d-none");
+  }
+
+  // 리스크 블록 — 항목마다 심각도(상/중/하) 배지를 붙인다 (§3.4.2 #7).
+  function renderInsightRisks(risks) {
+    const block = document.getElementById("ai-insight-risks-block");
+    const listEl = document.getElementById("ai-insight-risks");
+    listEl.innerHTML = "";
+    if (!risks || !risks.length) {
+      block.classList.add("d-none");
+      return;
+    }
+    const SEVERITY_LABEL = { high: "상", mid: "중", low: "하" };
+    risks.forEach((r) => {
+      const li = document.createElement("li");
+      const badge = document.createElement("span");
+      badge.className = "risk-severity-badge " + (r.severity || "");
+      badge.textContent = SEVERITY_LABEL[r.severity] || "-";
+      const text = document.createElement("span");
+      text.textContent = " " + (r.note || "");
+      li.append(badge, text);
+      listEl.appendChild(li);
+    });
+    block.classList.remove("d-none");
   }
 
   // ── Trade Barriers (C-1) ─────────────────────────────────────────────
@@ -398,6 +509,17 @@
     els.baseYearBadge.classList.remove("d-none");
   }
 
+  // ── 종합 조언 배너 (§3.9.0) — 품목(hs6) 단위로만 갱신, 국가 클릭으로는 안 바뀜 ──
+  function renderPortfolioAdvice(data) {
+    const advice = data && data.portfolio_advice;
+    if (!advice || !advice.reason) {
+      els.portfolioBanner.classList.add("d-none");
+      return;
+    }
+    els.portfolioText.textContent = advice.reason;
+    els.portfolioBanner.classList.remove("d-none");
+  }
+
   // ── HS 자동완성 ──────────────────────────────────────────────────────
   function fetchSuggest(q) {
     fetch("/api/hs/suggest?q=" + encodeURIComponent(q))
@@ -459,5 +581,21 @@
   function updateExportLinks(hs6) {
     els.exportCsvLink.href = "/api/export.csv?hs=" + encodeURIComponent(hs6);
     els.exportHtmlLink.href = "/api/export.html?hs=" + encodeURIComponent(hs6);
+  }
+
+  // Word 보고서는 국가 1개 단위라 hs6뿐 아니라 선택된 국가(selectedIso3)도 필요하다 —
+  // 국가를 선택하기 전에는 비활성 상태로 둔다.
+  function updateExportDocxLink() {
+    const hs6 = BOF.state.hs6;
+    const iso3 = BOF.state.selectedIso3;
+    if (!hs6 || !iso3) {
+      els.exportDocxLink.classList.add("is-disabled");
+      els.exportDocxLink.setAttribute("aria-disabled", "true");
+      els.exportDocxLink.href = "#";
+      return;
+    }
+    els.exportDocxLink.href = "/api/export.docx?hs=" + encodeURIComponent(hs6) + "&iso3=" + encodeURIComponent(iso3);
+    els.exportDocxLink.classList.remove("is-disabled");
+    els.exportDocxLink.removeAttribute("aria-disabled");
   }
 })();

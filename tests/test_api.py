@@ -76,3 +76,27 @@ def test_export_csv_download(client):
     assert resp.status_code == 200
     assert resp.mimetype == "text/csv"
     assert b"Rank" in resp.data
+
+
+def test_export_docx_requires_iso3(client):
+    _wait_for_analysis(client, "854140")
+    resp = client.get("/api/export.docx?hs=854140")
+    assert resp.status_code == 400
+    assert resp.get_json()["error"]["code"] == "BAD_REQUEST"
+
+
+def test_export_docx_unknown_country_is_404(client):
+    _wait_for_analysis(client, "854140")
+    resp = client.get("/api/export.docx?hs=854140&iso3=ZZZ")
+    assert resp.status_code == 404
+
+
+def test_export_docx_download_for_selected_country(client):
+    data = _wait_for_analysis(client, "854140")
+    assert data["top20"], "이 테스트는 후보가 있는 상태를 전제로 한다"
+    iso3 = data["top20"][0]["iso3"]
+
+    resp = client.get(f"/api/export.docx?hs=854140&iso3={iso3}")
+    assert resp.status_code == 200
+    assert resp.mimetype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    assert len(resp.data) > 1000  # 빈 zip이 아니라 실제 .docx 콘텐츠가 담겨 있어야 한다

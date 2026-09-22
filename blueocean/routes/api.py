@@ -5,10 +5,11 @@ import io
 import logging
 
 import pandas as pd
-from flask import Blueprint, Response, jsonify, render_template, request
+from flask import Blueprint, Response, jsonify, render_template, request, send_file
 
 import config
-from ..pipeline import funnel
+from .. import reports
+from ..pipeline import funnel, insight
 from ..pipeline.funnel import NoDataError
 from ..pipeline.scoring import SCORE_SPEC
 from ..services import fx, jobs
@@ -41,6 +42,7 @@ def _empty_result(hs6: str) -> dict:
         },
         "top20": [],
         "world_market_size_usd": 0,
+        "portfolio_advice": {"recommended_iso3": [], "reason": None, "generated_at": None},
         "error": {"code": "NO_DATA", "message": "해당 품목 데이터가 없습니다."},
     }
 
@@ -132,7 +134,26 @@ def country_detail(iso3: str):
         return jsonify(error={"code": "NO_DATA", "message": str(e)}), 200
     except ComtradeError as e:
         return jsonify(error={"code": "UPSTREAM_UNAVAILABLE", "message": str(e)}), 502
+
+    detail["insight"] = insight.generate(hs6, _target_row_for_insight(hs6, iso3, countries))
     return jsonify(detail)
+
+
+def _target_row_for_insight(hs6: str, iso3: str, countries: pd.DataFrame) -> dict:
+    """AI Insight가 근거로 쓸 실제 계산값(점수·성장률·관세·경쟁국 등)을 캐시된
+    `/api/analyze` 결과에서 찾아 넘긴다. 캐시가 없으면(아직 그 품목을 분석한 적이
+    없거나 TTL 만료) 국가명만이라도 채운 최소 정보로 폴백한다 — 이 경우 AI Insight는
+    수치 근거 없이 생성되므로 stub에 더 가까운 결과가 나올 수 있다."""
+    cached = peek(_analyze_cache_key(hs6), ANALYZE_CACHE_DIR, config.TTL_ANALYZE)
+    if cached:
+        row = next((r for r in cached.get("top20", []) if r.get("iso3") == iso3), None)
+        if row is not None:
+            return row
+    return {
+        "iso3": iso3,
+        "name_ko": countries.loc[iso3, "name_ko"] if iso3 in countries.index else None,
+        "name_en": countries.loc[iso3, "name_en"] if iso3 in countries.index else None,
+    }
 
 
 @bp.get("/fx/latest")
@@ -177,6 +198,57 @@ def export_html():
     resp = Response(html, mimetype="text/html")
     resp.headers["Content-Disposition"] = f"attachment; filename=blue_ocean_{hs6}.html"
     return resp
+
+
+@bp.get("/export.docx")
+def export_docx():
+    """선택된 국가 1개에 대한 Word 보고서(`blueocean/reports.py`, v2.6). `/api/analyze`와
+    달리 국가 하나를 다루므로 `iso3`가 필수다."""
+    hs6, _ = normalize_hs(request.args.get("hs", ""))
+    if not hs6:
+        return _bad_hs()
+    iso3 = (request.args.get("iso3") or "").upper()
+    if not iso3:
+        return jsonify(error={"code": "BAD_REQUEST", "message": "국가(iso3)를 지정하세요."}), 400
+
+    analyzed = _run_cached(hs6)
+    row = next((r for r in analyzed.get("top20", []) if r.get("iso3") == iso3), None)
+    if row is None:
+        return jsonify(error={"code": "NOT_FOUND", "message": "해당 국가의 분석 결과를 찾을 수 없습니다."}), 404
+
+    meta = analyzed.get("meta", {})
+    report_data = {
+        "country": row.get("name_ko") or row.get("name_en"),
+        "blue_ocean_score": row.get("score"),
+        "market_opportunity_score": row.get("potential"),
+        "penetration_opportunity_score": row.get("supply_score"),
+        "growth_1y": row.get("growth", {}).get("yoy_pct"),
+        "cagr_3y": row.get("growth", {}).get("cagr3_pct"),
+        "korea_market_share": row.get("korea_share_pct"),
+        "global_korea_share": meta.get("korea_world_share_pct"),
+        "export_gap": row.get("export_gap_pp"),
+        "tariff_rate": row.get("barriers", {}).get("tariff_rate_pct"),
+        "top3_concentration": row.get("competitors", {}).get("top3_share_pct"),
+        "item_name": meta.get("hs_desc") or f"HS {hs6}",
+        "hs_code": hs6,
+        "project_name": "Blue Ocean Finder",
+        "date": (meta.get("generated_at") or "")[:10] or None,
+    }
+
+    buf = io.BytesIO()
+    try:
+        reports.generate_blue_ocean_report(report_data, filename=buf)
+    except Exception as e:  # 보고서 생성 실패가 나머지 대시보드를 막으면 안 된다
+        log.exception("Word 보고서 생성 실패 (hs=%s, iso3=%s): %s", hs6, iso3, e)
+        return jsonify(error={"code": "INTERNAL", "message": "보고서 생성 중 오류가 발생했습니다."}), 500
+    buf.seek(0)
+
+    return send_file(
+        buf,
+        as_attachment=True,
+        download_name=f"blue_ocean_{hs6}_{iso3}.docx",
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    )
 
 
 @bp.get("/score-spec")

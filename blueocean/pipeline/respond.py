@@ -63,6 +63,10 @@ def _data_flags(row: pd.Series) -> list[str]:
         flags.append("fx_missing")
     if not row.get("tariff_ok", False):
         flags.append("tariff_missing")
+    if bool(row.get("growth_outlier_yoy")):
+        flags.append("growth_outlier_yoy")
+    if bool(row.get("growth_outlier_cagr3")):
+        flags.append("growth_outlier_cagr3")
     return flags
 
 
@@ -82,6 +86,9 @@ def _row_to_json(row: pd.Series) -> dict:
         "lon": _num(row.get("lon"), 2),
         "score": _num(row.get("score"), 1),
         "potential": _num(row.get("potential"), 1),
+        # 수요 측(potential)의 짝인 공급 여지 측 0~100 합성 점수. Word 보고서의
+        # penetration_opportunity_score가 이 값이다 (§ scoring.py supply_score 주석 참고).
+        "supply_score": _num(row.get("supply_score"), 1),
         "market_size_usd": _num(row.get("market_size"), 0),
         # 3자리까지 보낸다 — 1% 미만 값(예: 0.261%)을 프론트가 2자리로 반올림된 값(0.26%)
         # 대신 원래 정밀도로 표시할 수 있게 여유를 준다 (프론트 표시 자릿수는 state.js 참고).
@@ -130,7 +137,8 @@ def _row_to_json(row: pd.Series) -> dict:
 
 
 def build_analyze_response(hs6: str, T: int, korea_world_share_pct: float, top20: pd.DataFrame,
-                            funnel_counts: dict, world_market_size_usd: float) -> dict:
+                            funnel_counts: dict, world_market_size_usd: float,
+                            portfolio_advice: dict | None = None) -> dict:
     hs_desc = describe_hs6(hs6)
 
     if not top20.empty:
@@ -157,4 +165,6 @@ def build_analyze_response(hs6: str, T: int, korea_world_share_pct: float, top20
         },
         "top20": top20_json,
         "world_market_size_usd": _num(world_market_size_usd, 0),
+        # §3.9.0 종합 조언 — hs6(품목) 단위로 한 번만 생성되고 국가 선택으로는 바뀌지 않는다.
+        "portfolio_advice": portfolio_advice or {"recommended_iso3": [], "reason": None, "generated_at": None},
     }

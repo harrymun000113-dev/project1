@@ -80,9 +80,42 @@ def score(df: pd.DataFrame, keys: list[str] | None = None) -> pd.DataFrame:
         out["potential"] = (out[[f"pt_{s['key']}" for s in demand]].sum(axis=1) / d_total * 100).round(1)
     else:
         out["potential"] = np.nan
+
+    # `potential`(수요 측 0~100)의 짝인 공급 여지 측 0~100 합성 점수. Word 보고서(reports.py)의
+    # market_opportunity_score/penetration_opportunity_score가 이 둘이다. 전체 8항목으로 계산하면
+    # 수요 50점+공급 50점이 각각 50:50이라 `score`(전체 100점 가중평균)는 정확히
+    # (potential + supply_score) / 2 — 즉 산술평균이다 (기하평균 아님, §4.1 "수요 50점+공급 50점").
+    supply = [s for s in specs if s["side"] == "supply"]
+    if supply:
+        s_total = sum(s["weight"] for s in supply)
+        out["supply_score"] = (out[[f"pt_{s['key']}" for s in supply]].sum(axis=1) / s_total * 100).round(1)
+    else:
+        out["supply_score"] = np.nan
+
     return out
 
 
 def score_breakdown(row: pd.Series) -> dict[str, float]:
     """`score_breakdown` 응답 필드용: 항목별 획득 점수(pt_*)만 뽑아 label 없이 key 기준으로."""
     return {s["key"]: round(float(row.get(f"pt_{s['key']}", 0.0)), 1) for s in SCORE_SPEC}
+
+
+def flag_growth_outliers(df: pd.DataFrame, lo_q: float = 0.05, hi_q: float = 0.95) -> pd.DataFrame:
+    """§3.9.1 이상치 경고 — 규칙 기반(AI 불필요). 후보 풀(Stage 2, 상위 50개국) 기준으로
+    `yoy_pct`/`cagr3_pct`가 P5~P95를 벗어나면 표시용 플래그를 단다.
+
+    점수 계산(normalize의 이상치 클리핑)과는 무관한 별도 계산이다 — 저기는 점수를
+    깎지 않기 위한 클리핑이고, 여기는 "이 수치는 착시일 수 있다"는 표시만 하는
+    목적이라 클리핑하지 않고 P5~P95 바깥 여부만 그대로 플래그로 남긴다.
+    """
+    out = df.copy()
+    for col, flag in (("yoy_pct", "growth_outlier_yoy"), ("cagr3_pct", "growth_outlier_cagr3")):
+        if col not in out.columns or out[col].dropna().empty:
+            out[flag] = False
+            continue
+        lo, hi = out[col].quantile(lo_q), out[col].quantile(hi_q)
+        if not np.isfinite(lo) or not np.isfinite(hi) or hi <= lo:
+            out[flag] = False
+        else:
+            out[flag] = ((out[col] < lo) | (out[col] > hi)).fillna(False)
+    return out

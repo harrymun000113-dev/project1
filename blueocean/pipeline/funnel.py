@@ -17,7 +17,7 @@ import pandas as pd
 import config
 from ..services import comtrade, competitors, fx, tariff, trends
 from ..services.countries import load_countries
-from .scoring import score
+from .scoring import flag_growth_outliers, score
 
 log = logging.getLogger(__name__)
 
@@ -173,6 +173,9 @@ def run(hs6: str) -> dict:
     stage1_kept = len(m)
 
     cand = stage2_lite(m, top_n=config.STAGE2_TOP_N)
+    # §3.9.1 이상치 경고: 후보 풀(Stage 2, 상위 50개국) 기준으로 판정해야 하므로
+    # Stage 3(관세·트렌드·환율 보강)로 넘어가기 전, 이 시점의 yoy_pct/cagr3_pct로 계산한다.
+    cand = flag_growth_outliers(cand)
     stage2_kept = len(cand)
 
     full = stage3_full(cand, hs6, T)
@@ -181,13 +184,14 @@ def run(hs6: str) -> dict:
 
     korea_world_share_pct = m_all.attrs.get("korea_world_share_pct", float("nan"))
 
-    from . import respond
+    from . import advice, respond
 
     return respond.build_analyze_response(
         hs6=hs6, T=T, korea_world_share_pct=korea_world_share_pct, top20=top20,
         funnel_counts={"stage1": stage1_total if stage1_total else stage1_kept,
                        "stage2": stage2_kept, "stage3": len(top20)},
         world_market_size_usd=float(m_all["market_size"].sum(skipna=True)) if not m_all.empty else 0.0,
+        portfolio_advice=advice.generate(top20),  # §3.9.0
     )
 
 
@@ -231,7 +235,8 @@ def country_detail(hs6: str, iso3: str, T: int) -> dict:
             "export_gap_pp": round(gap, 2) if gap is not None else None,
         })
 
-    from . import insight
-
-    row = {"iso3": iso3, "name_ko": countries.loc[iso3, "name_ko"], "name_en": countries.loc[iso3, "name_en"]}
-    return {"gap_trend": gap_trend, "insight": insight.generate(hs6, row)}
+    # AI Insight(§3.4)는 여기서 만들지 않는다 — 이 함수가 아는 것은 gap_trend 뿐이라
+    # score/growth/관세/경쟁국처럼 AI가 근거로 삼을 실제 계산값이 없다. 그 값들은 이미
+    # `/api/analyze` 캐시에 있으므로, routes/api.py의 country_detail 뷰가 그 캐시된
+    # top20 행을 찾아 insight.generate()에 넘긴다 (없으면 최소 정보로 폴백).
+    return {"gap_trend": gap_trend}
