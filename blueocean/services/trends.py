@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import hashlib
 import logging
-import time
 
 import numpy as np
 import pandas as pd
@@ -99,22 +98,11 @@ def _fetch_one(hs6: str, iso2: str) -> float | None:
 
 def momentum(hs6: str, iso2_series: pd.Series) -> pd.Series:
     """iso3로 인덱싱된 iso2 코드 Series -> trend_momentum Series (실패/결측은 NaN)."""
-    items = list(iso2_series.items())
-    limit = config.SERPAPI_MAX_COUNTRIES_PER_RUN
-    if isinstance(limit, int) and limit > 0 and len(items) > limit:
-        log.warning(
-            "SerpAPI 후보국 수 %d개가 제한 %d개를 초과해 이번 실행에서는 처음 %d개만 조회합니다.",
-            len(items), limit, limit,
-        )
-        items = items[:limit]
-
     out = {}
-    for i, (iso3, iso2) in enumerate(items):
-        if i > 0 and config.SERPAPI_REQUEST_DELAY_SEC > 0:
-            time.sleep(config.SERPAPI_REQUEST_DELAY_SEC)
+    for iso3, iso2 in iso2_series.items():
         try:
             out[iso3] = _fetch_one_cached(hs6, iso2, config.DEMO_SERPAPI)
         except Exception as e:  # SerpAPI 한도·형식 변경 등 어떤 예외든 이 국가만 결측 처리
             log.warning("트렌드 조회 예외 (iso3=%s): %s", iso3, e)
             out[iso3] = None
-    return pd.Series(out, index=pd.Index([iso3 for iso3, _ in items]), dtype="float64")
+    return pd.Series(out, index=iso2_series.index, dtype="float64")

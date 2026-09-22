@@ -20,10 +20,8 @@ from __future__ import annotations
 
 import hashlib
 import itertools
-import json
 import logging
 import time
-from pathlib import Path
 from typing import Iterable
 
 import numpy as np
@@ -37,14 +35,6 @@ from .countries import comtrade_code_to_iso3, load_countries
 log = logging.getLogger(__name__)
 
 BASE_URL = "https://comtradeapi.un.org/data/v1/get/C/A/HS"
-SHARED_CACHE_DIR = config.DATA_DIR / "comtrade_shared"
-RAW_CACHE_DIR = config.DATA_DIR / "comtrade_raw"
-
-
-def _share_current_real_query(args: tuple, kwargs: dict) -> bool:
-    mode = kwargs.get("_mode", args[-2] if len(args) >= 2 else None)
-    schema = kwargs.get("_schema", args[-1] if args else None)
-    return not config.DEMO_COMTRADE and mode is False and schema == config.COMTRADE_SCHEMA_VERSION
 
 
 class ComtradeError(RuntimeError):
@@ -75,45 +65,10 @@ def _per_year(fetch, hs6: str, reporter: str | int, partner: int, periods: tuple
 
 
 # ── real HTTP call ───────────────────────────────────────────────────────
-def _raw_cache_path(params: dict[str, str]) -> Path:
-    query = json.dumps({"url": BASE_URL, "params": params}, sort_keys=True, ensure_ascii=False)
-    return RAW_CACHE_DIR / f"{hashlib.sha256(query.encode('utf-8')).hexdigest()}.json"
-
-
-def _response_rows(payload: object) -> list[dict] | None:
-    rows = payload.get("data") if isinstance(payload, dict) else payload
-    return rows if isinstance(rows, list) and all(isinstance(row, dict) for row in rows) else None
-
-
-def _load_raw_response(params: dict[str, str]) -> object | None:
-    path = _raw_cache_path(params)
-    try:
-        with path.open("r", encoding="utf-8") as fh:
-            saved = json.load(fh)
-        if saved.get("url") == BASE_URL and saved.get("params") == params:
-            payload = saved.get("response")
-            if _response_rows(payload) is not None:
-                return payload
-    except FileNotFoundError:
-        pass
-    except (OSError, ValueError, AttributeError) as e:
-        log.warning("Comtrade raw cache read failed for %s: %s", path, e)
-    return None
-
-
-def _save_raw_response(params: dict[str, str], payload: object) -> None:
-    path = _raw_cache_path(params)
-    try:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = path.with_suffix(".tmp")
-        with tmp.open("w", encoding="utf-8") as fh:
-            json.dump({"url": BASE_URL, "params": params, "response": payload}, fh, ensure_ascii=False)
-        tmp.replace(path)
-    except (OSError, TypeError, ValueError) as e:
-        log.warning("Comtrade raw cache write failed for %s: %s", path, e)
-
-
 def _call_api(flow: str, reporter: str | int, partner: str | int, hs6: str, periods: list[int]) -> pd.DataFrame:
+    if not config.COMTRADE_API_KEYS:
+        raise ComtradeError("COMTRADE_API_KEYS가 설정되지 않았습니다.")
+
     # 실측 결과: reporterCode를 생략한 "전체 리포터" 조회는 연도 1개만 물어도 서버에서
     # 40~60초가 걸렸고, 연도를 2~3개 콤마로 묶어서 같이 요청하면 150초를 줘도 계속
     # ReadTimeout이 났다(무료 티어가 그 정도 크기의 계산은 아예 못 끝내는 것으로 보임).
@@ -148,13 +103,6 @@ def _call_api(flow: str, reporter: str | int, partner: str | int, hs6: str, peri
     if partner != "all":
         params["partnerCode"] = str(partner)
 
-    cached_payload = _load_raw_response(params)
-    if cached_payload is not None:
-        return _tidy(_response_rows(cached_payload), flow)
-
-    if not config.COMTRADE_API_KEYS:
-        raise ComtradeError("COMTRADE_API_KEYS가 설정되지 않았습니다.")
-
     timeout = 150 if reporter == "all" else 30
 
     last_exc: Exception | None = None
@@ -185,12 +133,7 @@ def _call_api(flow: str, reporter: str | int, partner: str | int, hs6: str, peri
             log.warning("Comtrade 응답 처리 실패: %s", e)
             continue
 
-        rows = _response_rows(payload)
-        if rows is None:
-            last_exc = ValueError("Comtrade response has no data array")
-            log.warning("Comtrade response has no data array")
-            continue
-        _save_raw_response(params, payload)
+        rows = payload.get("data", payload) if isinstance(payload, dict) else payload
         return _tidy(rows, flow)
 
     raise ComtradeError(f"Comtrade 키 풀 전부 소진: {last_exc}")
@@ -362,8 +305,7 @@ def _demo_suppliers(hs6: str, reporter_iso3: str, year: int) -> pd.DataFrame:
 # 공개 함수)에서 하고, 캐시가 걸리는 내부 함수는 항상 구체적인 `periods` 튜플만 받는다.
 # (연도 해석을 캐시된 함수 안에서 하면, 연말을 넘기고도 예전 연도 범위로 캐시된 결과가
 # TTL 만료 전까지 재사용되는 미묘한 버그가 생긴다.)
-@parquet_cache(config.CACHE_DIR / "comtrade", config.TTL_COMTRADE,
-               shared_dir=SHARED_CACHE_DIR, share_if=_share_current_real_query)
+@parquet_cache(config.CACHE_DIR / "comtrade", config.TTL_COMTRADE)
 def _imports_cached(hs6: str, reporter: str | int, partner: int, periods: tuple[int, ...], _mode: bool, _schema: int) -> pd.DataFrame:
     # `_mode`(=config.DEMO_COMTRADE)와 `_schema`(=config.COMTRADE_SCHEMA_VERSION)는 값
     # 자체는 안 쓰지만 캐시 키에 반드시 들어가야 한다. `_mode`가 없으면 데모 모드에서
@@ -375,8 +317,7 @@ def _imports_cached(hs6: str, reporter: str | int, partner: int, periods: tuple[
     return _call_api("M", reporter, partner, hs6, list(periods))
 
 
-@parquet_cache(config.CACHE_DIR / "comtrade", config.TTL_COMTRADE,
-               shared_dir=SHARED_CACHE_DIR, share_if=_share_current_real_query)
+@parquet_cache(config.CACHE_DIR / "comtrade", config.TTL_COMTRADE)
 def _exports_cached(hs6: str, reporter: str | int, partner: int, periods: tuple[int, ...], _mode: bool, _schema: int) -> pd.DataFrame:
     if _mode:
         return _demo_exports(reporter, partner, hs6, list(periods))
@@ -395,8 +336,7 @@ def exports(hs6: str, reporter: str | int = 410, partner: int = 0, years: Iterab
     return _per_year(_exports_cached, hs6, reporter, partner, periods)
 
 
-@parquet_cache(config.CACHE_DIR / "comtrade", config.TTL_COMTRADE,
-               shared_dir=SHARED_CACHE_DIR, share_if=_share_current_real_query)
+@parquet_cache(config.CACHE_DIR / "comtrade", config.TTL_COMTRADE)
 def _supplier_breakdown_cached(hs6: str, reporter_iso3: str, year: int, _mode: bool, _schema: int) -> pd.DataFrame:
     if _mode:
         return _demo_suppliers(hs6, reporter_iso3, year)

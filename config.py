@@ -20,8 +20,6 @@ PORT = int(os.getenv("PORT", "5000"))
 # ── External API credentials ──────────────────────────────────────────
 COMTRADE_API_KEYS = [k.strip() for k in os.getenv("COMTRADE_API_KEYS", "").split(",") if k.strip()]
 SERPAPI_KEY = os.getenv("SERPAPI_KEY", "").strip()
-SERPAPI_REQUEST_DELAY_SEC = float(os.getenv("SERPAPI_REQUEST_DELAY_SEC", "0.5").strip() or "0.5")
-SERPAPI_MAX_COUNTRIES_PER_RUN = int(os.getenv("SERPAPI_MAX_COUNTRIES_PER_RUN", "10").strip() or "10")
 KEXIM_API_KEY = os.getenv("KEXIM_API_KEY", "").strip()
 
 # ── Demo / offline mode ────────────────────────────────────────────────

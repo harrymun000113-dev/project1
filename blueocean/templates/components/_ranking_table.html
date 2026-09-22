@@ -1,0 +1,35 @@
+<div id="ranking-table-card" class="card dashboard-card h-100">
+  <div class="card-body d-flex flex-column">
+    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+      <h6 class="card-title mb-0">Top 20 Blue Ocean Market Rankings</h6>
+      <span id="rank-base-year-badge" class="badge base-year-badge d-none"
+            title="전 세계 대부분 국가가 무역 통계 보고를 마친 가장 최근 연도 기준입니다. 통계 제출에는 보통 1~3년이 걸립니다.">
+        기준연도 -
+      </span>
+      <select id="rank-sort-select" class="form-select form-select-sm ms-auto rank-sort-select">
+        <option value="score">Score 순</option>
+        <option value="korea_share_pct">한국 점유율 순</option>
+        <option value="growth">Growth 순</option>
+        <option value="market_size_usd">시장규모 순</option>
+      </select>
+    </div>
+    <p class="text-muted small mb-2">
+      행을 클릭하면 3D 지구본과 대시보드 해당 국가가 즉시 락온됩니다.
+      (하드컷 1,000만$ → 간이점수 상위 50개국 중 최종 상위 20)
+    </p>
+
+    <div class="ranking-table-scroll flex-grow-1">
+      <table class="table table-sm ranking-table">
+        <thead>
+          <tr>
+            <th>Rank</th><th>Country</th><th>Score</th><th>Growth 추세</th>
+            <th>한국 점유율</th><th>경쟁국</th><th>시장규모</th>
+          </tr>
+        </thead>
+        <tbody id="ranking-table-body">
+          <tr><td colspan="7" class="text-center text-muted py-4">HS 코드를 검색하면 결과가 표시됩니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -23,7 +23,6 @@ import functools
 import hashlib
 import json
 import logging
-import shutil
 import threading
 import time
 from pathlib import Path
@@ -109,46 +108,21 @@ def disk_json_cache(cache_dir: Path, ttl: int, cache_if: Callable[[Any], bool] =
     return deco
 
 
-def parquet_cache(
-    cache_dir: Path,
-    ttl: int,
-    cache_if: Callable[[pd.DataFrame], bool] = lambda df: not df.empty,
-    shared_dir: Path | None = None,
-    share_if: Callable[[tuple, dict], bool] = lambda args, kwargs: True,
-):
-    """Local TTL cache with an optional Git-shareable Parquet fallback that never expires."""
+def parquet_cache(cache_dir: Path, ttl: int, cache_if: Callable[[pd.DataFrame], bool] = lambda df: not df.empty):
+    """Parquet-file backed TTL cache for DataFrame-returning functions."""
 
     def deco(fn):
         @functools.wraps(fn)
         def wrapper(*args, **kwargs):
             cache_dir.mkdir(parents=True, exist_ok=True)
-            filename = f"{_stable_key(fn.__name__, args, kwargs)}.parquet"
-            path = cache_dir / filename
-            share = shared_dir is not None and share_if(args, kwargs)
-            shared_path = shared_dir / filename if share else None
+            path = cache_dir / f"{_stable_key(fn.__name__, args, kwargs)}.parquet"
             if path.exists():
                 try:
                     age = time.time() - path.stat().st_mtime
                     if age < ttl:
-                        result = pd.read_parquet(path)
-                        if share and not shared_path.exists():
-                            try:
-                                shared_dir.mkdir(parents=True, exist_ok=True)
-                                shared_tmp = shared_path.with_suffix(".tmp")
-                                shutil.copyfile(path, shared_tmp)
-                                shared_tmp.replace(shared_path)
-                            except OSError as e:
-                                log.warning("shared parquet write failed for %s: %s", shared_path, e)
-                        return result
+                        return pd.read_parquet(path)
                 except Exception as e:  # corrupt file, missing engine, etc.
                     log.warning("parquet cache read failed for %s, recomputing: %s", path, e)
-
-            if share:
-                if shared_path.exists():
-                    try:
-                        return pd.read_parquet(shared_path)
-                    except Exception as e:
-                        log.warning("shared parquet read failed for %s, recomputing: %s", shared_path, e)
 
             result = fn(*args, **kwargs)
             try:
@@ -156,11 +130,6 @@ def parquet_cache(
                     tmp = path.with_suffix(".tmp")
                     result.to_parquet(tmp)
                     tmp.replace(path)
-                    if share:
-                        shared_dir.mkdir(parents=True, exist_ok=True)
-                        shared_tmp = shared_path.with_suffix(".tmp")
-                        result.to_parquet(shared_tmp)
-                        shared_tmp.replace(shared_path)
             except Exception as e:
                 log.warning("parquet cache write failed for %s: %s", path, e)
             return result

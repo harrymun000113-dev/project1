@@ -3,7 +3,6 @@ import pandas as pd
 import pytest
 
 from blueocean.pipeline.scoring import SCORE_SPEC, normalize, score
-from blueocean.services import trends
 
 
 def test_weights_sum_to_100():
@@ -68,25 +67,3 @@ def test_score_missing_column_defaults_neutral_without_crashing():
     out = score(df)
     assert len(out) == 2
     assert out["score"].notna().all()
-
-
-def test_momentum_applies_rate_limit_and_delay(monkeypatch):
-    calls = []
-    sleep_calls = []
-
-    def fake_fetch(hs6, iso2, mode):
-        calls.append((hs6, iso2, mode))
-        return 1.0
-
-    monkeypatch.setattr(trends, "_fetch_one_cached", fake_fetch)
-    monkeypatch.setattr("blueocean.services.trends.time.sleep", lambda s: sleep_calls.append(s))
-    monkeypatch.setattr("blueocean.services.trends.config.DEMO_SERPAPI", False)
-    monkeypatch.setattr("blueocean.services.trends.config.SERPAPI_REQUEST_DELAY_SEC", 0.25)
-    monkeypatch.setattr("blueocean.services.trends.config.SERPAPI_MAX_COUNTRIES_PER_RUN", 2)
-
-    series = pd.Series({"USA": "US", "JPN": "JP", "KOR": "KR"})
-    result = trends.momentum("330499", series)
-
-    assert list(result.index) == ["USA", "JPN"]
-    assert len(calls) == 2
-    assert sleep_calls == [0.25]
