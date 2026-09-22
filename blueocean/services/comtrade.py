@@ -22,7 +22,6 @@ import hashlib
 import itertools
 import logging
 import time
-from datetime import date
 from typing import Iterable
 
 import numpy as np
@@ -50,12 +49,19 @@ def _next_key() -> str | None:
     return next(_key_cycle) if _key_cycle else None
 
 
-def _recent_year_range(n: int = 6, lag: int = 2) -> list[int]:
-    """Most recent ``n`` years Comtrade is likely to have data for, given a
-    reporting lag of ``lag`` years (annual data typically trails 1-2 years,
-    §5.1 주의①)."""
-    latest = date.today().year - lag
-    return list(range(latest - n + 1, latest + 1))
+def _default_years() -> list[int]:
+    """`years=None`일 때 조회할 연도 — config.COMTRADE_YEAR_FROM~TO (기본 2018~2021)."""
+    return list(config.COMTRADE_YEARS)
+
+
+def _per_year(fetch, hs6: str, reporter: str | int, partner: int, periods: tuple[int, ...]) -> pd.DataFrame:
+    """reporter="all"은 어차피 연도별로 쪼개 호출되므로(_call_api), 캐시도 연도 단위로 건다.
+    그래야 (2018~2021)로 받은 뒤 (2018, 2020, 2021)을 요청해도 같은 연도를 다시 안 받는다."""
+    if reporter != "all" or len(periods) <= 1:
+        return fetch(hs6, reporter, partner, periods, config.DEMO_COMTRADE, config.COMTRADE_SCHEMA_VERSION)
+    frames = [fetch(hs6, reporter, partner, (y,), config.DEMO_COMTRADE, config.COMTRADE_SCHEMA_VERSION) for y in periods]
+    non_empty = [f for f in frames if not f.empty]
+    return pd.concat(non_empty, ignore_index=True) if non_empty else frames[0]
 
 
 # ── real HTTP call ───────────────────────────────────────────────────────
@@ -68,7 +74,13 @@ def _call_api(flow: str, reporter: str | int, partner: str | int, hs6: str, peri
     # ReadTimeout이 났다(무료 티어가 그 정도 크기의 계산은 아예 못 끝내는 것으로 보임).
     # 그래서 reporter="all"일 때는 연도별로 쪼개서 한 번에 하나씩 순차 호출한다.
     if reporter == "all" and len(periods) > 1:
-        frames = [_call_api(flow, reporter, partner, hs6, [p]) for p in periods]
+        # 연도별 호출을 곧바로 이어 쏘면(특히 연도 수가 많을 때) 무료 티어 rate limit(429)에
+        # 걸리기 쉽다 — 실측됨. 매 호출 사이에 짧은 지연을 둔다.
+        frames = []
+        for i, p in enumerate(periods):
+            if i > 0:
+                time.sleep(1.5)
+            frames.append(_call_api(flow, reporter, partner, hs6, [p]))
         non_empty = [f for f in frames if not f.empty]
         return pd.concat(non_empty, ignore_index=True) if non_empty else _tidy([], flow)
 
@@ -94,7 +106,9 @@ def _call_api(flow: str, reporter: str | int, partner: str | int, hs6: str, peri
     timeout = 150 if reporter == "all" else 30
 
     last_exc: Exception | None = None
-    attempts = max(3, len(config.COMTRADE_API_KEYS))  # 키가 1개뿐이어도 일시적 오류는 재시도한다
+    # 키가 1개뿐이어도 일시적 오류(특히 429)는 재시도한다. reporter="all" 호출은 서버
+    # 부담이 커서 rate limit에 더 잘 걸리므로(실측됨) 재시도 횟수를 더 준다.
+    attempts = max(5 if reporter == "all" else 3, len(config.COMTRADE_API_KEYS))
     for attempt in range(attempts):
         key = _next_key()
         try:
@@ -109,7 +123,7 @@ def _call_api(flow: str, reporter: str | int, partner: str | int, hs6: str, peri
 
         if resp.status_code == 429 or resp.status_code == 403:
             log.warning("Comtrade 키 한도 초과(status=%s) — 다음 키로 전환", resp.status_code)
-            time.sleep(min(2 ** attempt, 8))
+            time.sleep(min(3 * (2 ** attempt), 30))
             continue
         try:
             resp.raise_for_status()
@@ -312,14 +326,14 @@ def _exports_cached(hs6: str, reporter: str | int, partner: int, periods: tuple[
 
 def imports(hs6: str, reporter: str | int = "all", partner: int = 0, years: Iterable[int] | None = None) -> pd.DataFrame:
     """총수입(reporter가 partner로부터 수입한 값) 원장. flow=M."""
-    periods = tuple(years) if years is not None else tuple(_recent_year_range())
-    return _imports_cached(hs6, reporter, partner, periods, config.DEMO_COMTRADE, config.COMTRADE_SCHEMA_VERSION)
+    periods = tuple(years) if years is not None else tuple(_default_years())
+    return _per_year(_imports_cached, hs6, reporter, partner, periods)
 
 
 def exports(hs6: str, reporter: str | int = 410, partner: int = 0, years: Iterable[int] | None = None) -> pd.DataFrame:
     """총수출(reporter가 partner로 수출한 값) 원장. flow=X."""
-    periods = tuple(years) if years is not None else tuple(_recent_year_range())
-    return _exports_cached(hs6, reporter, partner, periods, config.DEMO_COMTRADE, config.COMTRADE_SCHEMA_VERSION)
+    periods = tuple(years) if years is not None else tuple(_default_years())
+    return _per_year(_exports_cached, hs6, reporter, partner, periods)
 
 
 @parquet_cache(config.CACHE_DIR / "comtrade", config.TTL_COMTRADE)
@@ -330,7 +344,13 @@ def _supplier_breakdown_cached(hs6: str, reporter_iso3: str, year: int, _mode: b
     code = countries.loc[reporter_iso3, "comtrade_code"] if reporter_iso3 in countries.index else None
     if code is None or pd.isna(code):
         return pd.DataFrame(columns=["reporter_iso3", "partner_iso3", "period", "flow", "value"])
-    return _call_api("M", int(code), "all", hs6, [year])  # partner="all" (전 공급국)
+    df = _call_api("M", int(code), "all", hs6, [year])  # partner="all" (전 공급국)
+    # partner="all"은 실제 국가 사이에 "World(세계 합계)"·"Areas nes(미분류 지역)" 같은
+    # 집계성 행을 섞어서 돌려줄 때가 있다. 이런 행은 country_codes.csv의 어떤 나라에도
+    # 대응되지 않아 partner_iso3가 결측(NaN)으로 남으므로, 그 자체가 "진짜 국가가
+    # 아니다"라는 신호다. 여기서 걸러내지 않으면 이 값을 그대로 sum()하는 모든 호출부
+    # (예: 경쟁국 합계)가 실제보다 부풀려진다 (§4.2 top3_share, §3.9.2).
+    return df[df["partner_iso3"].notna()]
 
 
 def supplier_breakdown(hs6: str, reporter_iso3: str, year: int) -> pd.DataFrame:

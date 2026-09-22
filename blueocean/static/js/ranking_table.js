@@ -52,7 +52,7 @@ window.BOFRankingTable = (function () {
       const name = document.createElement("span");
       name.textContent = i + 1 + ". " + (t.name_ko || t.name_en || t.iso3);
       const pct = document.createElement("span");
-      pct.textContent = (t.share_pct ?? "-") + "%";
+      pct.textContent = window.BOF.fmtSharePct(t.share_pct);
       line.append(name, pct);
       wrap.appendChild(line);
     });
@@ -64,7 +64,7 @@ window.BOFRankingTable = (function () {
     const tName = document.createElement("span");
     tName.textContent = "합계";
     const tVal = document.createElement("span");
-    tVal.textContent = (c.top3_share_pct ?? "-") + "%";
+    tVal.textContent = window.BOF.fmtSharePct(c.top3_share_pct);
     total.append(tName, tVal);
     wrap.appendChild(total);
     return wrap;
@@ -116,15 +116,14 @@ window.BOFRankingTable = (function () {
       tdGrowth.appendChild(growthBtn);
 
       const tdShare = document.createElement("td");
-      tdShare.textContent = row.korea_share_pct !== null ? row.korea_share_pct.toFixed(1) + "%" : "-";
+      tdShare.textContent = window.BOF.fmtSharePct(row.korea_share_pct);
 
       const tdCompetitors = document.createElement("td");
       const compBtn = document.createElement("button");
       compBtn.type = "button";
       compBtn.className = "competitor-btn";
       compBtn.setAttribute("data-popover-trigger", "1");
-      const top3Pct = row.competitors.top3_share_pct;
-      compBtn.textContent = top3Pct !== null && top3Pct !== undefined ? top3Pct.toFixed(1) + "%" : "-";
+      compBtn.textContent = window.BOF.fmtSharePct(row.competitors.top3_share_pct);
       compBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         window.BOFPopover.toggle(compBtn, "competitors:" + row.iso3, () => buildCompetitorPopover(row));

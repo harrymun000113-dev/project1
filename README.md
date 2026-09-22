@@ -12,7 +12,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-브라우저에서 `http://localhost:5000` 을 열고 헤더 검색창에 `854140` 같은 HS 코드를 입력하면
+브라우저에서 `http://localhost:5000` 을 열고 헤더 검색창에 `854143` 같은 HS 코드를 입력하면
 전체 파이프라인(Stage 1~4)이 끝까지 실행됩니다.
 
 ### 데모 모드란?

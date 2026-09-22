@@ -83,31 +83,33 @@ def _row_to_json(row: pd.Series) -> dict:
         "score": _num(row.get("score"), 1),
         "potential": _num(row.get("potential"), 1),
         "market_size_usd": _num(row.get("market_size"), 0),
-        "korea_share_pct": _num(row.get("korea_share_pct"), 2),
-        "export_gap_pp": _num(row.get("export_gap_pp"), 2),
+        # 3자리까지 보낸다 — 1% 미만 값(예: 0.261%)을 프론트가 2자리로 반올림된 값(0.26%)
+        # 대신 원래 정밀도로 표시할 수 있게 여유를 준다 (프론트 표시 자릿수는 state.js 참고).
+        "korea_share_pct": _num(row.get("korea_share_pct"), 3),
+        "export_gap_pp": _num(row.get("export_gap_pp"), 3),
         "growth": {
             "direction": _growth_direction(row.get("yoy_pct")),
-            "yoy_pct": _num(row.get("yoy_pct"), 1),
-            "cagr3_pct": _num(row.get("cagr3_pct"), 1),
+            "yoy_pct": _num(row.get("yoy_pct"), 3),
+            "cagr3_pct": _num(row.get("cagr3_pct"), 3),
             "prev_year": int(row["prev_year"]) if pd.notna(row.get("prev_year")) else None,
             "prev_value_usd": _num(row.get("prev_value_usd"), 0),
             "curr_year": int(row["curr_year"]) if pd.notna(row.get("curr_year")) else None,
             "curr_value_usd": _num(row.get("curr_value_usd"), 0),
         },
         "competitors": {
-            "top3_share_pct": _num(row.get("top3_share_pct"), 1),
+            "top3_share_pct": _num(row.get("top3_share_pct"), 3),
             "top3": [
                 {
                     "iso3": t.get("iso3"),
                     "name_ko": t.get("name_ko"),
                     "name_en": t.get("name_en"),
-                    "share_pct": _num(t.get("share_pct"), 1),
+                    "share_pct": _num(t.get("share_pct"), 3),
                 }
                 for t in top3_list
             ],
         },
         "barriers": {
-            "tariff_rate_pct": _num(row.get("tariff_rate_pct"), 1),
+            "tariff_rate_pct": _num(row.get("tariff_rate_pct"), 3),
             "tariff_type": _text(row.get("tariff_type")),
             "ntb_count": len(ntb_list),
             "ntb_items": ntb_list,
@@ -116,7 +118,7 @@ def _row_to_json(row: pd.Series) -> dict:
         "fx": {
             "currency": _text(row.get("currency_code")),
             "source": _text(row.get("fx_source")),
-            "change_3y_pct": _num(row.get("fx_change_3y_pct"), 1),
+            "change_3y_pct": _num(row.get("fx_change_3y_pct"), 3),
             "krw_per_local_now": _num(row.get("krw_per_local_now"), 4),
             "krw_per_local_then": _num(row.get("krw_per_local_then"), 4),
             "now_date": _text(row.get("fx_now_date")),

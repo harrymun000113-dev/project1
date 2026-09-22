@@ -24,6 +24,7 @@
     gapCanvas: document.getElementById("export-gap-trend-chart"),
     gapCountryLabel: document.getElementById("gap-trend-country"),
     fxCanvas: document.getElementById("fx-chart"),
+    baseYearBadge: document.getElementById("rank-base-year-badge"),
   };
 
   // ── 초기화 ───────────────────────────────────────────────────────────
@@ -163,6 +164,7 @@
     window.BOFGlobe.render(top20, firstIso3);
     renderChipBar(top20, firstIso3);
     renderRankingTable();
+    renderBaseYearBadge(data.meta);
     window.BOFCharts.renderBubble(els.bubbleCanvas, top20, firstIso3);
     updateExportLinks(hs6);
 
@@ -235,8 +237,7 @@
     document.getElementById("hud-item-line").textContent = "HS " + BOF.state.hs6 + " " + hsDesc;
     document.getElementById("hud-score").textContent = row.score !== null ? Math.round(row.score) : "-";
     document.getElementById("hud-potential").textContent = row.potential !== null ? row.potential.toFixed(1) : "-";
-    document.getElementById("hud-korea-share").textContent =
-      row.korea_share_pct !== null ? row.korea_share_pct.toFixed(1) + "%" : "-";
+    document.getElementById("hud-korea-share").textContent = BOF.fmtSharePct(row.korea_share_pct);
     const gapEl = document.getElementById("hud-gap");
     gapEl.textContent = BOF.fmtPct(row.export_gap_pp) + "p";
     gapEl.style.color = (row.export_gap_pp || 0) > 0 ? "#ff4d5e" : "#33d17a";
@@ -253,7 +254,7 @@
         chip.type = "button";
         chip.className = "target-chip" + (row.iso3 === selectedIso3 ? " selected" : "");
         chip.dataset.iso3 = row.iso3;
-        chip.textContent = "[" + row.iso2 + "] " + row.name_ko + " +" + BOF.fmtPct(row.export_gap_pp) + "p";
+        chip.textContent = "[" + row.iso2 + "] " + row.name_ko + " " + BOF.fmtPct(row.export_gap_pp) + "p";
         chip.addEventListener("click", () => BOF.emit("target:selected", row.iso3));
         els.chipBar.appendChild(chip);
       });
@@ -308,8 +309,7 @@
     }
     tariffBlock.style.opacity = b.tariff_rate_pct === null ? "0.5" : "1";
 
-    document.getElementById("tb-tariff-rate").textContent =
-      b.tariff_rate_pct !== null && b.tariff_rate_pct !== undefined ? b.tariff_rate_pct.toFixed(1) + "%" : "-";
+    document.getElementById("tb-tariff-rate").textContent = BOF.fmtSharePct(b.tariff_rate_pct);
     const typeBadge = document.getElementById("tb-tariff-type");
     typeBadge.textContent = b.tariff_type || "";
     document.getElementById("tb-tariff-sub").textContent = "한국산 HS " + BOF.state.hs6 + " 적용세율";
@@ -385,6 +385,17 @@
       BOF.state.sortBy,
       BOF.state.selectedIso3
     );
+  }
+
+  // 무역 통계는 각국 정부 보고가 1~3년 걸리는 게 흔해서, 기준연도가 현재 연도보다
+  // 몇 년 뒤처지는 게 정상이다 — 사용자가 헷갈리지 않게 어느 연도 기준인지 항상 보여준다.
+  function renderBaseYearBadge(meta) {
+    if (!meta || !meta.base_year) {
+      els.baseYearBadge.classList.add("d-none");
+      return;
+    }
+    els.baseYearBadge.textContent = "기준연도 " + meta.base_year;
+    els.baseYearBadge.classList.remove("d-none");
   }
 
   // ── HS 자동완성 ──────────────────────────────────────────────────────

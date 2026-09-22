@@ -98,6 +98,7 @@ body {
 .dashboard-card { background: var(--panel); border: 1px solid var(--border); color: var(--text); }
 .card-title { font-size: 0.95rem; font-weight: 700; }
 .source-badge, .tariff-type-badge { background: var(--panel-2); border: 1px solid var(--border); font-weight: 500; }
+.base-year-badge { background: var(--panel-2); border: 1px solid var(--border); color: var(--text-muted); font-weight: 500; cursor: help; }
 .tb-tariff-value { font-size: 1.8rem; font-weight: 800; }
 .tb-score-line { color: var(--text-muted); margin-top: 6px; }
 .tb-ntb-list { padding-left: 18px; margin-bottom: 4px; }

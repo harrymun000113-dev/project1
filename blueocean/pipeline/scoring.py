@@ -16,7 +16,13 @@ SCORE_SPEC = [
     dict(key="fx_3y", label="3년 환율 변동", weight=5, column="fx_change_3y_pct", higher_is_better=True, transform=None, fixed_range=None, side="demand"),
     dict(key="korea_share", label="한국 점유율", weight=25, column="korea_share_pct", higher_is_better=False, transform=None, fixed_range=None, side="supply"),
     dict(key="top3_share", label="상위 3개국 점유율", weight=15, column="top3_share_pct", higher_is_better=False, transform=None, fixed_range=None, side="supply"),
-    dict(key="tariff", label="관세율", weight=10, column="tariff_rate_pct", higher_is_better=False, transform=None, fixed_range=None, side="supply"),
+    # 관세율은 시장마다 비교할 상대적 지표가 아니라 절대적 의미(0%=FTA 최고, 높을수록 불리)를
+    # 가지므로 growth_3y/growth_1y처럼 fixed_range(절대평가)를 쓴다. 예전에는 fixed_range=None
+    # (후보군 내 상대 정규화)였는데, 후보군 안에 이상치가 하나만 있어도(예: 나머지는 0%FTA/결측,
+    # 한 나라만 20%) normalize()의 "분산 0 → 컬럼 전체 NaN" 분기가 발동해 실제 세율과 무관하게
+    # 전원이 중립값 0.5(=5점)로 깔리는 버그가 있었다 — 20% 관세국이 1등, 0%FTA국도 5점.
+    # 25는 데모 데이터 생성기(tariff.py `_fetch_one_demo`)의 MFN 상한과 동일하게 맞춘 값.
+    dict(key="tariff", label="관세율", weight=10, column="tariff_rate_pct", higher_is_better=False, transform=None, fixed_range=(0, 25), side="supply"),
 ]
 assert sum(s["weight"] for s in SCORE_SPEC) == 100
 

@@ -74,12 +74,26 @@ window.BOF = (function () {
     return "$" + usd.toFixed(0);
   }
 
+  // 1% 미만 값은 소수 1자리로 반올림하면 정보가 뭉개진다(예: 0.261% -> 0.3%로 보여
+  // "왜 숫자가 다르지" 하는 오해를 만든다). 자릿수를 명시하지 않으면 절대값이 1보다
+  // 작을 때 자동으로 3자리까지 보여준다.
+  function _autoDigits(v) {
+    return Math.abs(v) < 1 ? 3 : 1;
+  }
+
   function fmtPct(v, digits) {
     if (v === null || v === undefined || Number.isNaN(v)) return "-";
-    const d = digits === undefined ? 1 : digits;
+    const d = digits === undefined ? _autoDigits(v) : digits;
     const sign = v > 0 ? "+" : "";
     return sign + v.toFixed(d) + "%";
   }
 
-  return { state, on, emit, setState, findTarget, toast, fmtMoney, fmtPct };
+  // 점유율/관세율처럼 부호(+/-)가 없는 percentage용. fmtPct와 정밀도 규칙은 동일.
+  function fmtSharePct(v, digits) {
+    if (v === null || v === undefined || Number.isNaN(v)) return "-";
+    const d = digits === undefined ? _autoDigits(v) : digits;
+    return v.toFixed(d) + "%";
+  }
+
+  return { state, on, emit, setState, findTarget, toast, fmtMoney, fmtPct, fmtSharePct };
 })();

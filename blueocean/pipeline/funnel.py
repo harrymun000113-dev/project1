@@ -197,14 +197,23 @@ def country_detail(hs6: str, iso3: str, T: int) -> dict:
     if iso3 not in countries.index:
         raise NoDataError(f"알 수 없는 국가 코드: {iso3}")
 
-    years = list(range(T - 9, T + 1))
-    world = comtrade.imports(hs6, reporter="all", partner=config.WORLD_COMTRADE_CODE, years=years)
-    kor = comtrade.imports(hs6, reporter="all", partner=config.KOREA_COMTRADE_CODE, years=years)
+    code = countries.loc[iso3, "comtrade_code"]
+    if pd.isna(code):
+        raise NoDataError(f"{iso3}의 Comtrade 코드가 없습니다")
+    reporter = int(code)
+
+    years = [y for y in config.COMTRADE_YEARS if y <= T] or [T]
+    # 이 화면은 선택한 국가 "하나"만 보여주므로 reporter=all(전세계 197개국 전체 조회)이
+    # 아니라 그 나라 코드로만 조회한다. reporter=all은 10개 연도를 쪼개 순차 호출해야
+    # 해서(§comtrade.py) 국가 하나 보자고 수십~수백 초짜리 호출을 반복하게 되고, 실제로
+    # 이것 때문에 API 할당량이 빠듯한 환경에서 이 그래프만 유독 실패하는 문제가 있었다.
+    world = comtrade.imports(hs6, reporter=reporter, partner=config.WORLD_COMTRADE_CODE, years=years)
+    kor = comtrade.imports(hs6, reporter=reporter, partner=config.KOREA_COMTRADE_CODE, years=years)
     kor_exp_long = comtrade.exports(hs6, reporter=config.KOREA_COMTRADE_CODE, partner=config.WORLD_COMTRADE_CODE, years=years)
     world_exp_long = comtrade.exports(hs6, reporter="all", partner=config.WORLD_COMTRADE_CODE, years=years)
 
-    w = world[world["reporter_iso3"] == iso3].groupby("period")["value"].sum()
-    k = kor[kor["reporter_iso3"] == iso3].groupby("period")["value"].sum()
+    w = world.groupby("period")["value"].sum()
+    k = kor.groupby("period")["value"].sum()
     kx = kor_exp_long.groupby("period")["value"].sum()
     wx = world_exp_long.groupby("period")["value"].sum()
 

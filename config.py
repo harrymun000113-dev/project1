@@ -57,7 +57,22 @@ for _sub in ("comtrade", "trends", "fx", "tariff", "analyze"):
 # — 실제로 이 문제 때문에 독일 등 일부 국가의 수입액이 최대 8배로 부풀려진 캐시가
 # 남아있었다 (motCode/partner2Code/customsCode를 필터링하지 않아 운송수단×2차 파트너×
 # 통관절차 조합별로 쪼개진 행을 전부 합산했었음).
-COMTRADE_SCHEMA_VERSION = 2
+COMTRADE_SCHEMA_VERSION = 3
+
+# 분석에 쓰는 Comtrade 연도 구간. 무료 키는 호출 수가 빠듯한데, reporter="all" 호출은
+# 연도 1개당 API 호출 1회씩 소모하므로(comtrade._call_api) 구간을 좁게 고정한다.
+# 예전에는 최근 6년 + 국가 상세 그래프는 T-9~T(10년)를 조회해 키가 금방 바닥났다.
+#
+# 기본값을 2021~2024로 한 근거 (2026-09 화장품 330499 실측, 보고국 수 기준):
+#   2021: 80개국 / 2023: 79 / 2024: 77 (러시아·UAE·베트남·에티오피아만 누락, 수입액 3.4%)
+#   2025: 64개국 — 중국·대만 등 16개국(2021년 수입액 기준 38.5%)이 아직 미보고라 사용 불가.
+# 2018~2021 구간은 기준연도가 코로나 반등기(2021)라 YoY·CAGR이 왜곡되고 5년 묵은 데이터다.
+# 최신 연도를 쓰고 싶으면 .env에 COMTRADE_YEAR_FROM/COMTRADE_YEAR_TO만 바꾸면 된다
+# (기준연도 T는 이 구간 안에서 커버리지 기준으로 자동 선택되고, 성장률은 T-1·T-3을 쓰므로
+# 구간은 최소 4년 권장).
+COMTRADE_YEAR_FROM = int(os.getenv("COMTRADE_YEAR_FROM", "2021"))
+COMTRADE_YEAR_TO = int(os.getenv("COMTRADE_YEAR_TO", "2024"))
+COMTRADE_YEARS = list(range(COMTRADE_YEAR_FROM, COMTRADE_YEAR_TO + 1))
 
 # ── TTLs (seconds) ──────────────────────────────────────────────────────
 TTL_COMTRADE = 7 * 24 * 3600
@@ -78,14 +93,46 @@ KOREA_COMTRADE_CODE = 410
 WORLD_COMTRADE_CODE = 0
 
 # ── KITA TradeNavi (관세율·비관세 장벽) ───────────────────────────────────
-# 실측 전이므로 "<<" 를 포함한 placeholder로 둔다. tariff.py는 이 값이 채워지지
-# 않은 동안 항상 ok=False(중립 점수)를 반환해 파이프라인이 죽지 않게 한다.
-TRADENAVI_URL = os.getenv("TRADENAVI_URL", "<<실측: XHR 엔드포인트 URL>>")
-TRADENAVI_REFERER = os.getenv("TRADENAVI_REFERER", "<<실측: 해당 조회 화면 URL>>")
+# 실측 2차 캡처(2026-09-21, tariffInquiryDetail.do)로 실제 엔드포인트를 확정했다.
+#   - 국가코드는 그냥 ISO2였다 (searchNationListOpt=JP, US 등) → country_codes.csv의
+#     tradenavi_code(=iso2)를 그대로 쓰면 된다. 별도 크로스워크 불필요.
+#   - 요청 바디는 이 엔드포인트에 한해 JSON이 아니라 application/x-www-form-urlencoded다
+#     (§5.4.2 최초 가정이 맞았음 — JSON이었던 건 국가 자동완성용 다른 엔드포인트뿐).
+#   - `_listSearchParams`는 "뒤로가기 시 이전 목록 상태 복원용" 필드로 보여, 값이 정확히
+#     안 맞아도(예: 최초 진입 시나리오) 서버가 무시할 가능성이 높다. 만약 크롤러가
+#     계속 ok=False를 반환하면 이 필드부터 의심할 것.
+TRADENAVI_URL = os.getenv(
+    "TRADENAVI_URL",
+    "https://www.kita.net/tradeNavi/tariffInquiry/tariffInquiryDetail.do",
+)
+TRADENAVI_REFERER = os.getenv(
+    "TRADENAVI_REFERER",
+    "https://www.kita.net/tradeNavi/tariffInquiry/tariffInquiryDetail.do",
+)
 TRADENAVI_METHOD = os.getenv("TRADENAVI_METHOD", "POST")
+TRADENAVI_PAYLOAD_IS_JSON = False  # 이 엔드포인트는 form 인코딩 (국가검색 API와 다름)
+# 비관세장벽은 HS6 그리드가 아니라, 그 그리드에서 찾은 "말단 세번"(예: 330499010)으로
+# 이 상세 페이지를 조회해야 나온다 (§5.4.2, 2026-09-21 실측: gridIndex=3).
+TRADENAVI_TAX_DETAIL_URL = os.getenv(
+    "TRADENAVI_TAX_DETAIL_URL",
+    "https://www.kita.net/tradeNavi/tariffInquiry/tariffInquiryTaxDetail.do",
+)
 TRADENAVI_PAYLOAD_TEMPLATE: dict[str, str] = {
-    "<<실측: HS코드 필드명>>": "{hs}",
-    "<<실측: 국가코드 필드명>>": "{country}",
+    "tabIndex": "", "hsCondition": "", "ntmNo": "", "rejtNo": "", "dspthNo": "", "reglGrp": "",
+    "imRqisitId": "", "nowPageId": "detail", "totalRow": "", "totalColCount": "",
+    "pageIndex": "1", "tradeStatus": "", "isLoggedIn": "", "radio01": "export",
+    "searchNationListOpt2": "{country}", "searchYear2": "{year}", "searchKeyword2": "{hs}",
+    "seq": "", "searchNationListOpt": "{country}", "searchKeyword": "{hs}",
+    "searchYear": "{year}", "gridIndex": "2", "screenState": "false",
+}
+# "관세 조회(pgmId=7657)" 화면에서 나가는 모든 XHR에 공통으로 붙는 고정 헤더.
+# base64 값 자체는 페이지 메타데이터(어느 화면인지)일 뿐 세션 토큰이 아니라서 하드코딩해도 된다.
+TRADENAVI_EXTRA_HEADERS: dict[str, str] = {
+    "ajax": "TRUE",
+    "pageauthinfo": "bnVsbA==",
+    "pageprograminfo": (
+        "eyJwZ21JZCI6Ijc2NTciLCJ1cHBlclBnbUlkIjoiNzY1OCIsInBnbU5hbWUiOiKw/Ly8IMG2yLgiLCJwZ21EdGxOYW1lIjoisKPG7cG2yLgiLCJ1cmwiOiIvdHJhZGVOYXZpL3RhcmlmZklucXVpcnkvdGFyaWZmSW5xdWlyeURldGFpbC5kbyIsIm1lbnVTZXRJZCI6IjI2NDEiLCJtZW51RGVwdGgiOiI0IiwidG9wTWVudUlkIjoiOCIsInRvcE1lbnVOYW1lIjoiv6yxuKGkxeuw6KGksPy8vCIsIm1ickV4dXNZbiI6Ik4iLCJhY2Nlc0F1dGhVc2VZbiI6Ik4iLCJnbnJBY2Nlc1BzYmxZbiI6IlkiLCJtZW51VHlwZUNkIjoiMTAiLCJ0aGVtZSI6IjIiLCJwZ21UaXRsIjoiIiwicGdtRGVzY3IiOiIifQ=="
+    ),
 }
 
 
@@ -109,5 +156,5 @@ DEMO_TARIFF = _demo_for(tradenavi_configured())
 # 예전 값(예: 독일 수입액이 8배로 부풀려진 값)을 계속 돌려주는 사고가 난다.
 MODE_SIGNATURE = (
     f"comtrade={DEMO_COMTRADE},serpapi={DEMO_SERPAPI},kexim={DEMO_KEXIM},tariff={DEMO_TARIFF},"
-    f"schema={COMTRADE_SCHEMA_VERSION}"
+    f"schema={COMTRADE_SCHEMA_VERSION},years={COMTRADE_YEAR_FROM}-{COMTRADE_YEAR_TO}"
 )
