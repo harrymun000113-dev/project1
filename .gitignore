@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+data/cache/
+data/comtrade_shared/*.tmp
+data/comtrade_raw/*.tmp
+*.egg-info/
