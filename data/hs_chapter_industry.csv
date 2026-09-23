@@ -1,0 +1,100 @@
+chapter,industry_ko,industry_en,keywords_ko,keywords_en,reserved,special
+01,축산업,Livestock,축산|가축,livestock|cattle,0,0
+02,육류가공업,Meat Processing,육류|정육,meat|beef|pork,0,0
+03,수산업,Fisheries and Seafood,수산물|어패류,seafood|fish,0,0
+04,낙농업,Dairy,유제품|낙농,dairy|milk,0,0
+05,동물성 원료 산업,Animal By-products,동물성 원료,animal byproduct,0,0
+06,화훼·원예업,Horticulture and Floriculture,화훼|원예,horticulture|flowers,0,0
+07,채소산업,Vegetables,채소|농산물,vegetables|produce,0,0
+08,과일·견과류 산업,Fruits and Nuts,과일|견과류,fruit|nuts,0,0
+09,커피·차·향신료 산업,Coffee Tea and Spices,커피|차|향신료,coffee|tea|spices,0,0
+10,곡물산업,Cereals and Grains,곡물|곡류,grain|cereal,0,0
+11,제분·전분 산업,Milling and Starch Products,제분|전분,milling|starch,0,0
+12,유지작물·종자 산업,Oilseeds,유지작물|종자,oilseed|seeds,0,0
+13,식물성 추출물 산업,Plant Extracts and Gums,식물성추출물|수지,plant extract|gum resin,0,0
+14,식물성 편조물 산업,Vegetable Plaiting Materials,식물성재료,plaiting material,0,0
+15,유지가공업,Animal and Vegetable Fats and Oils,식용유|유지,edible oil|fats,0,0
+16,육류수산물 가공식품 산업,Meat and Fish Preparations,가공육|수산가공품,processed meat|processed seafood,0,0
+17,제당산업,Sugar,설탕|당류,sugar,0,0
+18,코코아·초콜릿 산업,Cocoa and Chocolate,코코아|초콜릿,cocoa|chocolate,0,0
+19,곡물가공식품 산업,Cereal and Bakery Products,라면|제과제빵,instant noodles|bakery,0,0
+20,농산물가공식품 산업,Processed Fruits and Vegetables,농산물가공|잼,processed food|jam,0,0
+21,가공식품 산업,Miscellaneous Food Preparations,가공식품|소스,food preparation|sauce,0,0
+22,음료·주류 산업,Beverages and Spirits,음료|주류|맥주,beverage|alcohol|beer,0,0
+23,사료산업,Animal Feed,사료|배합사료,animal feed,0,0
+24,담배산업,Tobacco,담배|궐련,tobacco|cigarette,0,0
+25,광물·시멘트 원료 산업,Salt Sulphur Stone and Cement,시멘트|석회,cement|lime|salt,0,0
+26,광석산업,Ores Slag and Ash,광석,ore|mineral concentrate,0,0
+27,에너지·석유화학 원료 산업,Mineral Fuels and Petroleum,원유|석유|LNG,crude oil|petroleum|LNG,0,0
+28,무기화학 산업,Inorganic Chemicals,무기화학|화학원료,inorganic chemical,0,0
+29,유기화학 산업,Organic Chemicals,유기화학|석유화학,organic chemical|petrochemical,0,0
+30,의약품 산업,Pharmaceuticals,의약품|제약,pharmaceutical|medicine|drug,0,0
+31,비료산업,Fertilizers,비료,fertilizer,0,0
+32,염료·도료 산업,Dyes Paints and Inks,염료|페인트|잉크,dye|paint|ink,0,0
+33,화장품·향료 산업,Cosmetics and Fragrances,화장품|향수,cosmetics|perfume|fragrance,0,0
+34,세제·왁스 산업,Soaps and Waxes,세제|비누,soap|detergent|wax,0,0
+35,접착제·효소 산업,Glues Enzymes and Albuminoids,접착제|효소,adhesive|enzyme,0,0
+36,화약·불꽃류 산업,Explosives and Pyrotechnics,화약|폭죽,explosive|fireworks,0,0
+37,사진·필름 산업,Photographic Goods,사진필름|인화,photographic film,0,0
+38,정밀화학 산업,Specialty Chemicals,정밀화학|특수화학,specialty chemical,0,0
+39,플라스틱 산업,Plastics,플라스틱|합성수지,plastic|polymer,0,0
+40,고무산업,Rubber,고무|타이어,rubber|tire,0,0
+41,피혁원자재 산업,Raw Hides and Leather,원피|가죽원단,raw hide|leather,0,0
+42,가죽·가방 산업,Leather Goods and Bags,가방|핸드백|가죽제품,bag|handbag|leather goods,0,0
+43,모피산업,Furskins,모피,fur|furskin,0,0
+44,목재산업,Wood Products,목재|합판,wood|timber|plywood,0,0
+45,코르크산업,Cork,코르크,cork,0,0
+46,죽세공·조물제품 산업,Basketware and Wickerwork,죽세공품,basketware|wicker,0,0
+47,펄프산업,Wood Pulp,펄프,wood pulp,0,0
+48,제지산업,Paper and Paperboard,종이|판지,paper|paperboard,0,0
+49,인쇄·출판 산업,Printed Publications,인쇄물|서적,printed book|publication,0,0
+50,실크산업,Silk,실크|견직물,silk,0,0
+51,모직물 산업,Wool,양모|모직물,wool,0,0
+52,면방직 산업,Cotton Textiles,면|면직물,cotton|cotton fabric,0,0
+53,식물성 섬유 산업,Vegetable Textile Fibres,마섬유|식물성섬유,vegetable fiber,0,0
+54,화학섬유(장섬유) 산업,Man-made Filaments,폴리에스터원사|화학섬유,man-made filament,0,0
+55,화학섬유(단섬유) 산업,Man-made Staple Fibres,화학섬유|합성섬유,synthetic fiber,0,0
+56,부직포·로프 산업,Nonwovens and Cordage,부직포|로프,nonwoven|cordage,0,0
+57,카펫산업,Carpets,카펫|양탄자,carpet|rug,0,0
+58,특수직물 산업,Special Woven Fabrics and Lace,레이스|자수,lace|embroidery,0,0
+59,코팅원단 산업,Coated Textile Fabrics,코팅원단|방수원단,coated fabric,0,0
+60,니트원단 산업,Knitted Fabrics,니트원단|편직물,knitted fabric,0,0
+61,의류(니트) 산업,Knitted Apparel,티셔츠|니트의류,knitwear|t-shirt|apparel,0,0
+62,의류(직물) 산업,Woven Apparel,의류|셔츠|바지,apparel|garment|clothing,0,0
+63,기타 섬유제품 산업,Made-up Textile Articles,침구|커튼,textile article|home textile,0,0
+64,신발산업,Footwear,신발|운동화,footwear|shoes|sneakers,0,0
+65,모자산업,Headgear,모자,headgear|hat,0,0
+66,우산·잡화 산업,Umbrellas and Walking Sticks,우산,umbrella|walking stick,0,0
+67,조화·장식깃털 산업,Artificial Flowers and Feathers,조화|장식깃털,artificial flower|feather,0,0
+68,석재·시멘트 제품 산업,Articles of Stone and Cement,석재|타일,stone article|cement product,0,0
+69,도자기 산업,Ceramics,도자기|세라믹,ceramic|pottery,0,0
+70,유리산업,Glass and Glassware,유리|유리제품,glass|glassware,0,0
+71,귀금속·보석 산업,Precious Metals and Jewelry,보석|귀금속|주얼리,jewelry|precious metal|gemstone,0,0
+72,철강산업,Iron and Steel,철강|철근,steel|iron,0,0
+73,철강제품 산업,Iron and Steel Articles,철강제품|구조물,steel article|structural steel,0,0
+74,동(구리) 산업,Copper,구리|동,copper,0,0
+75,니켈산업,Nickel,니켈,nickel,0,0
+76,알루미늄 산업,Aluminium,알루미늄,aluminium|aluminum,0,0
+77,유보(미사용),Reserved (Unused),,,1,0
+78,연(납) 산업,Lead,납,lead,0,0
+79,아연산업,Zinc,아연,zinc,0,0
+80,주석산업,Tin,주석,tin,0,0
+81,기타 비철금속 산업,Other Base Metals,비철금속,base metal,0,0
+82,공구·수공구 산업,Tools and Hand Implements,공구|수공구,hand tool|tool,0,0
+83,금속잡화 산업,Miscellaneous Base Metal Articles,금속잡화,metal article,0,0
+84,산업기계 산업,Machinery and Mechanical Appliances,산업기계|펌프,machinery|pump|industrial equipment,0,0
+85,전기기기·전자제품 산업,Electrical Equipment and Electronics,전자제품|반도체|배터리,electronics|semiconductor|battery,0,0
+86,철도차량 산업,Railway Equipment,철도차량,railway|locomotive,0,0
+87,자동차·운송장비 산업,Automotive and Transport Equipment,자동차|전기차|자동차부품,automotive|electric vehicle|auto parts,0,0
+88,항공우주 산업,Aerospace,항공기|드론,aircraft|aerospace|drone,0,0
+89,조선·선박 산업,Shipbuilding and Marine Vessels,선박|조선,ship|shipbuilding|vessel,0,0
+90,정밀광학·의료기기 산업,Precision Optical and Medical Instruments,의료기기|광학기기|측정기기,medical device|optical instrument,0,0
+91,시계산업,Clocks and Watches,시계,watch|clock,0,0
+92,악기산업,Musical Instruments,악기,musical instrument,0,0
+93,방위산업,Arms and Ammunition,무기|탄약|방산,weapon|ammunition|defense,0,0
+94,가구·조명 산업,Furniture and Lighting,가구|조명|LED,furniture|lighting|LED,0,0
+95,완구·오락용품 산업,Toys and Games,완구|장난감,toy|game,0,0
+96,생활잡화 산업,Miscellaneous Manufactured Articles,생활용품|필기구,miscellaneous goods|stationery,0,0
+97,예술품·골동품 산업,Works of Art and Antiques,예술품|골동품,artwork|antique,0,0
+98,국가별 특수분류,Special/Country-specific Classification,특수분류,special classification,0,1
+99,국가별 임시·특수 조치,Special/Temporary National Provisions,임시조치|특수조치,temporary provision|special measure,0,1

@@ -276,76 +276,34 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 .report-options>p{font-size:11px;color:#b1c7df;line-height:1.7;margin:0 0 20px}
 .report-option-line{display:flex;justify-content:space-between;align-items:center;gap:14px;border-top:1px solid #29476b;padding:12px 0;font-size:11px;color:#a8c2db}
 .report-option-line strong{color:#f0f7ff;font-size:12px;text-align:right}
-.report-print-btn{width:100%;margin:17px 0 8px;padding:13px;background:linear-gradient(120deg,#4A57B0,#3C4998);border:1px solid #4A57B0;border-radius:11px;color:#fff;font-weight:800;font-size:12px}
-.report-print-btn:focus-visible{outline:2px solid #8892D6;outline-offset:3px}
+.report-print-btn{width:100%;margin:17px 0 8px;padding:13px;background:linear-gradient(120deg,#0b89e5,#2468c3);border:1px solid #51a6e7;border-radius:11px;color:#fff;font-weight:800;font-size:12px}
+.report-print-btn:focus-visible{outline:2px solid #92dafe;outline-offset:3px}
 .report-options .report-help{font-size:10px;color:#a1bedb;margin:3px 0 13px;line-height:1.6}
 .report-options .report-work-notice{font-size:10px;line-height:1.65;color:#c5d8ed;background:#18314e;border:1px solid #315e83;padding:12px;border-radius:10px}
-.report-status-pill{font-size:10px;color:#8892D6;padding:5px 10px;background:#4A57B022;border:1px solid #4A57B0;border-radius:50px}
-/* 아래 .report-paper* 팔레트는 report_redesign/build_report.js(팀이 최종 확정한 보고서 디자인)와
-   동일한 인디고 팔레트를 그대로 쓴다 — 이 화면과 실제 .docx 산출물의 색이 어긋나지 않게 한다. */
-.report-paper{background:#ffffff;color:#2A2E36;border-radius:17px;box-shadow:0 12px 30px #0003;padding:0;min-width:0;line-height:1.65;overflow-wrap:anywhere;overflow:hidden}
-/* 표지 — report 양식.pdf 1페이지와 동일한 인디고 그라디언트 표지 */
-.report-cover{background:linear-gradient(160deg,#4A57B0,#232C63);color:#fff;padding:64px 40px 36px;position:relative;min-height:400px;display:flex;flex-direction:column}
-.report-cover-eyebrow{font-size:11px;color:#D9DEF5}
-.report-cover-title{margin:16px 0 18px}
-.report-cover-title span{display:block;font-size:40px;font-weight:800;line-height:1.15;letter-spacing:-.5px}
-.report-cover-rule{border-top:1px solid #8892D6;width:100%;margin:4px 0 16px}
-.report-cover-tagline{font-size:12px;color:#C7CDEF;max-width:420px;line-height:1.6}
-.report-cover-subject{margin-top:auto;padding-top:40px;font-size:12px;color:#fff;font-weight:700}
-.report-cover-team{margin-top:12px;font-size:11px;font-weight:800;color:#fff}
-.report-cover{aspect-ratio:210/297}
-@media print{
-  .report-cover{
-    aspect-ratio:auto;
-    height:297mm;
-    width:calc(100% + 30mm);
-    margin:-14mm -15mm 0;
-    box-sizing:border-box;
-    page-break-after:always;
-    border-radius:0;
-  }
-}
-@media(max-width:580px){.report-cover{padding:36px 20px 22px;min-height:280px}.report-cover-title span{font-size:26px}}
-.report-paper-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:26px 32px;background:linear-gradient(135deg,#4A57B0,#232C63);color:#fff}
-.report-paper-head span{font-size:9px;letter-spacing:1.5px;color:#D9DEF5;font-weight:800}
-.report-paper-head h2{font-size:26px;line-height:1.2;letter-spacing:.5px;font-family:Pretendard,-apple-system,sans-serif;color:#fff;margin:7px 0 3px;font-weight:800}
-.report-paper-head p{font-size:11px;color:#C7CDEF;margin:0}
-.report-paper-head .report-demo-stamp{color:#fff;border:1px solid #8892D6;border-radius:20px;background:#ffffff22;white-space:nowrap;padding:5px 10px;letter-spacing:.5px;font-size:9px;height:fit-content}
-.report-paper-meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font-size:11px;color:#5B6472;background:#EEF0FA;padding:12px 32px;margin:0}
-.report-paper-body{padding:26px 32px 8px}
-.report-paper-section{margin:22px 0 0;page-break-inside:avoid;break-inside:avoid}
-.report-paper-section h3{font-size:13px!important;color:#232C63;font-weight:800!important;padding:0 0 9px;border-bottom:1px solid #DCE1E8;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.report-paper-section h3 .sec-num{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;background:#232C63;color:#fff;font-size:10px;flex-shrink:0}
-.report-paper-section p{font-size:11px;line-height:1.75;color:#3A3F4B;margin:11px 0}
-.report-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.report-stats>div{padding:13px 8px;border-bottom:3px solid #232C63;border-radius:8px 8px 4px 4px;background:#F6F7FB;min-width:0}
-.report-stats span,.report-facts span{display:block;color:#8A93A3;font-size:9px;margin-bottom:4px}
-.report-stats strong{font-size:18px;color:#232C63;word-break:break-word;font-weight:800}
-.report-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border:1px solid #DCE1E8;border-radius:7px;overflow:hidden}
-.report-facts div{padding:11px 13px;border-bottom:1px solid #DCE1E8;background:#fff}
-.report-facts div:nth-child(4n+1),.report-facts div:nth-child(4n+2){background:#F6F7FB}
-.report-facts div:nth-child(odd){border-right:1px solid #DCE1E8}
+.report-status-pill{font-size:10px;color:#95e0cf;padding:5px 10px;background:#0a514522;border:1px solid #3b9880;border-radius:50px}
+.report-paper{background:#f9fbff;color:#17294d;border-radius:17px;box-shadow:0 12px 30px #0003;padding:38px 39px;min-width:0;line-height:1.65;overflow-wrap:anywhere}
+.report-paper-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:2px solid #394ba3;padding-bottom:19px}
+.report-paper-head span{font-size:9px;letter-spacing:1.5px;color:#6273aa;font-weight:800}
+.report-paper-head h2{font-size:29px;line-height:1.2;letter-spacing:1px;color:#31449c;font-family:Georgia,'Malgun Gothic',serif;margin:7px 0 3px;font-weight:850}
+.report-paper-head p{font-size:11px;color:#56698b;margin:0}
+.report-paper-head .report-demo-stamp{color:#8c5f0a;border:1px solid #e7cb7f;border-radius:6px;background:#fff4d6;white-space:nowrap;padding:5px 7px;letter-spacing:.5px}
+.report-paper-meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font-size:11px;color:#52658c;background:#edf2ff;padding:12px 14px;margin:18px 0 24px}
+.report-paper-section{margin:20px 0 0;page-break-inside:avoid;break-inside:avoid}
+.report-paper-section h3{font-size:14px!important;color:#2f4599;font-weight:800!important;padding-bottom:9px;border-bottom:1px solid #cbd5e8;margin-bottom:12px}
+.report-paper-section p{font-size:11px;line-height:1.75;color:#293b5b;margin:11px 0}
+.report-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.report-stats>div{padding:13px 8px;border:1px solid #dce5f4;border-radius:8px;background:#f1f5ff;min-width:0}
+.report-stats span,.report-facts span{display:block;color:#6b7c9e;font-size:9px;margin-bottom:4px}
+.report-stats strong{font-size:17px;color:#273c8b;word-break:break-word}
+.report-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border:1px solid #dce5f4;border-radius:7px;overflow:hidden}
+.report-facts div{padding:11px 13px;border-bottom:1px solid #dce5f4}
+.report-facts div:nth-child(odd){border-right:1px solid #dce5f4}
 .report-facts div:nth-last-child(-n+2){border-bottom:0}
-.report-facts strong{display:block;font-size:11px;color:#232C63}
-.report-risk-table{width:100%;border-collapse:collapse;font-size:11px}
-.report-risk-table th{background:#232C63;color:#fff;text-align:left;padding:8px 10px;font-size:10px;font-weight:700}
-.report-risk-table td{padding:9px 10px;border-bottom:1px solid #DCE1E8;color:#3A3F4B;vertical-align:top}
-.report-risk-table tr:nth-child(even) td{background:#F6F7FB}
-.risk-pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700}
-.risk-pill.low{background:#E8F3EC;color:#2E7D4F}
-.risk-pill.mid{background:#FBF1DA;color:#9A6B12}
-.risk-pill.high{background:#FBEAEA;color:#B23A3A}
-.report-callout{background:#EEF0FA;border-left:3px solid #3C4998;border-radius:0 8px 8px 0;padding:12px 14px;font-size:11px;color:#1E2550;line-height:1.7}
-.report-why-list{margin:0;padding-left:18px;font-size:11px;line-height:1.8;color:#3A3F4B}
-.report-why-list li{margin-bottom:4px}
-.report-verdict{background:#232C63;color:#fff;border-radius:8px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.report-verdict strong{font-size:13px}
-.report-verdict span{font-size:10px;color:#C7CDEF}
-.report-limitation{background:#FBF1DA;border:1px solid #D9A441;border-radius:8px;padding:11px 13px;font-size:10px;color:#9A6B12;line-height:1.6}
-.report-paper-section .report-muted{color:#8A93A3;font-size:10px}
-.report-paper-foot{margin:20px 32px 0;padding:12px 0 22px;border-top:1px solid #DCE1E8;color:#8A93A3;font-size:9px}
-@media(max-width:1000px){.report-builder-grid{grid-template-columns:1fr}.report-options{position:static}}
-@media(max-width:580px){.report-paper-head,.report-paper-body{padding:18px}.report-paper-meta{padding:12px 18px}.report-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.report-paper-head h2{font-size:21px}}
+.report-facts strong{display:block;font-size:11px;color:#203761}
+.report-paper-section .report-muted{color:#64748b;font-size:10px}
+.report-paper-foot{margin-top:28px;padding-top:12px;border-top:1px solid #dce5f4;color:#7585a4;font-size:9px}
+@media(max-width:1000px){.report-builder-grid{grid-template-columns:1fr}.report-options{position:static}.report-paper{padding:27px}}
+@media(max-width:580px){.report-paper{padding:18px}.report-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.report-paper-head h2{font-size:21px}}
 @media print{
   @page{size:A4;margin:14mm 15mm}
   html,body{background:#fff!important;color:#111!important;overflow:visible!important}
@@ -357,20 +315,6 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
   body .report-paper{padding:0!important;margin:0!important;background:white!important;color:#14233e!important;box-shadow:none!important;border-radius:0!important}
   body .report-paper-section{break-inside:avoid;page-break-inside:avoid}
 }
-</style><style id="bo-real-data-integration-styles">
-/* 실데이터 연동 과정에서 새로 추가한 요소들 — 기존 디자인 톤(.panel/.schedulePanel)에 맞춘다. */
-/* 내부 스크롤에 캘린더·검색결과를 가두지 않고, 실제 내용 높이만큼 iframe을 늘려서
-   본 페이지 스크롤만으로 전체를 크게 볼 수 있게 한다(높이는 JS가 실측해서 맞춘다). */
-.trademap-embed-wrap{position:relative;width:100%;border-radius:12px;overflow:visible;border:1px solid var(--line)}
-.trademap-embed-wrap iframe{width:100%;height:1200px;border:0;display:block;background:#fff}
-#quickTargetRow button[data-quick-target]{cursor:pointer}
-/* 맨 위 "검색 코드 / 이름" 표시 — 검색한 HS 코드와 품목명이 눈에 바로 띄도록 강조한다. */
-.product-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:28px}
-.product-bar-empty{font-size:12px;color:var(--muted)}
-.product-bar-filled{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.product-bar-label{font-size:9px;color:#90a2c5;letter-spacing:.5px}
-.product-bar-filled strong{color:#eaf6ff;font-size:14px;font-weight:800;background:#123258;padding:5px 12px;border-radius:8px;border:1px solid #1685ff66}
-.product-bar-sep{color:#4a5f8a}
 </style></head><body><div class="shell"><aside class="sidebar"><a class="brand" href="#" onclick="navigatePage('home');resetToDefault();return false"><span class="brand-mark">◈</span><span>Blue Ocean<small>F I N D E R</small></span></a><nav>
 <div class="nav-label">WORKSPACE</div>
 <a class="nav-item active" href="#/home" data-nav-page="home" onclick="navigatePage('home');return false"><span class="nav-icon">⌂</span><span>홈</span></a>
@@ -384,15 +328,34 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 <div class="nav-label">ANALYSIS TOOLS</div>
 
 <button class="nav-item secondary" onclick="openModal('algoModal')"><span class="nav-icon">◇</span><span>점수 산출 방식</span></button>
-</nav></aside><div class="content"><header class="topbar" id="topOverview"><div><div class="crumb">Workspace / Overview</div><h1>글로벌 무역 대시보드</h1></div><div class="top-actions"><div class="search-box"><input aria-label="HS Code로 시장 검색" class="w-full pl-8 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 text-slate-700 placeholder-slate-400 transition" id="globalSearchInput" inputmode="numeric" maxlength="10" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" onkeydown="if(event.key==='Enter'){event.preventDefault();submitHsCodeSearch()}" placeholder="HS Code로 시장 검색..." title="6자리 HS Code 입력 후 Enter" type="text"/><button class="hs-search-go" type="button" onclick="submitHsCodeSearch()" aria-label="HS Code 검색 실행" title="HS Code 검색">⌕</button></div><div class="currency"><button class="px-2 py-0.5 text-[11px] font-semibold rounded-md bg-white text-sky-700 shadow-xs transition" id="btnUSD" onclick="setCurrency('USD')">USD ($)</button><button class="px-2 py-0.5 text-[11px] font-medium text-slate-500 hover:text-slate-800 transition" id="btnKRW" onclick="setCurrency('KRW')">KRW (₩)</button></div></div></header><div class="intro"><div class="product-bar" id="currentProductBar"><span class="product-bar-empty" id="productBarEmpty">다음 수출 시장의 가능성을 한눈에 확인하세요. HS 코드를 검색해 보세요.</span><span class="product-bar-filled" id="productBarFilled" hidden><span class="product-bar-label">검색 코드</span><strong id="productBarCode">—</strong><span class="product-bar-sep">·</span><span class="product-bar-label">이름</span><strong id="productBarName">—</strong></span></div><span class="sample">● LIVE DATA</span></div><section class="metrics"><div class="metric"><div><div class="metric-label">선택 시장 규모</div><div class="metric-value" id="metricMarket">—</div><div class="metric-note">해당 품목 수입시장</div></div><span class="metric-icon">▥</span></div><div class="metric"><div><div class="metric-label">수요 잠재력</div><div class="metric-value" id="metricPotential">—</div><div class="metric-note">100점 기준</div></div><span class="metric-icon">↗</span></div><div class="metric"><div><div class="metric-label">수출 기회 격차</div><div class="metric-value" id="metricGap">—</div><div class="metric-note">Export Gap</div></div><span class="metric-icon">◎</span></div><div class="metric"><div><div class="metric-label">분석 해외시장</div><div class="metric-value" id="metricCount">00</div><div class="metric-note">선택 품목 기준</div></div><span class="metric-icon">◈</span></div></section><section class="hero-grid" id="globeHeroSection"><div class="panel globePanel" id="globePanel"><div class="globe-label">GLOBAL NETWORK / 글로벌 시장 탐색</div><div class="globe-status" id="globeStatus">3D 지구본 불러오는 중…</div>
+</nav></aside><div class="content"><header class="topbar" id="topOverview"><div><div class="crumb">Workspace / Overview</div><h1>글로벌 무역 대시보드</h1></div><div class="top-actions"><div class="search-box"><input aria-label="HS Code로 시장 검색" class="w-full pl-8 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 text-slate-700 placeholder-slate-400 transition" id="globalSearchInput" inputmode="numeric" maxlength="10" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" onkeydown="if(event.key==='Enter'){event.preventDefault();submitHsCodeSearch()}" placeholder="HS Code로 시장 검색..." title="6자리 HS Code 입력 후 Enter" type="text"/><button class="hs-search-go" type="button" onclick="submitHsCodeSearch()" aria-label="HS Code 검색 실행" title="HS Code 검색">⌕</button></div><div class="currency"><button class="px-2 py-0.5 text-[11px] font-semibold rounded-md bg-white text-sky-700 shadow-xs transition" id="btnUSD" onclick="setCurrency('USD')">USD ($)</button><button class="px-2 py-0.5 text-[11px] font-medium text-slate-500 hover:text-slate-800 transition" id="btnKRW" onclick="setCurrency('KRW')">KRW (₩)</button></div></div></header><div class="intro"><p>다음 수출 시장의 가능성을 한눈에 확인하세요.</p><span class="sample">● SAMPLE DATA</span></div><section class="metrics"><div class="metric"><div><div class="metric-label">선택 시장 규모</div><div class="metric-value" id="metricMarket">$1.84B</div><div class="metric-note">해당 품목 수입시장</div></div><span class="metric-icon">▥</span></div><div class="metric"><div><div class="metric-label">수요 잠재력</div><div class="metric-value" id="metricPotential">88.5</div><div class="metric-note">100점 기준</div></div><span class="metric-icon">↗</span></div><div class="metric"><div><div class="metric-label">수출 기회 격차</div><div class="metric-value" id="metricGap">+15.4%p</div><div class="metric-note">Export Gap</div></div><span class="metric-icon">◎</span></div><div class="metric"><div><div class="metric-label">분석 해외시장</div><div class="metric-value" id="metricCount">07</div><div class="metric-note">선택 품목 기준</div></div><span class="metric-icon">◈</span></div></section><section class="hero-grid" id="globeHeroSection"><div class="panel globePanel" id="globePanel"><div class="globe-label">GLOBAL NETWORK / 글로벌 시장 탐색</div><div class="globe-status" id="globeStatus">3D 지구본 불러오는 중…</div>
 <!-- Top Overlay Header inside Globe Canvas Container -->
 <div class="absolute inset-0 z-0" id="threeGlobeContainer">
 <canvas id="canvas3d" style="display:block; width:100%; height:100%;"></canvas>
 </div>
 <!-- Bottom Overlay Target Quick Select Buttons Row -->
-<div class="relative z-10 flex flex-wrap items-center gap-1.5 bg-white/80 backdrop-blur-md p-1.5 rounded-xl border border-slate-200/80 w-fit self-center" id="quickTargetRow">
+<div class="relative z-10 flex flex-wrap items-center gap-1.5 bg-white/80 backdrop-blur-md p-1.5 rounded-xl border border-slate-200/80 w-fit self-center">
 <span class="text-[11px] text-slate-500 font-semibold px-1 font-mono">시장 선택</span>
-<span class="text-[11px] text-slate-400 px-1" id="quickTargetEmpty">HS 코드를 검색하세요</span>
+<button aria-label="🇲🇽 멕시코 +15.4%p" class="px-2.5 py-1 text-xs rounded-lg font-bold transition flex items-center gap-1 bg-white text-rose-600 shadow-2xs border border-rose-300" id="btnTargetMEX" onclick="lockHunterTarget('MEX')">
+<span>🇲🇽 멕시코</span>
+<span class="text-[10px] font-mono text-rose-600">+15.4%p</span>
+</button>
+<button aria-label="🇻🇳 베트남 +12.1%p" class="px-2.5 py-1 text-xs rounded-lg font-medium transition flex items-center gap-1 text-slate-600 hover:bg-white hover:text-slate-900" id="btnTargetVNM" onclick="lockHunterTarget('VNM')">
+<span>🇻🇳 베트남</span>
+<span class="text-[10px] font-mono text-slate-500">+12.1%p</span>
+</button>
+<button aria-label="🇵🇱 폴란드 +9.8%p" class="px-2.5 py-1 text-xs rounded-lg font-medium transition flex items-center gap-1 text-slate-600 hover:bg-white hover:text-slate-900" id="btnTargetPOL" onclick="lockHunterTarget('POL')">
+<span>🇵🇱 폴란드</span>
+<span class="text-[10px] font-mono text-slate-500">+9.8%p</span>
+</button>
+<button aria-label="🇮🇳 인도 +11.2%p" class="px-2.5 py-1 text-xs rounded-lg font-medium transition flex items-center gap-1 text-slate-600 hover:bg-white hover:text-slate-900" id="btnTargetIND" onclick="lockHunterTarget('IND')">
+<span>🇮🇳 인도</span>
+<span class="text-[10px] font-mono text-slate-500">+11.2%p</span>
+</button>
+<button aria-label="🇩🇪 독일 +4.8%p" class="px-2.5 py-1 text-xs rounded-lg font-medium transition flex items-center gap-1 text-slate-600 hover:bg-white hover:text-slate-900" id="btnTargetDEU" onclick="lockHunterTarget('DEU')">
+<span>🇩🇪 독일</span>
+<span class="text-[10px] font-mono text-slate-500">+4.8%p</span>
+</button>
 </div>
 </div><div class="panel hudPanel" id="hudPanel">
 <!-- Top Row: HUD Status + Target Rank Badge -->
@@ -401,7 +364,7 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
 <span class="text-[11px] font-mono font-bold text-slate-600">SELECTED MARKET</span>
 </div>
-<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 border border-rose-200 font-mono" id="hudTargetRankBadge">검색 대기</span>
+<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 border border-rose-200 font-mono" id="hudTargetRankBadge">TARGET #1 (최우선)</span>
 </div>
 <!-- Country Info & Score Row -->
 <div class="flex items-center justify-between pt-1">
@@ -410,28 +373,28 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
                 MX
               </div>
 <div>
-<h3 class="text-base font-extrabold text-slate-900" id="hudCountryName">HS 코드를 검색하세요</h3>
-<p class="text-[11px] text-slate-400 font-medium" id="hudHsSubtext">아직 검색된 품목이 없습니다</p>
+<h3 class="text-base font-extrabold text-slate-900" id="hudCountryName">Mexico (멕시코)</h3>
+<p class="text-[11px] text-slate-400 font-medium" id="hudHsSubtext">HS 854140 Solar Cells &amp; Modules</p>
 </div>
 </div>
 <div class="text-right">
 <span class="text-[10px] text-slate-400 font-medium block">Blue Ocean Score</span>
-<span class="text-2xl font-black font-mono text-sky-600 tracking-tight" id="hudCountryScore">—<span class="text-sm font-semibold text-slate-400">/100</span></span>
+<span class="text-2xl font-black font-mono text-sky-600 tracking-tight" id="hudCountryScore">87<span class="text-sm font-semibold text-slate-400">/100</span></span>
 </div>
 </div>
 <!-- 3 Mini Metric Cards -->
 <div class="grid grid-cols-3 gap-2 pt-1 text-center font-mono">
 <div class="bg-slate-50 border border-slate-100 rounded-xl py-2 px-1">
 <span class="text-[10px] text-slate-400 font-sans block">수요 잠재력</span>
-<span class="text-xs font-bold text-slate-800 mt-0.5 block" id="hudPotentialVal">—</span>
+<span class="text-xs font-bold text-slate-800 mt-0.5 block" id="hudPotentialVal">88.5</span>
 </div>
 <div class="bg-slate-50 border border-slate-100 rounded-xl py-2 px-1">
 <span class="text-[10px] text-slate-400 font-sans block">한국 점유율</span>
-<span class="text-xs font-bold text-slate-800 mt-0.5 block" id="hudPenetrationVal">—</span>
+<span class="text-xs font-bold text-slate-800 mt-0.5 block" id="hudPenetrationVal">1.2%</span>
 </div>
 <div class="bg-rose-50/50 border border-rose-100 rounded-xl py-2 px-1">
 <span class="text-[10px] text-rose-500 font-sans block font-medium">침투 타깃(Gap)</span>
-<span class="text-xs font-black text-rose-600 mt-0.5 block" id="hudExportGapVal">—</span>
+<span class="text-xs font-black text-rose-600 mt-0.5 block" id="hudExportGapVal">+15.4%p</span>
 </div>
 </div>
 <!-- Action Buttons Row -->
@@ -445,7 +408,7 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 <span>↻</span>
 </button>
 </div>
-</div><div class="panel score-panel"><h3>Blue Ocean Score</h3><p>수요와 진입 기회를 함께 평가합니다.</p><div class="score-ring" id="scoreRing"><div><small>OPPORTUNITY</small><strong id="ringValue">—</strong><small>/ 100</small></div></div><div class="score-foot" id="scoreMarket">HS 코드를 검색하세요</div></div></section><main class="analysis-grid" id="dashboardSection"><div class="analysis-column analysis-column-left"><div class="panel insightPanel" id="insightPanel"><div class="insight-topline"><div class="insight-title-wrap"><span class="insight-bulb">💡</span><h3>AI Market Insight</h3><span class="opportunity-pill">MARKET OPPORTUNITY</span></div><span class="country-pill" id="insightCountryName">선택 국가</span></div>
+</div><div class="panel score-panel"><h3>Blue Ocean Score</h3><p>수요와 진입 기회를 함께 평가합니다.</p><div class="score-ring" id="scoreRing"><div><small>OPPORTUNITY</small><strong id="ringValue">87</strong><small>/ 100</small></div></div><div class="score-foot" id="scoreMarket">멕시코 · 종합 기회 점수</div></div></section><main class="analysis-grid" id="dashboardSection"><div class="analysis-column analysis-column-left"><div class="panel insightPanel" id="insightPanel"><div class="insight-topline"><div class="insight-title-wrap"><span class="insight-bulb">💡</span><h3>AI Market Insight</h3><span class="opportunity-pill">MARKET OPPORTUNITY</span></div><span class="country-pill" id="insightCountryName">선택 국가</span></div>
 <section class="insight-section insight-interpretation"><div class="insight-section-head"><div><h4><span class="heading-icon mint">◉</span>AI 종합 의견</h4><p>선정 근거와 시장 특성을 연결한 종합 해석입니다.</p></div><span class="opportunity-pill">기회 중심 종합 분석</span></div><div class="opinion-body" id="insightOpinion"></div><div class="conclusion-line"><span>✓   핵심 결론</span><strong id="insightConclusion">데이터를 불러오는 중입니다.</strong></div><div class="insight-lead-status" id="insightLeadStatus">샘플 데이터 · 실제 AI/뉴스 미연동</div></section><button class="insight-toggle" id="insightExpandBtn" type="button" aria-controls="insightDetails" aria-expanded="false" onclick="toggleInsightDetails()"><span class="toggle-icon" aria-hidden="true">＋</span><span id="insightToggleLabel">상세 인사이트 더보기</span><span class="toggle-chevron" aria-hidden="true">⌄</span></button>
 <div class="insight-details" id="insightDetails" hidden><div class="insight-summary" id="aiInsightParagraph">국가 데이터를 불러오는 중입니다.</div>
 <div class="insight-source" id="insightSourceTag">SAMPLE DATA · 기존 샘플 수치 기반 화면 미리보기</div>
@@ -458,7 +421,7 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 <div class="insight-footer"><span id="aiInsightTargetName">Target: —</span><span id="insightDataNotes">샘플 데이터 · 실시간 AI/뉴스 미연동</span></div></div></div><div class="panel trendPanel" id="trendPanel"><div class="section-eyebrow">ANALYSIS / EXPORT GAP</div>
 <div class="flex items-center justify-between mb-1.5">
 <div>
-<h3 class="font-bold text-sm text-slate-800" id="trendChartTitle">Export Gap Trend</h3>
+<h3 class="font-bold text-sm text-slate-800" id="trendChartTitle">Export Gap Trend in Mexico</h3>
 </div>
 <span class="text-slate-400 text-xs">•••</span>
 </div>
@@ -503,7 +466,7 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 <!-- Bottom Metric Note -->
 <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 px-1 font-mono">
 <span>Selected Market Size:</span>
-<span class="font-bold text-sky-700 text-xs" id="targetPotentialAmount">—</span>
+<span class="font-bold text-sky-700 text-xs" id="targetPotentialAmount">$1,840M (USD)</span>
 </div>
 </div><div class="panel matrixPanel" id="matrixPanel"><div class="section-eyebrow">ANALYSIS / OPPORTUNITY MAP</div>
 <div class="flex items-center justify-between mb-1">
@@ -534,7 +497,7 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
     </div>
     <button type="button" class="page-home-btn" onclick="navigatePage('home')">← 대시보드로 돌아가기</button>
   </div>
-  <div class="page-context"><span id="reportPageContext">선택 국가 · HS 품목</span><span class="report-status-pill">● LIVE DATA · 보고서 미리보기</span></div>
+  <div class="page-context"><span id="reportPageContext">선택 국가 · HS 품목</span><span class="report-status-pill">● SAMPLE DATA · 보고서 미리보기</span></div>
   <div class="report-builder-grid">
     <aside class="panel report-options" aria-label="보고서 제작 안내">
       <span class="section-eyebrow">REPORT STUDIO</span>
@@ -545,72 +508,26 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
       <div class="report-option-line"><span>Blue Ocean Score</span><strong id="reportSideScore">—</strong></div>
       <button class="report-print-btn" type="button" onclick="printReportPreview()">▧ 현재 미리보기 PDF로 저장</button>
       <p class="report-help">버튼을 누르면 브라우저 인쇄 창이 열립니다. 대상에서 <b>PDF로 저장</b>을 선택하세요.</p>
-      <div class="report-work-notice">이 보고서는 현재 선택한 국가의 실제 분석 결과(UN Comtrade·KITA·환율 API)를 기반으로 자동 생성됩니다. AI 서술 문장은 OpenAI 키가 설정된 경우에만 생성되고, 없으면 규칙 기반 문구로 대체됩니다.</div>
+      <div class="report-work-notice">현재 파일은 샘플 데이터 기반입니다. 상세 AI 보고서 자동 작성 및 공식 출처 연동은 향후 Flask/OpenAI 백엔드에 연결해야 합니다.</div>
     </aside>
     <article class="report-paper" id="reportPrintArea" aria-label="시장 분석 보고서 미리보기">
-      <div class="report-cover" id="reportCover">
-        <div class="report-cover-eyebrow">유망시장 발굴 리포트</div>
-        <div class="report-cover-title"><span>BLUE</span><span>OCEAN</span><span>REPORT</span></div>
-        <div class="report-cover-rule"></div>
-        <div class="report-cover-tagline">무역 통계 데이터 기반 유망 시장 분석 의사결정 브리프</div>
-        <div class="report-cover-subject" id="reportCoverSubject">HS 코드를 검색하면 여기에 표시됩니다.</div>
-        <div class="report-cover-team">KITA AX 마스터즈</div>
-      </div>
-      <header class="report-paper-head"><div><span>유망시장 발굴 리포트</span><h2>BLUE OCEAN REPORT</h2><p>무역 통계 데이터 기반 유망 시장 분석 의사결정 브리프</p></div><span class="report-demo-stamp">LIVE DATA</span></header>
-      <div class="report-paper-body">
-      <section class="report-paper-section" style="margin-top:6px"><h3>문서 개요</h3>
-        <div class="report-facts" id="reportDocInfo">
-          <div><span>수출 품목</span><strong id="reportDocProduct">—</strong></div>
-          <div><span>추천 국가</span><strong id="reportDocCountry">—</strong></div>
-          <div><span>분석 엔진</span><strong>Blue Ocean Finder Scoring Model</strong></div>
-          <div><span>작성 프로젝트</span><strong>Blue Ocean Finder</strong></div>
-          <div><span>조사 기준연도</span><strong id="reportDocYear">—</strong></div>
-          <div><span>발행 일자</span><strong id="reportIssueDate">—</strong></div>
-        </div>
+      <header class="report-paper-head"><div><span>BLUE OCEAN FINDER / MARKET RESEARCH</span><h2>BLUE OCEAN REPORT</h2><p>HS Code 기반 유망 수출시장 분석 · 화면 미리보기</p></div><span class="report-demo-stamp">SAMPLE DATA</span></header>
+      <div class="report-paper-meta"><span id="reportPaperTitle">선택 국가 · HS 품목</span><span id="reportIssueDate">—</span></div>
+      <section class="report-paper-section"><h3>01. Executive Summary · 핵심 요약</h3>
+        <div class="report-stats"><div><span>Blue Ocean Score</span><strong id="reportScore">—</strong></div><div><span>수입시장 규모</span><strong id="reportMarket">—</strong></div><div><span>한국산 점유율</span><strong id="reportShare">—</strong></div><div><span>Export Gap</span><strong id="reportGap">—</strong></div></div>
+        <p id="reportSummary">선택한 국가의 데이터를 확인하는 중입니다.</p>
       </section>
-      <section class="report-paper-section"><h3><span class="sec-num">1</span>요약</h3>
-        <div class="report-stats"><div><span>BLUE OCEAN SCORE</span><strong id="reportScore">—</strong></div><div><span>한국 점유율</span><strong id="reportShare">—</strong></div><div><span>최근 1년 성장률</span><strong id="reportYoY">—</strong></div><div><span>종합 순위</span><strong id="reportRank">—</strong></div></div>
-        <div class="report-callout" id="reportSummary" style="margin-top:12px">선택한 국가의 데이터를 확인하는 중입니다.</div>
+      <section class="report-paper-section"><h3>02. Market Overview · 시장 현황</h3>
+        <div class="report-facts"><div><span>분석 품목</span><strong id="reportProduct">—</strong></div><div><span>수요 잠재력</span><strong id="reportPotential">—</strong></div><div><span>표시된 추세 기준연도</span><strong id="reportYear">—</strong></div><div><span>전년 대비 수입 증가율</span><strong id="reportYoY">—</strong></div></div>
+        <p>시장규모와 성장률은 현재 화면에 연결된 샘플 값을 표시합니다. 정식 분석에서는 실제 Comtrade 데이터와 연도를 사용합니다.</p>
       </section>
-      <section class="report-paper-section"><h3><span class="sec-num">2</span>이 시장을 선택한 이유</h3>
-        <ul class="report-why-list" id="reportWhyList"><li>데이터를 확인하는 중입니다.</li></ul>
-        <p class="report-muted" id="reportWhyChartCaption" style="margin:10px 0 4px">한국산 수입액 추이 (단위: 백만 달러)</p>
-        <div class="chart-wrap" style="height:180px"><canvas id="reportTrendChart"></canvas></div>
+      <section class="report-paper-section"><h3>03. Korea Export Opportunity · 한국의 진출 여지</h3>
+        <p id="reportPenetration">한국 점유율과 Export Gap을 확인하는 중입니다.</p>
       </section>
-      <section class="report-paper-section"><h3><span class="sec-num">3</span>리스크 및 진입장벽</h3>
-        <table class="report-risk-table"><thead><tr><th>점검 항목</th><th>심각도</th><th>설명</th></tr></thead><tbody id="reportRiskBody"></tbody></table>
+      <section class="report-paper-section"><h3>04. Blue Ocean Score · 점수 현황</h3>
+        <p id="reportScoreNote">현재 점수를 확인하는 중입니다.</p><p class="report-muted">8개 지표별 산정 근거와 경쟁국·관세·규제 상세 내용은 실제 분석 API 연동 후 추가되는 영역입니다. 미확인 값을 만들어 넣지 않습니다.</p>
       </section>
-      <section class="report-paper-section"><h3><span class="sec-num">4</span>한국 기업 진출 선례</h3>
-        <p class="report-muted" style="margin-top:0">확인된 진출 사례가 없는 경우 지어내지 않고 아래와 같이 표시합니다.</p>
-        <div class="report-limitation" id="reportPrecedentBox">확인된 진출 사례 없음 — 현재 이 항목은 실제 웹 검색·뉴스 데이터에 연결되어 있지 않습니다.</div>
-      </section>
-      <section class="report-paper-section"><h3><span class="sec-num">5</span>다음 액션 체크리스트</h3>
-        <table class="report-risk-table"><thead><tr><th>단계</th><th>내용</th><th>설명</th></tr></thead><tbody>
-          <tr><td><strong>1단계</strong></td><td>관세율·경쟁국 구도 재확인</td><td>본 리포트 수치는 최신 데이터 기준으로 팀 내 재검증(실효관세율 및 상위 경쟁국 점유율 교차 확인)</td></tr>
-          <tr><td><strong>2단계</strong></td><td>현지 유통·규제 요건 조사</td><td>관련 협회·KOTRA 무역관을 통해 실제 인증/통관 요건 확인(비관세 장벽 항목 사전 점검)</td></tr>
-          <tr><td><strong>3단계</strong></td><td>소량 샘플 오더 또는 시범 거래 검토</td><td>대량 계약 전 소규모로 시장 반응 테스트(바이어 반응 및 초기 물류 프로세스 점검)</td></tr>
-        </tbody></table>
-      </section>
-      <section class="report-paper-section"><h3><span class="sec-num">6</span>접촉 채널 <span class="report-muted" style="font-weight:400">(참고용)</span></h3>
-        <table class="report-risk-table"><thead><tr><th>접촉 채널</th><th>설명 (참고용)</th></tr></thead><tbody>
-          <tr><td><strong>KOTRA 해당 국가 무역관</strong></td><td>시장 정보 및 바이어 매칭 지원 문의</td></tr>
-          <tr><td><strong>관련 업종 협회·전시회</strong></td><td>현지 업계 네트워크 파악</td></tr>
-          <tr><td><strong>온라인 B2B 플랫폼</strong></td><td>Alibaba 등 해당국 주요 조달 플랫폼을 통한 초기 바이어 탐색</td></tr>
-        </tbody></table>
-      </section>
-      <section class="report-paper-section"><h3><span class="sec-num">7</span>종합 결론 및 방향성</h3>
-        <div class="report-verdict" id="reportVerdictBox"><strong id="reportVerdict">확인되지 않음</strong><span id="reportVerdictSub"></span></div>
-        <p id="reportConclusion">데이터를 확인하는 중입니다.</p>
-        <div class="report-limitation">위 판단은 본 리포트에 제시된 데이터만을 근거로 한 요약이며, 최종 진출 결정은 팀 내 추가 검토를 거쳐 확정해야 합니다.</div>
-      </section>
-      <section class="report-paper-section"><h3><span class="sec-num">8</span>데이터 한계</h3>
-        <p style="margin-top:0">관세율 데이터는 조회 시점 기준이며 향후 변경될 수 있습니다. "한국 기업 진출 선례"는 실시간 검색 결과에 의존하지 않으므로 위와 같이 항상 미확인으로 표시됩니다. 물류일수 등 일부 보조 지표는 확보되지 않아 계산에서 제외되었습니다.</p>
-      </section>
-      <section class="report-paper-section"><h3><span class="sec-num">A</span>산출 근거</h3>
-        <table class="report-risk-table"><thead><tr><th>산출 지표</th><th>값 / 산식</th></tr></thead><tbody id="reportBasisBody"></tbody></table>
-      </section>
-      </div>
-      <footer class="report-paper-foot">Blue Ocean Finder Scoring Model · UN Comtrade·KITA·환율 API 기반 자동 생성 보고서 · 최종 수출 판단 전 팀 내 재검증이 필요합니다.</footer>
+      <footer class="report-paper-foot">Blue Ocean Finder · 데모 보고서 미리보기 · 실제 수출 판단용 자료가 아닙니다.</footer>
     </article>
   </div>
 </section>
@@ -623,16 +540,20 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 <span class="text-slate-500">
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </span>
-<h3 class="font-bold text-xs text-slate-800">박람회 캘린더 (TradeMap)</h3>
+<h3 class="font-bold text-xs text-slate-800">박람회 캘린더</h3>
 </div>
-<span class="text-[10px] font-mono text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded">실데이터 연동</span>
+<span class="text-[10px] font-mono text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded">예시 일정</span>
 </div>
-<!-- 실제 TradeMap(HS 코드 기반 박람회·무역행사 검색) 페이지를 그대로 임베드한다 —
-     가짜 일정을 만들지 않고, 이미 실제로 동작하는 /trademap 화면을 재사용한다. -->
-<div class="trademap-embed-wrap">
-  <iframe id="trademapIframe" title="TradeMap 박람회 일정" loading="lazy"></iframe>
+<div class="text-[10px] text-slate-400 font-semibold grid grid-cols-12 pb-1.5 border-b border-slate-100 mb-1.5 px-1">
+<span class="col-span-4">Date</span>
+<span class="col-span-8">Key Event</span>
+</div>
+<!-- Dynamic Schedule List -->
+<div class="space-y-2 text-xs" id="tradeShowList">
+<!-- Populated via Javascript -->
 </div>
 </div>
+  <div class="page-data-notice">현재 HTML에 표시된 행사는 데모 일정입니다. 실데이터 연동 시 검증된 개최일·장소·주최기관 정보를 사용하세요.</div>
 </section>
 <section aria-labelledby="newsPageTitle" class="secondary-page" id="newsPage" hidden>
   <div class="page-intro"><div><div class="section-eyebrow">ADD INFORMATION / INDUSTRY BRIEF</div><h2 id="newsPageTitle">◈ 산업 뉴스</h2><p>국가 및 HS 품목과 관련된 출처 확인 뉴스를 이 페이지에서 확인합니다.</p></div><button class="page-home-btn" type="button" onclick="navigatePage('home')">← 대시보드로 돌아가기</button></div>
@@ -642,7 +563,7 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 <div class="news-list" id="industryNewsList"><div class="news-empty"><span class="news-empty-icon">▤</span><strong>산업 뉴스 연동 대기</strong><span>현재 HTML에는 실시간 뉴스 데이터가 연결되어 있지 않습니다.<br/>백엔드에서 국가·품목별 기사와 출처를 전달하면 이 영역에 표시됩니다.</span></div></div>
 <div class="news-foot">기사 제목 · 발표일 · 출처를 확인한 정보만 노출합니다.</div>
 </section>
-</section><footer class="footer"><span>© Blue Ocean Finder · Global trade intelligence</span><span>Blue Ocean Finder · 실시간 분석 데이터 기준</span></footer></div></div><div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4" id="algoModal">
+</section><footer class="footer"><span>© Blue Ocean Finder · Global trade intelligence</span><span>원본 내장 샘플 데이터 · 환산 기준 1 USD = 1,320 KRW</span></footer></div></div><div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4" id="algoModal">
 <div class="bg-white border border-slate-200 rounded-3xl max-w-xl w-full p-6 card-shadow">
 <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
 <h3 class="text-base font-extrabold text-slate-800">📐 Blue Ocean Score 공식 명세</h3>
@@ -703,68 +624,266 @@ function syncOverview(c,data){
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('[id$="Modal"]').forEach(m=>m.classList.add('hidden'))});
 document.addEventListener('click',e=>{if(e.target.id?.endsWith('Modal'))closeModal(e.target.id)});
 </script><script>
-    const USD_TO_KRW_FALLBACK = 1320.0; // 실제 환율 로딩 전 임시값. /api/fx/latest 응답이 오면 즉시 교체된다.
-    let usdToKrw = USD_TO_KRW_FALLBACK;
+    const USD_TO_KRW = 1320.0;
     let currentCurrency = 'USD';
-    let selectedCountryId = null;
-    let currentHsCode = '';
+    let selectedCountryId = 'MEX'; // Default: Mexico
+    let currentHsCode = '854140';
     let currentSortMode = 'score';
 
-    // 실제 /api/analyze 응답으로 채워지는 상태. 과거의 하드코딩된 `database` 샘플 객체를 대체한다.
-    let currentMeta = null;        // /api/analyze 응답의 meta
-    let currentCountries = [];     // mapAnalyzeRowToCountry()로 변환된 실제 top20 국가 배열
-    let currentProductLabel = '';  // meta.hs_desc
-    let trademapLoaded = false;    // /trademap iframe(박람회 페이지) 로드 완료 여부
-
-    // ISO2 -> 국기 이모지. 실데이터에는 국기 이미지가 없어 유니코드 Regional Indicator로 생성한다.
-    function flagEmoji(iso2) {
-      if (!iso2 || iso2.length !== 2) return '';
-      return String.fromCodePoint(...[...iso2.toUpperCase()].map(c => 127397 + c.charCodeAt(0)));
-    }
-
-    // .toFixed()를 곧바로 호출하면 실데이터의 null(계산 실패·결측)에서 예외가 난다 —
-    // 이 화면 전체에서 숫자 포맷은 항상 이 헬퍼를 거친다.
-    function numOrDash(v, digits) {
-      return (typeof v === 'number' && Number.isFinite(v)) ? v.toFixed(digits) : '—';
-    }
-
-    // /api/analyze의 top20 행(row) -> 이 화면이 기대하는 국가 객체로 변환.
-    // 실제로 없는 값(국가별 다개년 시계열, 박람회 일정, "경쟁국 개수" 등)은 지어내지 않고
-    // 빈 배열/합리적 대체값으로 남긴다. 다개년 시계열은 selectCountry()가 국가 상세
-    // API(/api/country/<iso3>/detail)를 불러와 그때 채운다.
-    function mapAnalyzeRowToCountry(row) {
-      return {
-        id: row.iso3,
-        name: row.name_en || row.iso3,
-        name_kr: row.name_ko || row.name_en || row.iso3,
-        flag: flagEmoji(row.iso2),
-        lat: row.lat, lng: row.lon,
-        rank: row.rank,
-        score: row.score,
-        potential: row.potential,
-        supply_score: row.supply_score,
-        penetration: row.korea_share_pct,
-        // 원래 디자인은 "경쟁국 개수"였으나 실데이터에는 그 지표가 없다 — 대신 실제로
-        // 계산되는 "상위 3개국 합산 점유율(%)"을 같은 칸에 보여준다(renderTable 참고).
-        competitors: row.competitors ? row.competitors.top3_share_pct : null,
-        competitors_top3: row.competitors ? row.competitors.top3 : [],
-        market_size_usd: (typeof row.market_size_usd === 'number' ? row.market_size_usd : 0) / 1e6, // 이 화면의 formatMoney()는 "백만 달러" 단위 기준
-        export_gap: row.export_gap_pp,
-        yoy_pct: row.growth ? row.growth.yoy_pct : null,
-        cagr3_pct: row.growth ? row.growth.cagr3_pct : null,
-        tariff_rate_pct: row.barriers ? row.barriers.tariff_rate_pct : null,
-        tariff_type: row.barriers ? row.barriers.tariff_type : null,
-        ntb_items: row.barriers ? (row.barriers.ntb_items || []) : [],
-        score_breakdown: row.score_breakdown || null,
-        role_desc: '',
-        trend_years: [], import_trend: [], korea_export_trend: [], gap_trend: [],
-        insight: '', schedules: [],
-      };
-    }
-
-    function currentDataset() {
-      return { name: currentProductLabel, countries: currentCountries };
-    }
+    const database = {
+      "854140": {
+        name: "Solar Cells & Modules (8541.40 태양전지·모듈)",
+        countries: [
+          {
+            id: 'MEX',
+            name: 'Mexico',
+            name_kr: '멕시코',
+            flag: '🇲🇽',
+            lat: 23.6345,
+            lng: -102.5528,
+            score: 87,
+            potential: 88.50,
+            penetration: 1.2,
+            competitors: 3,
+            market_size_usd: 1840,
+            export_gap: 15.40,
+            fx: '18.50 MXN',
+            role_desc: '북미 니어쇼어링 최대 급부상 시장',
+            trend_years: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'],
+            import_trend: [800, 950, 1100, 1300, 1450, 1600, 1720, 1800, 1840],
+            korea_export_trend: [50, 75, 110, 150, 190, 230, 270, 310, 350],
+            gap_trend: [4.2, 5.5, 7.1, 8.8, 10.4, 12.1, 13.5, 14.7, 15.40],
+            insight: 'Mexico nearshoring trend creates surge in renewable energy demand. Untapped export gap of +15.4%p represents a prime target for Korea solar components.',
+            schedules: [
+              { date: '1. Jun 04', title: '멕시코시티 엑스포 일렉트리카', note: 'KOTRA Mexico Pavilion Matchmaking' },
+              { date: '2. Sep 18', title: 'Solar Power Mexico 2026', note: 'Guadalajara Renewable Center' }
+            ]
+          },
+          {
+            id: 'VNM',
+            name: 'Vietnam',
+            name_kr: '베트남',
+            flag: '🇻🇳',
+            lat: 14.0583,
+            lng: 108.2772,
+            score: 85,
+            potential: 85.10,
+            penetration: 73.0,
+            competitors: 4,
+            market_size_usd: 1420,
+            export_gap: 12.10,
+            fx: '24,500 VND',
+            role_desc: '아세안 신재생 에너지 제조 허브',
+            trend_years: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'],
+            import_trend: [2800, 3400, 4200, 5100, 6200, 7400, 8500, 8900, 8400],
+            korea_export_trend: [600, 820, 1150, 1400, 1750, 2100, 2400, 2600, 2750],
+            gap_trend: [2.5, 3.8, 5.2, 6.9, 8.4, 9.8, 11.2, 11.8, 12.10],
+            insight: 'Vietnam is experiencing unprecedented industrial power demand, where low Korean export share indicates immediate untapped market opportunity with high potential.',
+            schedules: [
+              { date: '1. Jan 19', title: '하노이 신재생에너지 인프라전', note: 'Hanoi Green Power Hub' },
+              { date: '2. Aug 27', title: '호치민 태양광·ESS 엑스포', note: 'KOTRA Semans Business Fair' }
+            ]
+          },
+          {
+            id: 'POL',
+            name: 'Poland',
+            name_kr: '폴란드',
+            flag: '🇵🇱',
+            lat: 51.9194,
+            lng: 19.1451,
+            score: 86,
+            potential: 78.40,
+            penetration: 3.4,
+            competitors: 2,
+            market_size_usd: 1350,
+            export_gap: 9.80,
+            fx: '4.10 PLN',
+            role_desc: '중동부 유럽 최대 K-그리드 기지',
+            trend_years: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'],
+            import_trend: [600, 720, 850, 980, 1100, 1200, 1280, 1320, 1350],
+            korea_export_trend: [30, 45, 65, 90, 110, 135, 150, 165, 180],
+            gap_trend: [2.1, 3.2, 4.4, 5.8, 6.9, 7.8, 8.5, 9.2, 9.80],
+            insight: 'Poland is accelerating grid modernizations with high appetite for premium Korean high-efficiency PV modules.',
+            schedules: [
+              { date: '1. Mar 14', title: '바르샤바 Enex 에너지 박람회', note: 'Kielce Trade Fair Pavilion' }
+            ]
+          },
+          {
+            id: 'IND',
+            name: 'India',
+            name_kr: '인도',
+            flag: '🇮🇳',
+            lat: 20.5937,
+            lng: 78.9629,
+            score: 84,
+            potential: 68.90,
+            penetration: 4.8,
+            competitors: 3,
+            market_size_usd: 3100,
+            export_gap: 11.20,
+            fx: '83.20 INR',
+            role_desc: '신재생 500GW 국가 목표 메가프로젝트',
+            trend_years: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'],
+            import_trend: [1400, 1650, 1900, 2200, 2500, 2750, 2900, 3000, 3100],
+            korea_export_trend: [80, 110, 145, 180, 215, 245, 270, 290, 310],
+            gap_trend: [3.0, 4.2, 5.5, 6.8, 8.1, 9.3, 10.1, 10.8, 11.20],
+            insight: 'India mega-solar projects demand supply chain diversification away from regional dominance.',
+            schedules: [
+              { date: '1. Sep 25', title: 'Renewable Energy India Expo', note: 'Greater Noida Pavilion' }
+            ]
+          },
+          {
+            id: 'DEU',
+            name: 'Germany',
+            name_kr: '독일',
+            flag: '🇩🇪',
+            lat: 51.1657,
+            lng: 10.4515,
+            score: 83,
+            potential: 54.50,
+            penetration: 76.0,
+            competitors: 3,
+            market_size_usd: 4800,
+            export_gap: 4.80,
+            fx: '0.92 EUR',
+            role_desc: '유럽 CBAM 탄소 규제 선도국',
+            trend_years: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'],
+            import_trend: [2600, 2900, 3200, 3600, 4000, 4300, 4500, 4700, 4800],
+            korea_export_trend: [300, 350, 410, 460, 510, 550, 580, 600, 620],
+            gap_trend: [1.8, 2.3, 2.9, 3.4, 3.9, 4.2, 4.5, 4.7, 4.80],
+            insight: 'Germany maintains strict CBAM certification standards where high quality Korean components hold an ESG advantage.',
+            schedules: [
+              { date: '1. Jun 19', title: 'Intersolar Europe Munich', note: 'Global Tier 1 Fair' }
+            ]
+          },
+          {
+            id: 'CHN',
+            name: 'China',
+            name_kr: '중국',
+            flag: '🇨🇳',
+            lat: 35.8617,
+            lng: 104.1954,
+            score: 85,
+            potential: 43.40,
+            penetration: 53.5,
+            competitors: 1,
+            market_size_usd: 8900,
+            export_gap: 0.12,
+            fx: '7.24 CNY',
+            role_desc: '글로벌 최대 규모 태양광 제조 시장',
+            trend_years: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'],
+            import_trend: [4800, 5100, 5600, 6200, 6800, 7200, 7800, 8200, 8900],
+            korea_export_trend: [400, 480, 520, 580, 610, 640, 690, 720, 750],
+            gap_trend: [-0.5, 0.2, 0.8, 1.2, 1.6, 2.1, 2.5, 2.9, 3.2],
+            insight: 'China maintains massive volume scale with aggressive domestic fabrication; specialized N-type wafer exports remain the priority.',
+            schedules: [
+              { date: '1. Jan 19', title: 'SNEC 상하이 태양광 박람회', note: 'SNEC Clean Energy Center' }
+            ]
+          },
+          {
+            id: 'ITA',
+            name: 'Italy',
+            name_kr: '이탈리아',
+            flag: '🇮🇹',
+            lat: 41.8719,
+            lng: 12.5674,
+            score: 82,
+            potential: 34.98,
+            penetration: 74.3,
+            competitors: 1,
+            market_size_usd: 2100,
+            export_gap: 1.20,
+            fx: '0.92 EUR',
+            role_desc: '남유럽 영농형 태양광 인센티브 시장',
+            trend_years: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'],
+            import_trend: [1100, 1250, 1400, 1600, 1750, 1900, 2000, 2050, 2100],
+            korea_export_trend: [100, 130, 160, 190, 220, 250, 280, 310, 340],
+            gap_trend: [0.8, 1.0, 1.2, 1.4, 1.5, 1.6, 1.5, 1.3, 1.20],
+            insight: 'Southern European agrivoltaic incentives offer premium pricing for certified high-durability Korean cell tech.',
+            schedules: [
+              { date: '1. Mar 20', title: 'Key Energy Rimini', note: 'KOTRA Milan Pavilion' }
+            ]
+          },
+          {
+            id: 'KOR',
+            name: 'Korea',
+            name_kr: '한국 (기준국)',
+            flag: '🇰🇷',
+            lat: 37.5665,
+            lng: 126.9780,
+            score: 85,
+            potential: 37.70,
+            penetration: 70.0,
+            competitors: 3,
+            market_size_usd: 2400,
+            export_gap: 0.0,
+            fx: '1,320 KRW',
+            role_desc: '헌팅 레이더 발원지 (Origin Benchmark)',
+            trend_years: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'],
+            import_trend: [1200, 1300, 1500, 1700, 1900, 2100, 2200, 2300, 2400],
+            korea_export_trend: [900, 1050, 1200, 1350, 1500, 1600, 1700, 1800, 1900],
+            gap_trend: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            insight: 'Domestic reference benchmark market showcasing high adoption of high-efficiency N-type TOPCon cells.',
+            schedules: [
+              { date: '1. Apr 12', title: '대구 국제그린에너지엑스포', note: 'EXCO National Center' }
+            ]
+          }
+        ]
+      },
+      "850440": {
+        name: "Inverters (8504.40 인버터/전력변환기)",
+        countries: [
+          {
+            id: 'MEX',
+            name: 'Mexico',
+            name_kr: '멕시코',
+            flag: '🇲🇽',
+            lat: 23.6345,
+            lng: -102.5528,
+            score: 88,
+            potential: 84.2,
+            penetration: 1.8,
+            competitors: 2,
+            market_size_usd: 1950,
+            export_gap: 16.20,
+            fx: '18.50 MXN',
+            role_desc: '북미 EV 및 전력변환 인버터 관문',
+            trend_years: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'],
+            import_trend: [850, 1000, 1180, 1350, 1500, 1680, 1800, 1900, 1950],
+            korea_export_trend: [60, 90, 130, 170, 210, 260, 300, 340, 380],
+            gap_trend: [4.0, 5.8, 7.5, 9.4, 11.2, 12.9, 14.5, 15.6, 16.20],
+            insight: 'Primary supply conduit to US EV and power electronics manufacturers in Mexico border industrial parks.',
+            schedules: [
+              { date: '1. Jun 04', title: 'Expo Electrica Mexico City', note: 'KOTRA Mexico Center' }
+            ]
+          },
+          {
+            id: 'VNM',
+            name: 'Vietnam',
+            name_kr: '베트남',
+            flag: '🇻🇳',
+            lat: 14.0583,
+            lng: 108.2772,
+            score: 86,
+            potential: 82.0,
+            penetration: 75.0,
+            competitors: 3,
+            market_size_usd: 1800,
+            export_gap: 13.5,
+            fx: '24,500 VND',
+            role_desc: '스마트 팩토리 전력기기 집중 수요',
+            trend_years: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'],
+            import_trend: [900, 1050, 1200, 1380, 1520, 1650, 1720, 1780, 1800],
+            korea_export_trend: [180, 220, 270, 310, 360, 400, 440, 470, 500],
+            gap_trend: [3.2, 4.8, 6.5, 8.1, 9.6, 11.0, 12.2, 13.0, 13.5],
+            insight: 'Industrial smart converters are surging in Vietnamese smart factory assembly facilities.',
+            schedules: [
+              { date: '1. Oct 14', title: 'Hanoi Industrial Machinery Fair', note: 'National Grid Pavilion' }
+            ]
+          }
+        ]
+      }
+    };
   </script>
 <script>
     let scene, camera, renderer, globeGroup, innerSphere, wireframeSphere, trajectoriesGroup, markersGroup;
@@ -898,7 +1017,7 @@ document.addEventListener('click',e=>{if(e.target.id?.endsWith('Modal'))closeMod
       koreaRing.lookAt(koreaVec.clone().multiplyScalar(2));
       markersGroup.add(koreaRing);
 
-      const currentData = currentDataset();
+      const currentData = database[currentHsCode] || database["854140"];
 
       currentData.countries.forEach(country => {
         if (country.id === 'KOR') return;
@@ -959,7 +1078,7 @@ document.addEventListener('click',e=>{if(e.target.id?.endsWith('Modal'))closeMod
     function lockHunterTarget(countryId) {
       selectCountry(countryId);
 
-      const currentData = currentDataset();
+      const currentData = database[currentHsCode] || database["854140"];
       const country = currentData.countries.find(c => c.id === countryId);
       if (country && globeGroup) {
         const targetLngRad = -(country.lng + 180) * (Math.PI / 180) + Math.PI / 2;
@@ -984,7 +1103,7 @@ function zoomGlobe(step) {
 }
 
     function cycleNextTarget() {
-      const currentData = currentDataset();
+      const currentData = database[currentHsCode] || database["854140"];
       const targetList = currentData.countries.filter(c => c.id !== 'KOR');
       const curIdx = targetList.findIndex(c => c.id === selectedCountryId);
       const nextIdx = (curIdx + 1) % targetList.length;
@@ -994,17 +1113,18 @@ function zoomGlobe(step) {
 <script>
     let blueOceanChartInstance = null;
     let trendChartInstance = null;
+    let sparkline1Instance = null;
+    let sparkline2Instance = null;
 
     function formatMoney(amountInMillionUSD) {
-      if (typeof amountInMillionUSD !== 'number' || !Number.isFinite(amountInMillionUSD)) return '—';
       if (currentCurrency === 'USD') {
-        return amountInMillionUSD >= 1000
-          ? `$${(amountInMillionUSD / 1000).toFixed(2)}B`
+        return amountInMillionUSD >= 1000 
+          ? `$${(amountInMillionUSD / 1000).toFixed(2)}B` 
           : `$${Math.round(amountInMillionUSD)}M`;
       } else {
-        const krwBillion = (amountInMillionUSD * 1000000 * usdToKrw) / 100000000;
-        return krwBillion >= 10000
-          ? `약 ${(krwBillion / 10000).toFixed(2)}조 원`
+        const krwBillion = (amountInMillionUSD * 1000000 * USD_TO_KRW) / 100000000;
+        return krwBillion >= 10000 
+          ? `약 ${(krwBillion / 10000).toFixed(2)}조 원` 
           : `약 ${Math.round(krwBillion).toLocaleString()}억 원`;
       }
     }
@@ -1023,18 +1143,67 @@ function zoomGlobe(step) {
       if(document.body.dataset.view==='report' && typeof window.refreshReportPreview==='function')window.refreshReportPreview();
     }
 
+    function renderMiniSparklines() {
+      if (typeof Chart === 'undefined') return; // Chart.js CDN unavailable: keep the rest of the dashboard working.
+
+      const ctx1 = document.getElementById('exchangeMiniChart1').getContext('2d');
+      const ctx2 = document.getElementById('exchangeMiniChart2').getContext('2d');
+
+      if (sparkline1Instance) sparkline1Instance.destroy();
+      if (sparkline2Instance) sparkline2Instance.destroy();
+
+      sparkline1Instance = new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: [1, 2, 3, 4, 5, 6, 7],
+          datasets: [{
+            data: [1315, 1318, 1316, 1324, 1320, 1325, 1320],
+            borderColor: '#818cf8',
+            borderWidth: 1.8,
+            pointRadius: 0,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: { x: { display: false }, y: { display: false } }
+        }
+      });
+
+      sparkline2Instance = new Chart(ctx2, {
+        type: 'line',
+        data: {
+          labels: [1, 2, 3, 4, 5, 6, 7],
+          datasets: [{
+            data: [18.2, 18.4, 18.3, 18.6, 18.5, 18.55, 18.50],
+            borderColor: '#38bdf8',
+            borderWidth: 1.8,
+            pointRadius: 0,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: { x: { display: false }, y: { display: false } }
+        }
+      });
+    }
+
     function renderBlueOceanMap(dataList) {
       if (typeof Chart === 'undefined') return; // Chart.js CDN unavailable: keep the rest of the dashboard working.
 
       const ctx = document.getElementById('blueOceanChart').getContext('2d');
-
-      const chartPoints = dataList.filter(c => typeof c.penetration === 'number' && typeof c.potential === 'number').map(c => {
+      
+      const chartPoints = dataList.map(c => {
         const isSelected = c.id === selectedCountryId;
-        const size = typeof c.market_size_usd === 'number' ? c.market_size_usd : 0;
         return {
           x: c.penetration,
           y: c.potential,
-          r: isSelected ? 22 : Math.max(Math.min(Math.sqrt(size) * 0.32, 18), 9),
+          r: isSelected ? 22 : Math.max(Math.min(Math.sqrt(c.market_size_usd) * 0.32, 18), 9),
           country: c,
           backgroundColor: isSelected ? 'rgba(239, 68, 68, 0.85)' : 'rgba(186, 230, 253, 0.65)',
           borderColor: isSelected ? '#ef4444' : '#38bdf8',
@@ -1044,7 +1213,6 @@ function zoomGlobe(step) {
 
       if (blueOceanChartInstance) blueOceanChartInstance.destroy();
 
-      try {
       blueOceanChartInstance = new Chart(ctx, {
         type: 'bubble',
         data: {
@@ -1071,11 +1239,11 @@ function zoomGlobe(step) {
               displayColors: false,
               titleFont: { weight: 'bold', size: 12 },
               callbacks: {
-                title: (items) => `${items[0].raw.country.name} (${items[0].raw.country.name_kr}) [Score: ${numOrDash(items[0].raw.country.score,0)}]`,
+                title: (items) => `${items[0].raw.country.name} (${items[0].raw.country.name_kr}) [Score: ${items[0].raw.country.score}]`,
                 label: (ctx) => [
-                  `• 잠재력: ${numOrDash(ctx.raw.country.potential,1)}`,
-                  `• 한국 점유율: ${numOrDash(ctx.raw.country.penetration,1)}%`,
-                  `• Export Gap: ${numOrDash(ctx.raw.country.export_gap,1)}%p`,
+                  `• 잠재력: ${ctx.raw.country.potential}`,
+                  `• 한국 점유율: ${ctx.raw.country.penetration}%`,
+                  `• Export Gap: +${ctx.raw.country.export_gap}%p`,
                   `• 시장규모: ${formatMoney(ctx.raw.country.market_size_usd)}`
                 ]
               }
@@ -1106,9 +1274,6 @@ function zoomGlobe(step) {
           }
         }
       });
-      } catch (e) {
-        console.warn('[BOF] 기회 매트릭스 차트 렌더링 실패(캔버스 미지원 환경 등):', e);
-      }
     }
 
     function renderTrendChart(country) {
@@ -1120,7 +1285,6 @@ function zoomGlobe(step) {
 
       document.getElementById('trendChartTitle').innerText = `Export Gap Trend in ${country.name}`;
 
-      try {
       trendChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -1188,30 +1352,31 @@ function zoomGlobe(step) {
           }
         }
       });
-      } catch (e) {
-        console.warn('[BOF] 수출입 추이 차트 렌더링 실패(캔버스 미지원 환경 등):', e);
-      }
     }
 
     function renderTable() {
-      const currentData = currentDataset();
+      const currentData = database[currentHsCode] || database["854140"];
       let list = [...currentData.countries];
-      list = list.filter(c => typeof c.export_gap === 'number' && c.export_gap > 0);
+
+      // Export Gap > 0 is now a fixed rule, not a visible UI toggle.
+      const gapOnly = true;
+      if (gapOnly) {
+        list = list.filter(c => c.export_gap > 0);
+      }
 
       if (currentSortMode === 'score') {
-        list.sort((a, b) => (b.score||0) - (a.score||0) || (b.potential||0) - (a.potential||0));
+        list.sort((a, b) => b.score - a.score || b.potential - a.potential);
       } else if (currentSortMode === 'potential') {
-        list.sort((a, b) => (b.potential||0) - (a.potential||0));
+        list.sort((a, b) => b.potential - a.potential);
       } else if (currentSortMode === 'gap') {
-        list.sort((a, b) => (b.export_gap||0) - (a.export_gap||0));
+        list.sort((a, b) => b.export_gap - a.export_gap);
       }
 
       const tbody = document.getElementById('rankingTableBody');
       tbody.innerHTML = '';
       document.getElementById('rankingCount').textContent = `TOP ${Math.min(list.length, 20)}`;
-      document.getElementById('rankingDataNotice').textContent = list.length
-        ? `조회 결과 ${Math.min(list.length,20)}개국 · 실제 데이터가 없는 국가는 임의로 생성하지 않습니다.`
-        : '';
+      const demoRows = list.slice(0,20).filter(c=>c.demoOnly).length;
+      document.getElementById('rankingDataNotice').textContent = demoRows ? `SAMPLE DATA · 추가 ${demoRows}개국과 수치는 화면 시연용 예시입니다. 실데이터 연동 시 교체됩니다.` : `조회 결과 ${Math.min(list.length,20)}개국 · 실제 데이터가 없는 국가는 임의로 생성하지 않습니다.`;
 
       if (!list.length) tbody.innerHTML = '<tr><td colspan="7" style="padding:30px;text-align:center;color:#91a5c8">검색 조건에 맞는 시장이 없습니다.</td></tr>';
       list.slice(0, 20).forEach((item, index) => {
@@ -1227,12 +1392,12 @@ function zoomGlobe(step) {
           <td class="py-2 px-1 text-center text-slate-400 font-mono">${index + 1}</td>
           <td class="py-2 px-2 flex items-center gap-1.5 font-medium text-slate-800">
             <span class="text-sm">${item.flag}</span>
-            <span class="truncate">${item.name}</span>
+            <span class="truncate">${item.name}</span>${item.demoOnly ? '<span class="demo-row-badge" title="실제 무역통계가 아닌 UI 시연용 예시">예시</span>' : ''}
           </td>
-          <td class="py-2 px-1 text-center font-bold text-slate-700 font-mono">${numOrDash(item.score,0)}</td>
-          <td class="py-2 px-1 text-right text-slate-600 font-mono">${numOrDash(item.potential,2)}</td>
-          <td class="py-2 px-1 text-right text-slate-600 font-mono">${numOrDash(item.penetration,1)}%</td>
-          <td class="py-2 px-1 text-center text-slate-500" title="상위 3개국 합산 점유율">${item.competitors!=null?numOrDash(item.competitors,1)+'%':'—'}</td>
+          <td class="py-2 px-1 text-center font-bold text-slate-700 font-mono">${item.score}</td>
+          <td class="py-2 px-1 text-right text-slate-600 font-mono">${item.potential.toFixed(2)}</td>
+          <td class="py-2 px-1 text-right text-slate-600 font-mono">${item.penetration.toFixed(1)}%</td>
+          <td class="py-2 px-1 text-center text-slate-500">${item.competitors}</td>
           <td class="py-2 px-1 text-center">
             <button onclick="event.stopPropagation(); showKotraNotice('${item.name}');" class="px-2 py-0.5 text-[10px] bg-slate-100 hover:bg-sky-100 text-slate-700 hover:text-sky-700 rounded font-medium border border-slate-200 transition cursor-pointer">KOTRA</button>
           </td>
@@ -1241,87 +1406,13 @@ function zoomGlobe(step) {
       });
     }
 
-    // 지구본 위 "시장 선택" 퀵버튼 — 예전 디자인은 멕시코/베트남/폴란드/인도/독일 5개국을
-    // 고정 버튼으로 하드코딩했지만, 실제로는 검색하는 HS 코드마다 상위권 국가가 달라지므로
-    // 그때그때 실제 top20 중 상위 5개국으로 다시 그린다.
-    function renderQuickTargets(countries, selectedId) {
-      const wrap = document.getElementById('quickTargetRow');
-      const empty = document.getElementById('quickTargetEmpty');
-      wrap.querySelectorAll('button[data-quick-target]').forEach(b => b.remove());
-      const top = countries
-        .filter(c => typeof c.export_gap === 'number' && c.export_gap > 0)
-        .sort((a, b) => (b.score||0) - (a.score||0))
-        .slice(0, 5);
-      if (empty) empty.hidden = top.length > 0;
-      top.forEach(c => {
-        const btn = document.createElement('button');
-        const isSelected = c.id === selectedId;
-        btn.type = 'button';
-        btn.dataset.quickTarget = c.id;
-        btn.setAttribute('aria-label', `${c.flag} ${c.name_kr} ${numOrDash(c.export_gap,1)}%p`);
-        btn.className = isSelected
-          ? 'px-2.5 py-1 text-xs rounded-lg font-bold transition flex items-center gap-1 bg-white text-rose-600 shadow-2xs border border-rose-300'
-          : 'px-2.5 py-1 text-xs rounded-lg font-medium transition flex items-center gap-1 text-slate-600 hover:bg-white hover:text-slate-900';
-        btn.onclick = () => lockHunterTarget(c.id);
-        btn.innerHTML = `<span>${c.flag} ${c.name_kr}</span><span class="text-[10px] font-mono ${isSelected?'text-rose-600':'text-slate-500'}">${numOrDash(c.export_gap,1)}%p</span>`;
-        wrap.appendChild(btn);
-      });
-    }
-
-    // ── 국가 상세(다개년 시계열 + AI Insight 재료) 실데이터 로딩 ────────────
-    // 같은 국가를 다시 선택했을 때 재요청하지 않도록 hs6+iso3 조합으로 캐싱한다.
-    const _countryDetailCache = {};
-    let _countryDetailToken = 0;
-
-    function loadCountryDetail(iso3) {
-      const hs6 = currentHsCode;
-      const cacheKey = hs6 + ':' + iso3;
-      const token = ++_countryDetailToken;
-
-      const apply = (detail) => {
-        if (selectedCountryId !== iso3 || currentHsCode !== hs6) return; // 이미 다른 선택으로 넘어감
-        const country = currentCountries.find(c => c.id === iso3);
-        if (!country || !detail || !Array.isArray(detail.gap_trend)) return;
-        country.trend_years = detail.gap_trend.map(p => String(p.year));
-        country.import_trend = detail.gap_trend.map(p => (p.total_import_usd || 0) / 1e6);
-        country.korea_export_trend = detail.gap_trend.map(p => (p.korea_export_usd || 0) / 1e6);
-        country.gap_trend = detail.gap_trend.map(p => p.export_gap_pp);
-        renderTrendChart(country);
-        if (typeof window.refreshReportPreview === 'function') window.refreshReportPreview();
-      };
-
-      if (_countryDetailCache[cacheKey]) {
-        apply(_countryDetailCache[cacheKey]);
-        return;
-      }
-      fetch('/api/country/' + encodeURIComponent(iso3) + '/detail?hs=' + encodeURIComponent(hs6))
-        .then(resp => resp.json())
-        .then(body => {
-          if (token !== _countryDetailToken) return;
-          if (body && body.error) { console.warn('[BOF] country detail error:', body.error); return; }
-          _countryDetailCache[cacheKey] = body;
-          apply(body);
-        })
-        .catch(e => console.warn('[BOF] country detail 요청 실패:', e));
-    }
-
-    // ── TradeMap(박람회) iframe에 현재 HS 코드를 동기화 (§expo 페이지) ─────
-    function syncTradeMapFrame() {
-      const iframe = document.getElementById('trademapIframe');
-      if (!iframe || !trademapLoaded || !iframe.contentWindow || !currentHsCode) return;
-      iframe.contentWindow.postMessage(
-        { source: 'blue-ocean-finder', type: 'hs-search', hs: currentHsCode },
-        window.location.origin
-      );
-    }
-
     function selectCountry(countryId) {
-      const available = currentCountries;
-      if (!available.length) return;
+      const available = database[currentHsCode].countries;
       countryId = available.some(c => c.id === countryId) ? countryId : available[0].id;
       selectedCountryId = countryId;
 
-      const currentData = currentDataset();
+
+      const currentData = database[currentHsCode] || database["854140"];
       const country = currentData.countries.find(c => c.id === countryId) || currentData.countries[0];
 
       if (country) {
@@ -1329,19 +1420,48 @@ function zoomGlobe(step) {
         // Update HUD Box
         document.getElementById('hudCountryCodeBox').innerText = country.id.slice(0, 2);
         document.getElementById('hudCountryName').innerText = `${country.name} (${country.name_kr})`;
-        document.getElementById('hudCountryScore').innerHTML = `${numOrDash(country.score,0)}<span class="text-sm font-semibold text-slate-400">/100</span>`;
-        document.getElementById('hudPotentialVal').innerText = numOrDash(country.potential, 1);
-        document.getElementById('hudPenetrationVal').innerText = `${numOrDash(country.penetration, 1)}%`;
-        document.getElementById('hudExportGapVal').innerText = typeof country.export_gap === 'number' ? `${country.export_gap>=0?'+':''}${country.export_gap.toFixed(1)}%p` : '—';
+        document.getElementById('hudCountryScore').innerHTML = `${country.score}<span class="text-sm font-semibold text-slate-400">/100</span>`;
+        document.getElementById('hudPotentialVal').innerText = country.potential.toFixed(1);
+        document.getElementById('hudPenetrationVal').innerText = `${country.penetration.toFixed(1)}%`;
+        document.getElementById('hudExportGapVal').innerText = `+${country.export_gap.toFixed(1)}%p`;
 
-        renderQuickTargets(currentData.countries, countryId);
 
+        // Update Quick Target Buttons highlight
+        ['MEX', 'VNM', 'POL', 'IND', 'DEU'].forEach(id => {
+          const btn = document.getElementById(`btnTarget${id}`);
+          if (btn) {
+            if (id === countryId) {
+              btn.className = 'px-2.5 py-1 text-xs rounded-lg font-bold transition flex items-center gap-1 bg-white text-rose-600 shadow-2xs border border-rose-300';
+            } else {
+              btn.className = 'px-2.5 py-1 text-xs rounded-lg font-medium transition flex items-center gap-1 text-slate-600 hover:bg-white hover:text-slate-900';
+            }
+          }
+        });
+
+        // Update AI Insight
+        document.getElementById('aiInsightParagraph').innerText = country.insight;
         document.getElementById('aiInsightTargetName').innerText = `Target: ${country.name} (${country.name_kr})`;
         document.getElementById('targetPotentialAmount').innerText = formatMoney(country.market_size_usd);
 
-        syncTradeMapFrame();
-        loadCountryDetail(countryId);
-        renderTrendChart(country); // 다개년 시계열이 아직 없으면 빈 차트 -> loadCountryDetail 완료 시 다시 그려짐
+        // Update Trade Shows
+        const schedContainer = document.getElementById('tradeShowList');
+        schedContainer.innerHTML = '';
+        if (country.schedules && country.schedules.length > 0) {
+          country.schedules.forEach(s => {
+            const row = document.createElement('div');
+            row.className = 'grid grid-cols-12 py-1 text-xs border-b border-slate-50 items-center';
+            row.innerHTML = `
+              <span class="col-span-4 font-medium text-slate-700 text-[11px]">${s.date}</span>
+              <div class="col-span-8 overflow-hidden">
+                <p class="text-slate-800 truncate text-[11px] font-medium">${s.title}</p>
+                <p class="text-[10px] text-slate-400 truncate">${s.note}</p>
+              </div>
+            `;
+            schedContainer.appendChild(row);
+          });
+        }
+
+        renderTrendChart(country);
       }
 
       renderBlueOceanMap(currentData.countries);
@@ -1357,24 +1477,55 @@ function zoomGlobe(step) {
       renderTable();
     }
 
+    function handleItemChange(hsCode) {
+      if (hsCode) currentHsCode = String(hsCode);
+      const currentData = database[currentHsCode] || database["854140"];
+      selectedCountryId = currentData.countries[0]?.id || 'MEX';
+      document.getElementById('hudHsSubtext').innerText = `HS ${currentHsCode} Analysis`;
+      updateAllUI();
+    }
+
+
+
+    function handleTableSearch() {
+      renderTable();
+    }
+
+    function triggerAiBriefUpdate() {
+      const currentData = database[currentHsCode] || database["854140"];
+      const country = currentData.countries.find(c => c.id === selectedCountryId);
+      if (country) {
+        document.getElementById('aiInsightParagraph').classList.add('opacity-40');
+        setTimeout(() => {
+          document.getElementById('aiInsightParagraph').innerText = `[샘플 분석] ${country.name} market shows rapid nearshoring expansion with an Export Gap of +${country.export_gap}%p. KOTRA trade pavilion matching is actively recommended.`;
+          document.getElementById('aiInsightParagraph').classList.remove('opacity-40');
+        }, 200);
+      }
+    }
+
     function showKotraNotice(countryName) {
       const p = document.getElementById('aiInsightParagraph');
       p.innerText = `[안내] KOTRA 해외시장 정보에서 확인할 시장: ${countryName}.`;
     }
 
     function resetToDefault() {
+      selectedCountryId = 'MEX';
+      currentHsCode = '854140';
+
+
       document.getElementById('globalSearchInput').value = '';
+
       resetGlobeView();
+      updateAllUI();
       scrollToGlobe();
     }
 
     function updateAllUI() {
-      const currentData = currentDataset();
+      const currentData = database[currentHsCode] || database["854140"];
       const country = currentData.countries.find(c => c.id === selectedCountryId) || currentData.countries[0];
       if (country) {
         selectCountry(country.id);
       } else {
-        renderQuickTargets([], null);
         renderBlueOceanMap(currentData.countries);
         renderTable();
       }
@@ -1389,10 +1540,10 @@ function zoomGlobe(step) {
     }
 
     function downloadMarketReport() {
-      const currentData = currentDataset();
-      let csv = "Rank,Country,Score,Potential,Penetration,Export_Gap,Market_Size_USD_Million\n";
+      const currentData = database[currentHsCode] || database["854140"];
+      let csv = "Rank,Country,Score,Potential,Penetration,Export_Gap,Market_Size_USD\n";
       currentData.countries.forEach((c, i) => {
-        csv += `${i + 1},"${c.name}",${c.score??''},${c.potential??''},${c.penetration??''},${c.export_gap??''},${c.market_size_usd??''}\n`;
+        csv += `${i + 1},"${c.name}",${c.score},${c.potential},${c.penetration},${c.export_gap},${c.market_size_usd}\n`;
       });
 
       const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csv);
@@ -1412,116 +1563,80 @@ function zoomGlobe(step) {
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      // initHunterGlobe(); // 대신 아래 Spline 임베드 모듈 스크립트를 사용 중 (장식용, 실데이터와 무관)
+      // initHunterGlobe();
+      renderMiniSparklines();
       updateAllUI();
     });
   </script>
-<script id="blue-ocean-real-hs-search">
-// 실제 /api/analyze 연동 (§H). 예전에는 하드코딩된 HS 854140 · 850440 두 개만 받아주는
-// 샘플 검증 로직이었다 — 이제 유효한 HS6는 전부 실제 분석 파이프라인으로 조회한다.
-
-// 아래 "blue-ocean-insight-addon" 스크립트(원래 파일에 이미 있던 확장 훅)가 읽는
-// 전역 엔드포인트 — 이 두 값만 채우면 그 스크립트의 실제 fetch 로직이 그대로 동작한다.
-window.BLUE_OCEAN_INSIGHT_ENDPOINT = '/api/insight';
-window.BLUE_OCEAN_NEWS_ENDPOINT = '/api/news';
-
-let activeSearchToken = 0;
-
-function fetchWithTimeout(url, ms) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), ms || 10000);
-  return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
-}
-
-function fetchAnalyze(hs6, token) {
-  return fetchWithTimeout('/api/analyze?hs=' + encodeURIComponent(hs6))
-    .then(resp => resp.json().then(body => ({ status: resp.status, body })))
-    .then(({ status, body }) => {
-      if (status === 202 && body.job_id) return pollAnalyzeJob(body.job_id, token);
-      if (body.error) throw new Error(body.error.message || '분석 요청이 올바르지 않습니다.');
-      return body;
-    });
-}
-
-function pollAnalyzeJob(jobId, token) {
-  const MAX_RETRIES = 5; // 타임아웃/네트워크 순단이 이 횟수 넘게 연속으로 나야 포기한다
-  let retries = 0;
-  return new Promise((resolve, reject) => {
-    const tick = () => {
-      if (token !== activeSearchToken) { reject(new Error('superseded')); return; }
-      fetchWithTimeout('/api/jobs/' + jobId)
-        .then(resp => resp.json().then(body => ({ status: resp.status, body })))
-        .then(({ status, body }) => {
-          retries = 0;
-          if (status === 202) { setTimeout(tick, 1200); return; }
-          if (status >= 400) { reject(new Error((body.error && body.error.message) || '분석 작업 실패')); return; }
-          resolve(body);
-        })
-        .catch(err => {
-          if (token !== activeSearchToken) { reject(err); return; }
-          retries += 1;
-          if (retries > MAX_RETRIES) { reject(err); return; }
-          setTimeout(tick, 2000);
-        });
-    };
-    tick();
-  });
-}
-
-function applyAnalyzeResult(hs6, data) {
-  const toast = msg => typeof window.showAppToast === 'function' ? window.showAppToast(msg) : null;
-  currentHsCode = hs6;
-  currentMeta = data.meta || null;
-  const descKo = data.meta && data.meta.hs_desc_ko;
-  const descEn = data.meta && data.meta.hs_desc;
-  currentProductLabel = descKo || descEn || `HS ${hs6}`;
-  currentCountries = (data.top20 || []).map(mapAnalyzeRowToCountry);
-
-  // 검색한 코드가 무엇인지(예: "라면") 맨 위에서 바로 보이도록 코드/이름을 분리해 강조 표시한다.
-  const barEmpty = document.getElementById('productBarEmpty');
-  const barFilled = document.getElementById('productBarFilled');
-  const barCode = document.getElementById('productBarCode');
-  const barName = document.getElementById('productBarName');
-  if (barEmpty && barFilled && barCode && barName) {
-    barCode.textContent = `HS ${hs6}`;
-    barName.textContent = descEn && descKo && descEn !== descKo ? `${descKo} (${descEn})` : currentProductLabel;
-    barEmpty.hidden = true;
-    barFilled.hidden = false;
+<script id="blue-ocean-top20-demo-and-hs-search">
+/* UI mock data. The added countries and every figure are intentionally illustrative,
+   NOT UN Comtrade observations. Replace database[hs].countries using the Flask API for real rankings. */
+(function () {
+  const specs = [
+    ['USA','United States','미국','🇺🇸',38.5,-97.4],
+    ['JPN','Japan','일본','🇯🇵',36.2,138.2],
+    ['CAN','Canada','캐나다','🇨🇦',56.1,-106.3],
+    ['AUS','Australia','호주','🇦🇺',-25.3,133.8],
+    ['FRA','France','프랑스','🇫🇷',46.2,2.2],
+    ['NLD','Netherlands','네덜란드','🇳🇱',52.1,5.3],
+    ['ESP','Spain','스페인','🇪🇸',40.5,-3.7],
+    ['GBR','United Kingdom','영국','🇬🇧',55.4,-3.4],
+    ['BRA','Brazil','브라질','🇧🇷',-14.2,-51.9],
+    ['IDN','Indonesia','인도네시아','🇮🇩',-0.8,113.9],
+    ['THA','Thailand','태국','🇹🇭',15.9,100.9],
+    ['MYS','Malaysia','말레이시아','🇲🇾',4.2,101.9],
+    ['TUR','Türkiye','튀르키예','🇹🇷',39.0,35.2],
+    ['ARE','United Arab Emirates','아랍에미리트','🇦🇪',23.4,53.8],
+    ['SAU','Saudi Arabia','사우디아라비아','🇸🇦',23.9,45.1],
+    ['ZAF','South Africa','남아프리카공화국','🇿🇦',-30.6,22.9],
+    ['CHL','Chile','칠레','🇨🇱',-35.7,-71.5],
+    ['PHL','Philippines','필리핀','🇵🇭',12.9,122.8]
+  ];
+  for (const [hs, data] of Object.entries(database)) {
+    const eligible = data.countries.filter(c=>c.id!=='KOR' && c.export_gap>0);
+    const needed = Math.max(0,20-eligible.length);
+    const existing = new Set(data.countries.map(c=>c.id));
+    const template = eligible[0];
+    if (!template) continue;
+    let added = 0;
+    for (const [id,name,name_kr,flag,lat,lng] of specs) {
+      if (added>=needed) break;
+      if (existing.has(id)) continue;
+      const i=added++, size=Math.round(1640-i*63 + (hs==='850440'?100:0));
+      const factor = [0.49,0.53,0.57,0.62,0.68,0.75,0.82,0.89,1].map(x=>Math.round(size*x));
+      const share = +(1.5 + i*.29).toFixed(1);
+      const gap = +(8.3-i*.39).toFixed(2);
+      data.countries.push({
+        ...template,
+        id,name,name_kr,flag,lat,lng,
+        score:Math.max(52,81-i+(hs==='850440'?2:0)),
+        potential:+(72.4-i*1.8).toFixed(2),
+        penetration:share, competitors:2+(i%3),market_size_usd:size,
+        export_gap:gap,role_desc:'UI 시연용 국가 (실제 통계 아님)',
+        trend_years:['2016','2017','2018','2019','2020','2021','2022','2023','2024'],
+        import_trend:factor,
+        korea_export_trend:factor.map(v=>Math.round(v*share/100)),
+        gap_trend:factor.map((_,j)=>+(gap*.62+gap*.38*j/8).toFixed(2)),
+        insight:'[시연용 샘플] 이 국가는 실제 무역통계가 아닌 레이아웃 확인용 예시입니다.',
+        schedules:[], demoOnly:true
+      });
+      existing.add(id);
+    }
   }
-  const hsSubtext = document.getElementById('hudHsSubtext');
-  if (hsSubtext) hsSubtext.innerText = `HS ${hs6} · ${currentProductLabel}`;
-
-  if (!currentCountries.length) {
-    toast('해당 품목의 유망시장 데이터가 없습니다.');
-    selectedCountryId = null;
-  } else {
-    selectedCountryId = [...currentCountries].sort((a, b) => (b.score||0) - (a.score||0))[0].id;
-  }
-  updateAllUI();
-  if (typeof window.refreshBlueOceanNewsPage === 'function') window.refreshBlueOceanNewsPage();
-}
-
-function submitHsCodeSearch() {
-  const node = document.getElementById('globalSearchInput');
-  const raw = (node?.value || '').trim().replace(/[.\s-]/g, '');
-  const toast = msg => typeof window.showAppToast === 'function' ? window.showAppToast(msg) : alert(msg);
-  if (!/^\d{6,10}$/.test(raw)) { toast('HS Code 숫자 6자리를 입력해 주세요.'); return; }
-  const hs = raw.slice(0, 6);
-  node.value = hs;
-  if (raw.length > 6) toast('HS Code 앞 6자리로 분석합니다.');
-  if (typeof window.navigatePage === 'function') window.navigatePage('home');
-
-  const token = ++activeSearchToken;
-  const tbody = document.getElementById('rankingTableBody');
-  if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="padding:30px;text-align:center;color:#91a5c8">분석 중… (첫 조회는 다소 걸릴 수 있습니다)</td></tr>';
-
-  fetchAnalyze(hs, token)
-    .then(data => { if (token === activeSearchToken) applyAnalyzeResult(hs, data); })
-    .catch(err => {
-      if (token !== activeSearchToken) return;
-      console.error('[BOF] analyze 실패:', err);
-      toast('분석 중 오류가 발생했습니다: ' + (err && err.message ? err.message : '잠시 후 다시 시도해 주세요.'));
-    });
+})();
+function submitHsCodeSearch(){
+  const node=document.getElementById('globalSearchInput');
+  const raw=(node?.value||'').trim().replace(/[.\s-]/g,'');
+  const toast=msg=>typeof window.showAppToast==='function'?window.showAppToast(msg):alert(msg);
+  if(!/^\d{6,10}$/.test(raw)){toast('HS Code 숫자 6자리를 입력해 주세요.');return;}
+  const hs=raw.slice(0,6);
+  if(!database[hs]){toast('현재 HTML 샘플은 HS 854140 · 850440만 제공합니다. 다른 HS Code는 Flask 분석 API 연결 후 검색할 수 있습니다.');return;}
+  node.value=hs;
+  if(raw.length>6)toast('HS Code 앞 6자리로 분석합니다.');
+  if(typeof window.navigatePage==='function')window.navigatePage('home');
+  handleItemChange(hs);
+  const rec=(database[hs].countries||[]).find(c=>c.id===selectedCountryId);
+  if(rec && typeof selectCountry==='function')selectCountry(rec.id);
 }
 </script>
 <script type="module">
@@ -1600,10 +1715,6 @@ function submitHsCodeSearch() {
   el('insightWatchCards').innerHTML=result.watch.map(k=>watchCard(k.icon,k.title,k.body||k.desc)).join('');
   el('insightOpinion').replaceChildren(...result.paras.map(s=>{const p=document.createElement('p');p.textContent=s;return p}));
   el('insightConclusion').textContent=result.conclusion;
-  // 보고서 "종합 결론" 섹션이 여기서 실제로 계산된 AI Insight 내용을 그대로 재사용할 수 있도록
-  // 국가·HS 코드와 함께 마지막 결과를 저장해 둔다(보고서가 같은 문구를 다시 만들지 않게 함).
-  window.__lastInsightResult={hsCode:currentHsCode,iso3:c.id,result};
-  if(document.body.dataset.view==='report'&&typeof window.refreshReportPreview==='function')window.refreshReportPreview();
  }
  async function loadInsight(c){const seq=++requestSeq;const demo=buildFallback(c);render(demo,c);
   const endpoint=window.BLUE_OCEAN_INSIGHT_ENDPOINT;
@@ -1616,11 +1727,11 @@ function submitHsCodeSearch() {
  async function loadNews(c){const seq=++newsRequestSeq;el('newsCountryTag').textContent=`${c.name_kr} · HS ${currentHsCode}`;noNewsState();const endpoint=window.BLUE_OCEAN_NEWS_ENDPOINT;if(!endpoint||location.protocol==='file:')return;try{const url=new URL(endpoint,location.href);url.searchParams.set('hs',currentHsCode);url.searchParams.set('iso3',c.id);const r=await fetch(url,{credentials:'same-origin',headers:{Accept:'application/json'}});if(!r.ok)throw Error();const d=await r.json();if(seq!==newsRequestSeq||c.id!==selectedCountryId)return;renderNews(d.items||d.news||d,c)}catch(e){if(seq===newsRequestSeq)noNewsState()}}
  // Hook existing selection instead of replacing existing data/chart/quick-target behavior.
  const baseSelectCountry=selectCountry;
- selectCountry=function(id){baseSelectCountry(id);const current=currentDataset();const c=current.countries.find(x=>x.id===selectedCountryId);if(c){loadInsight(c);el('newsCountryTag').textContent=`${c.name_kr} · HS ${currentHsCode}`;if(document.body.dataset.view==='news')loadNews(c);if(typeof window.syncSecondaryPageContext==='function')window.syncSecondaryPageContext(c)}};
+ selectCountry=function(id){baseSelectCountry(id);const current=database[currentHsCode]||database['854140'];const c=current.countries.find(x=>x.id===selectedCountryId);if(c){loadInsight(c);el('newsCountryTag').textContent=`${c.name_kr} · HS ${currentHsCode}`;if(document.body.dataset.view==='news')loadNews(c);if(typeof window.syncSecondaryPageContext==='function')window.syncSecondaryPageContext(c)}};
  showKotraNotice=function(countryName){showAppToast(`${countryName} KOTRA 연락처는 현재 샘플에 연결되어 있지 않습니다. 검증된 접촉처 정보를 연결해 주세요.`)};
  window.showAppToast=function(msg){const node=el('appToast');node.textContent=msg;node.hidden=false;clearTimeout(window.__boToastTimer);window.__boToastTimer=setTimeout(()=>node.hidden=true,4300)};
- window.setBlueOceanNews=function(items){const current=currentCountries.find(x=>x.id===selectedCountryId);renderNews(items,current)};
- window.refreshBlueOceanNewsPage=function(){const current=currentCountries.find(x=>x.id===selectedCountryId);if(current)loadNews(current)};
+ window.setBlueOceanNews=function(items){const current=(database[currentHsCode]||database['854140']).countries.find(x=>x.id===selectedCountryId);renderNews(items,current)};
+ window.refreshBlueOceanNewsPage=function(){const current=(database[currentHsCode]||database['854140']).countries.find(x=>x.id===selectedCountryId);if(current)loadNews(current)};
  // Side navigation active indicator.
  document.querySelectorAll('.sidebar .nav-item[href^="#"]').forEach(a=>a.addEventListener('click',()=>{document.querySelectorAll('.sidebar .nav-item').forEach(n=>n.classList.remove('active'));a.classList.add('active')}));
 })();
@@ -1628,125 +1739,33 @@ function submitHsCodeSearch() {
 (function(){
   const routes={home:'#/home',report:'#/report',expo:'#/expo',news:'#/news'};
   const pageTitle={home:'글로벌 무역 대시보드',report:'보고서 제작',expo:'박람회 일정',news:'산업 뉴스'};
-  function currentRecord(){const data=currentDataset();return data?.countries.find(c=>c.id===selectedCountryId)||data?.countries[0]}
-  function esc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
-  function riskSeverity(level){return level==='high'?'high':level==='mid'?'mid':'low'}
-  function riskRowHtml(name,level,desc){const label={low:'하',mid:'중',high:'상'}[level]||'하';return `<tr><td><strong>${esc(name)}</strong></td><td><span class="risk-pill ${riskSeverity(level)}">${label}</span></td><td>${esc(desc)}</td></tr>`}
-  // 등급 임계값은 blueocean/reports.py(실제 .docx 보고서 생성기)의 기준과 동일하게 맞춘다 —
-  // 80점 이상 "적극 검토 가능" / 60~79점 "신중 접근" / 60점 미만 "보류".
-  function gradeFor(score){
-    if(!Number.isFinite(score))return{grade:'확인되지 않음',desc:'Blue Ocean Score 값이 없어 등급을 판정할 수 없습니다.'};
-    if(score>=80)return{grade:'적극 검토 가능',desc:`Blue Ocean Score ${score}점으로 80점 이상 구간에 해당해 적극 검토가 가능한 수준입니다.`};
-    if(score>=60)return{grade:'신중 접근',desc:`Blue Ocean Score ${score}점으로 60~79점 구간에 해당해 신중한 접근이 필요합니다.`};
-    return{grade:'보류',desc:`Blue Ocean Score ${score}점으로 60점 미만 구간에 해당해 진출을 보류하는 것을 검토할 만합니다.`};
-  }
-  let reportTrendChartInstance=null;
-  function renderReportTrendChart(c){
-    if(typeof Chart==='undefined')return;
-    const canvas=document.getElementById('reportTrendChart');
-    if(!canvas)return;
-    if(reportTrendChartInstance){reportTrendChartInstance.destroy();reportTrendChartInstance=null}
-    const years=c.trend_years||[],values=c.korea_export_trend||[];
-    if(!years.length)return;
-    try{
-      reportTrendChartInstance=new Chart(canvas.getContext('2d'),{
-        type:'line',
-        data:{labels:years,datasets:[{label:'한국산 수입액 (백만 달러)',data:values,borderColor:'#3C4998',backgroundColor:'#4A57B033',borderWidth:2,tension:.3,pointRadius:3,pointBackgroundColor:'#232C63',fill:true}]},
-        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8A93A3',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#8A93A3',font:{size:9}},grid:{color:'#DCE1E8'}}}}
-      });
-    }catch(e){console.warn('[BOF] 보고서 추이 차트 렌더링 실패:',e)}
-  }
+  function currentRecord(){const data=database[currentHsCode]||database['854140'];return data?.countries.find(c=>c.id===selectedCountryId)||data?.countries[0]}
   function renderReportPreview(c){
     if(!c)return;
     const byId=id=>document.getElementById(id);
-    const data=currentDataset();
-    const market=typeof formatMoney==='function'?formatMoney(c.market_size_usd):'확인되지 않음';
-    const gap=typeof c.export_gap==='number'?`${c.export_gap>0?'+':''}${c.export_gap.toFixed(1)}%p`:'확인되지 않음';
-    const share=typeof c.penetration==='number'?`${c.penetration.toFixed(1)}%`:'확인되지 않음';
-    const score=Number.isFinite(c.score)?`${c.score}/100`:'확인되지 않음';
-    const yoyText=typeof c.yoy_pct==='number'?`${c.yoy_pct>0?'+':''}${c.yoy_pct.toFixed(1)}%`:'확인되지 않음';
-    const totalCount=(currentMeta&&currentMeta.funnel&&currentMeta.funnel.stage3)||(data&&data.countries?data.countries.length:null);
-    const rankText=Number.isFinite(c.rank)?`${c.rank}위${totalCount?` / ${totalCount}개국`:''}`:'확인되지 않음';
-
-    // 홈 화면 AI Insight 패널이 이미 계산해 둔 실제 결과가 있으면(같은 HS/국가 조합일 때만)
-    // 그 문장을 그대로 재사용한다 — 보고서가 별도의 어색한 문장을 새로 지어내지 않게 한다.
-    const li=window.__lastInsightResult;
-    const cachedInsight=(li&&li.hsCode===currentHsCode&&li.iso3===c.id)?li.result:null;
-
+    const data=database[currentHsCode]||database['854140'];
+    const market=typeof formatMoney==='function'?formatMoney(c.market_size_usd):'미확인';
+    const gap=typeof c.export_gap==='number'?`${c.export_gap>0?'+':''}${c.export_gap.toFixed(1)}%p`:'미확인';
+    const share=typeof c.penetration==='number'?`${c.penetration.toFixed(1)}%`:'미확인';
+    const score=Number.isFinite(c.score)?`${c.score}/100`:'미확인';
+    const years=c.trend_years||[], imports=c.import_trend||[];
+    const n=Math.min(years.length,imports.length), last=n?String(years[n-1]):'미확인';
+    const yoy=n>=2&&imports[n-2]>0?(imports[n-1]/imports[n-2]-1)*100:null;
+    const yoyText=yoy===null?'미확인':`${yoy>0?'+':''}${yoy.toFixed(1)}%`;
     const pairs={
       reportSideCountry:`${c.flag||''} ${c.name_kr}`,
       reportSideHs:currentHsCode,reportSideScore:score,
-      reportDocProduct:`HS ${currentHsCode} · ${currentProductLabel||(data&&data.name)||''}`,
-      reportDocCountry:`${c.name_kr} (${c.name})`,
-      reportCoverSubject:`HS ${currentHsCode} · ${currentProductLabel||(data&&data.name)||''}  —  추천 국가 ${c.flag||''} ${c.name_kr} (${c.name})`,
-      reportDocYear:(currentMeta&&currentMeta.base_year)?`${currentMeta.base_year}년`:'확인되지 않음',
-      reportIssueDate:(currentMeta&&currentMeta.generated_at)?String(currentMeta.generated_at).slice(0,10):new Date().toISOString().slice(0,10),
-      reportScore:score,reportShare:share,reportYoY:yoyText,reportRank:rankText,
-      reportSummary:(cachedInsight&&cachedInsight.summary)||`${c.name_kr}의 해당 품목 수입시장은 ${market} 규모입니다. Blue Ocean Score ${score}, 한국산 현지 점유율 ${share}, 최근 1년 성장률 ${yoyText} — UN Comtrade 등 실제 분석 파이프라인이 계산한 값입니다.`,
+      reportPaperTitle:`${c.name_kr} (${c.name}) · HS ${currentHsCode}`,
+      reportIssueDate:`미리보기 생성일 ${new Date().toLocaleDateString('ko-KR')}`,
+      reportScore:score,reportMarket:market,reportShare:share,reportGap:gap,
+      reportProduct:data.name||`HS ${currentHsCode}`,
+      reportPotential:Number.isFinite(c.potential)?`${c.potential.toFixed(1)}/100`:'미확인',
+      reportYear:last,reportYoY:yoyText,
+      reportSummary:`${c.name_kr}의 해당 품목 수입시장은 ${market} 규모로 표시됩니다. Blue Ocean Score는 ${score}이며 한국산 현지 점유율은 ${share}입니다. 이 수치는 현재 HTML에 포함된 샘플 데이터입니다.`,
+      reportPenetration:`한국산의 현지시장 점유율은 ${share}, Export Gap은 ${gap}로 표시됩니다. Export Gap은 한국의 세계시장 점유율과 해당국 내 한국산 점유율의 차이를 나타냅니다. 실제 분석에서는 최신 보고연도 및 해당 HS 품목을 기준으로 다시 검증해야 합니다.`,
+      reportScoreNote:`선택 국가의 Blue Ocean Score는 ${score}이며, 수요 잠재력은 ${Number.isFinite(c.potential)?c.potential.toFixed(1)+'/100':'미확인'}입니다. 현재 데모에는 8개 항목의 원시지표 및 점수 분해가 없으므로 상세 점수표는 생성하지 않습니다.`
     };
     for(const [id,value] of Object.entries(pairs)){const el=byId(id);if(el)el.textContent=value;}
-
-    // 2. 이 시장을 선택한 이유 — 전부 실데이터 기반 문장.
-    const whyList=byId('reportWhyList');
-    if(whyList){
-      const items=[
-        `이 시장의 한국산 수입은 최근 1년 기준 ${yoyText}${typeof c.yoy_pct==='number'?(c.yoy_pct>0?' 증가했습니다.':' 감소했습니다.'):'.'}`,
-        `한국의 현지 점유율은 ${share}로, 세계 점유율 대비 ${gap}의 격차가 있어 ${(typeof c.export_gap==='number'&&c.export_gap>0)?'아직 개척되지 않은 여지가 있습니다.':'점유율 추이를 참고할 필요가 있습니다.'}`,
-        `상위 3개 경쟁국이 시장의 ${c.competitors!=null?numOrDash(c.competitors,1)+'%':'확인되지 않은 비중'}를 차지하고 있습니다.`,
-      ];
-      whyList.innerHTML=items.map(t=>`<li>${esc(t)}</li>`).join('');
-    }
-    renderReportTrendChart(c);
-
-    // 3. 리스크 및 진입장벽 — 전부 실데이터 기반 규칙으로만 심각도를 매긴다(지어낸 값 없음).
-    const riskRows=[];
-    if(typeof c.tariff_rate_pct==='number'){
-      const lvl=c.tariff_rate_pct>=15?'high':c.tariff_rate_pct>=5?'mid':'low';
-      riskRows.push(riskRowHtml('관세 부담',lvl,`실효세율 ${c.tariff_rate_pct.toFixed(1)}%${c.tariff_type?' ('+c.tariff_type+')':''}`));
-    } else {
-      riskRows.push(riskRowHtml('관세 부담','mid','관세 정보를 확인하지 못했습니다(중립 처리)'));
-    }
-    if(typeof c.competitors==='number'){
-      const lvl=c.competitors>=70?'high':c.competitors>=40?'mid':'low';
-      riskRows.push(riskRowHtml('경쟁 강도',lvl,`상위 3개국 합산 점유율 ${c.competitors.toFixed(1)}%`));
-    } else {
-      riskRows.push(riskRowHtml('경쟁 강도','mid','경쟁국 점유율 정보를 확인하지 못했습니다'));
-    }
-    const ntb=c.ntb_items||[];
-    const ntbLvl=ntb.length>=3?'high':ntb.length>=1?'mid':'low';
-    riskRows.push(riskRowHtml('비관세 규제',ntbLvl,ntb.length?`${ntb.length}건 확인됨 — ${esc(ntb.slice(0,2).join(', '))}${ntb.length>2?' 외':''}`:'확인된 비관세 장벽 없음'));
-    const riskBody=byId('reportRiskBody');
-    if(riskBody)riskBody.innerHTML=riskRows.join('');
-
-    // 7. 종합 결론 및 방향성 — 등급 배지는 항상 규칙 기반(reports.py와 동일 임계값)이라 지어낸
-    // 값이 아니다. 설명 문단은 AI Insight 패널이 이미 만든 실제 분석 내용을 그대로 옮겨 써서,
-    // 여기서 또 다른(어색한) 문장을 새로 만들지 않는다 — 같은 근거는 같은 설명으로 보여준다.
-    const g=gradeFor(c.score);
-    const verdictEl=byId('reportVerdict'),verdictSubEl=byId('reportVerdictSub'),conclusionEl=byId('reportConclusion');
-    if(verdictEl)verdictEl.textContent=`종합 판단: ${g.grade}`;
-    if(verdictSubEl)verdictSubEl.textContent=Number.isFinite(c.score)?`(Blue Ocean Score ${c.score})`:'';
-    if(conclusionEl){
-      if(cachedInsight){
-        const parts=[cachedInsight.summary,...(cachedInsight.paras||[]),cachedInsight.conclusion].filter(Boolean);
-        conclusionEl.textContent=Array.from(new Set(parts)).join(' ');
-      } else {
-        conclusionEl.textContent=`${g.desc} (AI Insight 상세 분석을 불러오는 중입니다 — 홈 화면에서 이 국가를 한 번 선택하면 여기에도 반영됩니다.)`;
-      }
-    }
-
-    // A. 산출 근거 — build_report.js/보고서 PDF와 동일한 6개 행 구성, 전부 실데이터.
-    const basisBody=byId('reportBasisBody');
-    if(basisBody){
-      const rows=[
-        ['Market Opportunity Score',Number.isFinite(c.potential)?`${numOrDash(c.potential,1)} / 100`:'확인되지 않음'],
-        ['Penetration Opportunity Score',Number.isFinite(c.supply_score)?`${numOrDash(c.supply_score,1)} / 100`:'확인되지 않음'],
-        ['Blue Ocean Score (기하평균)',Number.isFinite(c.score)?`${numOrDash(c.score,1)} / 100${(Number.isFinite(c.potential)&&Number.isFinite(c.supply_score))?` (√(${numOrDash(c.potential,1)} × ${numOrDash(c.supply_score,1)}) ≈ ${numOrDash(c.score,1)})`:''}`:'확인되지 않음'],
-        ['Export Gap (글로벌 점유율 − 현지 점유율)',typeof c.export_gap==='number'?`${c.export_gap.toFixed(1)}%p`:'확인되지 않음'],
-        ['3년 연평균 성장률 (CAGR)',typeof c.cagr3_pct==='number'?`${c.cagr3_pct>0?'+':''}${c.cagr3_pct.toFixed(1)}%`:'확인되지 않음'],
-        ['데이터 출처','UN Comtrade API · KITA 트레이드내비 · 한국수출입은행/yfinance'],
-      ];
-      basisBody.innerHTML=rows.map(([k,v])=>`<tr><td>${esc(k)}</td><td><strong>${esc(v)}</strong></td></tr>`).join('');
-    }
   }
   window.refreshReportPreview=function(){renderReportPreview(currentRecord())};
   window.printReportPreview=function(){
@@ -1760,8 +1779,7 @@ function submitHsCodeSearch() {
     const expo=document.getElementById('expoPageContext'), news=document.getElementById('newsPageContext'), report=document.getElementById('reportPageContext');
     if(expo)expo.textContent=val;if(news)news.textContent=val;if(report)report.textContent=val;
     renderReportPreview(c);
-    const count=document.getElementById('expoPageCount');if(count)count.textContent='TradeMap에서 실시간 검색';
-    if(typeof window.syncTradeMapFrame==='function')window.syncTradeMapFrame();
+    const count=document.getElementById('expoPageCount');if(count)count.textContent=`데모 행사 ${(c.schedules||[]).length}건`;
   };
   window.toggleInsightDetails=function(){
     const detail=document.getElementById('insightDetails'),btn=document.getElementById('insightExpandBtn');
@@ -1779,42 +1797,7 @@ function submitHsCodeSearch() {
     document.querySelectorAll('.sidebar .nav-item').forEach(el=>el.classList.toggle('active',el.dataset.navPage===page));
     window.syncSecondaryPageContext(currentRecord());
     if(page==='news'&&typeof window.refreshBlueOceanNewsPage==='function')window.refreshBlueOceanNewsPage();
-    if(page==='expo')window.ensureTradeMapFrameLoaded();
     if(!opts.keepScroll)window.scrollTo({top:0,behavior:'instant'});
-  };
-  // TradeMap iframe(박람회 페이지)은 처음 열 때만 로드하고, 이후에는 postMessage로 HS 코드만 갱신한다.
-  // TradeMap은 원래 자체 헤더·히어로 배너가 있는 독립 페이지지만, 이 화면에서는 별도 페이지처럼
-  // 보이지 않고 캘린더·목록만 본 페이지 안에 자연스럽게 보이도록 그 부분만 동일 출처 iframe
-  // 안에서 CSS로 숨긴다(동일 출처라 postMessage 없이 iframe.contentDocument로 바로 조작 가능).
-  window.ensureTradeMapFrameLoaded=function(){
-    const iframe=document.getElementById('trademapIframe');
-    if(!iframe||iframe.src)return;
-    iframe.addEventListener('load',()=>{
-      trademapLoaded=true;
-      try{
-        const doc=iframe.contentDocument;
-        const style=doc.createElement('style');
-        // 헤더/히어로만 숨겨서 별도 페이지처럼 안 보이게 하고, 나머지는 원래의 밝은
-        // 배경을 그대로 둔다 — 어두운 배경으로 바꿨더니 일부 영역(우측 통계 카드 등)의
-        // 대비가 깨져 가독성이 떨어졌다. 안전하고 검증된 원래 색을 유지한다.
-        style.textContent='.topbar,.hero.expo-hero{display:none!important}body{background:#fff!important}';
-        doc.head.appendChild(style);
-        // 내용 높이만큼 iframe을 늘려서 내부 스크롤 없이 본 페이지 스크롤로 전체를 본다.
-        // 캘린더 달 이동·검색 필터·"더 많은 행사 보기"로 내용 높이가 계속 바뀌므로,
-        // 한 번만 재는 게 아니라 ResizeObserver로 계속 따라간다.
-        const resize=()=>{ iframe.style.height=doc.documentElement.scrollHeight+'px'; };
-        resize();
-        if(window.ResizeObserver){
-          new ResizeObserver(resize).observe(doc.body);
-        } else {
-          setInterval(resize, 1000);
-        }
-      }catch(e){
-        console.warn('[BOF] TradeMap 헤더/히어로 숨김·높이 자동조절 실패:', e);
-      }
-      if(typeof window.syncTradeMapFrame==='function')window.syncTradeMapFrame();
-    },{once:true});
-    iframe.src='/trademap';
   };
   window.navigatePage=function(page){
     if(!Object.hasOwn(routes,page))page='home';
