@@ -1,0 +1,46 @@
+<nav class="navbar navbar-expand-lg app-navbar">
+  <div class="container-xl">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <span class="brand-title">Blue Ocean Finder</span>
+      <span class="badge hunt-mode-badge">HUNT MODE</span>
+    </a>
+
+    <form id="hs-search-form" class="d-flex flex-grow-1 mx-lg-4 my-2 my-lg-0" role="search" autocomplete="off">
+      <div class="hs-search-wrap position-relative flex-grow-1">
+        <input id="hs-search-input" type="text" inputmode="numeric" class="form-control hs-search-input"
+               placeholder="HS코드 입력 후 Enter (예: 330720)" aria-label="HS 코드 검색">
+        <div id="hs-suggest-list" class="hs-suggest-list list-group position-absolute w-100 d-none"></div>
+      </div>
+    </form>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navSubmenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navSubmenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <li class="nav-item"><a class="nav-link" href="#hero">3D 헌팅 지구본</a></li>
+        <li class="nav-item"><a id="dashboard-tab-link" class="nav-link" href="#dashboard">분석 대시보드</a></li>
+        <li class="nav-item"><a id="trademap-tab-link" class="nav-link" href="#trademap-view">TradeMap (박람회)</a></li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#scoreSpecModal">평가기준(100점)</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#formulaModal">수식 명세</a>
+        </li>
+        <li class="nav-item"><a id="export-csv-link" class="nav-link" href="#">Export (CSV)</a></li>
+        <li class="nav-item"><a id="export-html-link" class="nav-link" href="#">HTML 코드 다운로드</a></li>
+        <li class="nav-item">
+          <a id="export-docx-link" class="nav-link export-docx-link is-disabled" href="#" aria-disabled="true"
+             title="국가를 먼저 선택하세요">보고서 (Word)</a>
+        </li>
+        <li class="nav-item">
+          <button id="currency-toggle" type="button" class="btn btn-sm btn-outline-light currency-toggle ms-lg-2"
+                  data-currency="USD" aria-label="통화 단위 전환">
+            <span class="cur-usd fw-semibold">USD ($)</span> / <span class="cur-krw">KRW (₩)</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
