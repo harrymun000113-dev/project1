@@ -1,0 +1,27 @@
+<div id="fx-rate-card" class="card dashboard-card flex-fill">
+  <div class="card-body">
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <h6 class="card-title mb-0">Real-time Exchange Rate</h6>
+      <span id="fx-pair-label" class="text-muted small">-</span>
+      <span id="fx-source-badge" class="badge source-badge ms-auto">-</span>
+    </div>
+
+    <div class="fx-summary">
+      <span id="fx-summary-value" class="fx-summary-value">-</span>
+      <div class="text-muted small" id="fx-summary-date">-</div>
+    </div>
+
+    <div class="fx-chart-wrap">
+      <canvas id="fx-chart" height="140"></canvas>
+    </div>
+
+    <div class="fx-change-badge-row">
+      <span id="fx-change-badge" class="badge fx-change-badge">-</span>
+      <span id="fx-change-desc" class="text-muted small">-</span>
+    </div>
+
+    <div class="tb-score-line small">환율 점수 <span id="fx-score">-</span> / 5</div>
+    <div class="text-muted small mt-1" id="fx-usd-krw-row">USD/KRW -</div>
+    <div id="fx-missing" class="text-warning small d-none">이 통화의 환율 데이터를 불러올 수 없습니다 (환율 점수는 중립 처리)</div>
+  </div>
+</div>

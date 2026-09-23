@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Blue Ocean Finder — HS {{ data.meta.hs6 }} 스냅샷</title>
+<style>
+  body { font-family: -apple-system, "Malgun Gothic", sans-serif; margin: 24px; color: #1c2430; }
+  h1 { font-size: 20px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+  th, td { border: 1px solid #d7dce2; padding: 6px 10px; font-size: 13px; text-align: left; }
+  th { background: #f1f4f8; }
+  .meta { color: #5b6672; font-size: 13px; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+  <h1>Blue Ocean Finder — HS {{ data.meta.hs6 }} ({{ data.meta.hs_desc }})</h1>
+  <div class="meta">
+    기준연도 {{ data.meta.base_year }} · 한국 세계 점유율 {{ data.meta.korea_world_share_pct }}% ·
+    생성 시각 {{ data.meta.generated_at }}
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Rank</th><th>Country</th><th>Score</th><th>YoY 성장률(%)</th>
+        <th>한국 점유율(%)</th><th>경쟁국 Top3(%)</th><th>시장규모(USD)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data.top20 %}
+      <tr>
+        <td>{{ row.rank }}</td>
+        <td>{{ row.iso2 }} {{ row.name_en }}</td>
+        <td>{{ row.score }}</td>
+        <td>{{ row.growth.yoy_pct }}</td>
+        <td>{{ row.korea_share_pct }}</td>
+        <td>{{ row.competitors.top3_share_pct }}</td>
+        <td>{{ "{:,.0f}".format(row.market_size_usd) if row.market_size_usd is not none else "-" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7">데이터가 없습니다.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
