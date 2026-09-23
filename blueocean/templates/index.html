@@ -18,6 +18,23 @@
   <section id="dashboard" class="row g-4 align-items-stretch my-4">
     {% include "components/_dashboard.html" %}
   </section>
+
+  <section id="event-dashboard" class="event-dashboard-section my-5">
+    <div class="event-dashboard-heading d-flex align-items-end justify-content-between gap-3 mb-3">
+      <div>
+        <span class="section-kicker">TRADEMAP EVENT INTELLIGENCE</span>
+        <h2 class="h4 mb-1">박람회·무역행사 캘린더</h2>
+        <p class="text-muted small mb-0">HS 코드와 산업·국가 조건을 기준으로 박람회 및 무역행사를 탐색합니다.</p>
+      </div>
+      <a class="btn btn-sm btn-outline-secondary" href="#hero">위로 가기</a>
+    </div>
+    <div class="event-dashboard-frame">
+      <iframe id="trademap-dashboard-frame"
+        src="{{ url_for('pages.trademap_dashboard') }}"
+        title="TradeMap 박람회 및 무역행사 대시보드"
+        loading="lazy"></iframe>
+    </div>
+  </section>
 </main>
 
 <div id="toast-root" class="toast-container position-fixed bottom-0 end-0 p-3"></div>

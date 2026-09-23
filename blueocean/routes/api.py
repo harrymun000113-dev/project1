@@ -8,7 +8,6 @@ import pandas as pd
 from flask import Blueprint, Response, jsonify, render_template, request, send_file
 
 import config
-from .. import reports
 from ..pipeline import funnel, insight
 from ..pipeline.funnel import NoDataError
 from ..pipeline.scoring import SCORE_SPEC
@@ -148,7 +147,13 @@ def _target_row_for_insight(hs6: str, iso3: str, countries: pd.DataFrame) -> dic
     if cached:
         row = next((r for r in cached.get("top20", []) if r.get("iso3") == iso3), None)
         if row is not None:
-            return row
+            # Insight는 분석 응답의 국가 행과 메타데이터를 함께 사용한다.
+            return {
+                **row,
+                "hs_desc": cached.get("meta", {}).get("hs_desc"),
+                "korea_world_share_pct": cached.get("meta", {}).get("korea_world_share_pct"),
+                "curr_year": cached.get("meta", {}).get("base_year"),
+            }
     return {
         "iso3": iso3,
         "name_ko": countries.loc[iso3, "name_ko"] if iso3 in countries.index else None,
@@ -215,6 +220,8 @@ def export_docx():
     row = next((r for r in analyzed.get("top20", []) if r.get("iso3") == iso3), None)
     if row is None:
         return jsonify(error={"code": "NOT_FOUND", "message": "해당 국가의 분석 결과를 찾을 수 없습니다."}), 404
+
+    from .. import reports
 
     meta = analyzed.get("meta", {})
     report_data = {

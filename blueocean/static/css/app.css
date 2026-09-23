@@ -36,6 +36,8 @@ body {
 .hs-suggest-list { top: 100%; z-index: 1050; max-height: 260px; overflow-y: auto; }
 .app-navbar .nav-link { color: var(--text-muted); }
 .app-navbar .nav-link:hover { color: var(--text); }
+.event-dashboard-link { color: #8dc1ff !important; font-weight: 700; }
+.event-dashboard-link::before { content: "◈ "; color: #4ea1ff; }
 .currency-toggle .cur-usd, .currency-toggle .cur-krw { opacity: 0.5; }
 /* Bootstrap의 .disabled(pointer-events:none)와 달리 클릭 이벤트는 항상 받게 두고
    (그래야 JS가 "국가를 먼저 선택하세요" 토스트를 띄울 수 있다), 시각적으로만 흐리게 한다. */
@@ -45,6 +47,13 @@ body {
 
 /* ── Hero ───────────────────────────────────────────────────────────── */
 .hero-headline h1 { font-size: 1.7rem; font-weight: 800; line-height: 1.3; }
+.event-widget-button { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; padding: 8px 12px; border: 1px solid rgba(141,193,255,.6); border-radius: 7px; color: #dbeafe; background: rgba(37,99,175,.28); font-size: .78rem; font-weight: 700; text-decoration: none; }
+.event-widget-button:hover { color: #fff; background: rgba(37,99,175,.5); border-color: #8dc1ff; }
+.event-dashboard-section { scroll-margin-top: 76px; }
+.section-kicker { display: block; color: #75b4ff; font-size: .68rem; font-weight: 800; letter-spacing: .12em; margin-bottom: 4px; }
+.event-dashboard-heading h2 { color: var(--text); font-weight: 800; }
+.event-dashboard-frame { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: #f5f7fb; box-shadow: 0 10px 30px rgba(0,0,0,.18); }
+.event-dashboard-frame iframe { display: block; width: 100%; height: 1450px; border: 0; background: #f5f7fb; }
 
 .locked-target-hud {
   background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
@@ -96,6 +105,39 @@ body {
 .ai-insight-body { font-size: 0.95rem; }
 .ai-insight-chips .badge { background: var(--panel-2); border: 1px solid var(--border); font-weight: 500; }
 @media (max-width: 991px) { .ai-insight-wrap { width: 100%; min-height: auto; } }
+
+/* AI Market Insight layout */
+.ai-market-header { border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.ai-market-icon { color: #61d8c2; font-size: 1.2rem; }
+.ai-market-eyebrow { color: #77b9ff; font-size: .62rem; font-weight: 800; letter-spacing: .12em; }
+.ai-market-title { color: #f5f8ff; font-size: 1.15rem; }
+.ai-market-country { color: #8dc1ff; font-size: .78rem; font-weight: 700; margin-top: 10px; }
+.ai-insight-summary { color: #dce8f7; font-size: .88rem; line-height: 1.65; margin: 6px 0 14px; }
+.ai-insight-kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin-bottom: 16px; }
+.ai-kpi-card { min-width: 0; background: #17233c; border: 1px solid #2b3a59; border-radius: 8px; padding: 8px 6px; }
+.ai-kpi-card.positive { border-color: rgba(51,209,122,.62); }
+.ai-kpi-label { display: block; color: var(--text-muted); font-size: .58rem; line-height: 1.25; min-height: 1.5em; }
+.ai-kpi-value { display: block; color: #8dc1ff; font-size: .84rem; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ai-kpi-card.positive .ai-kpi-value { color: var(--success); }
+.ai-market-section { margin-top: 16px; }
+.ai-market-section-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.ai-market-section-heading span { color: #61d8c2; font-size: .66rem; font-weight: 800; letter-spacing: .08em; }
+.ai-market-section-heading h3 { color: #f1f6ff; font-size: .83rem; font-weight: 800; margin: 0; }
+.ai-market-card-grid { display: grid; gap: 8px; }
+.ai-market-card-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ai-market-card-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ai-market-mini-card { background: #15223b; border: 1px solid #293957; border-radius: 9px; padding: 10px; min-width: 0; }
+.ai-mini-icon { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: rgba(97,216,194,.15); color: #61d8c2; font-size: .72rem; font-weight: 800; margin-bottom: 7px; }
+.ai-market-mini-card h4 { color: #eaf2ff; font-size: .75rem; line-height: 1.35; margin: 0 0 5px; }
+.ai-mini-metric { display: block; color: #8dc1ff; font-size: .72rem; line-height: 1.35; margin-bottom: 5px; }
+.ai-market-mini-card p { color: #aebbd0; font-size: .7rem; line-height: 1.5; margin: 0; }
+.ai-market-empty { border: 1px dashed #344764; border-radius: 8px; color: var(--text-muted); font-size: .73rem; padding: 10px; }
+.ai-interpretation { background: #111d34; border: 1px solid #293957; border-radius: 9px; padding: 12px 14px; }
+.ai-interpretation p { color: #d4deed; font-size: .78rem; line-height: 1.65; margin: 0 0 7px; }
+.ai-interpretation p:last-child { margin-bottom: 0; }
+.ai-key-conclusion { margin-top: 8px; border-left: 3px solid #61d8c2; border-radius: 0 8px 8px 0; background: rgba(97,216,194,.12); color: #8df0dc; font-size: .8rem; font-weight: 700; line-height: 1.55; padding: 10px 12px; }
+@media (max-width: 1100px) { .ai-insight-kpis { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+@media (max-width: 600px) { .ai-market-card-grid.three, .ai-market-card-grid.two { grid-template-columns: 1fr; } .ai-insight-kpis { grid-template-columns: repeat(2, minmax(0,1fr)); } }
 
 /* AI Insight 콘텐츠 블록 (§3.4.2, v2.5) */
 .ai-insight-block { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); }

@@ -28,6 +28,7 @@
     baseYearBadge: document.getElementById("rank-base-year-badge"),
     portfolioBanner: document.getElementById("portfolio-advice-banner"),
     portfolioText: document.getElementById("portfolio-advice-text"),
+    tradeMapFrame: document.getElementById("trademap-dashboard-frame"),
   };
 
   // ── 초기화 ───────────────────────────────────────────────────────────
@@ -201,6 +202,7 @@
     window.BOFCharts.renderBubble(els.bubbleCanvas, top20, firstIso3);
     updateExportLinks(hs6);
     updateExportDocxLink();  // 결과가 0건이면 이전 검색의 링크가 남아있지 않도록 여기서도 갱신
+    syncTradeMapHs(hs6);
 
     if (firstIso3) {
       onTargetSelected(firstIso3);
@@ -309,44 +311,71 @@
   // ── AI Insight (§3.4.2 콘텐츠 블록) ────────────────────────────────────
   function renderAiInsight(insight, row) {
     if (!insight || !row) return;
-    document.getElementById("ai-insight-country").textContent = row.name_en || "-";
-    document.getElementById("ai-insight-body").textContent = insight.why_market || "";
+    const country = row.name_ko || row.name_en || "-";
+    document.getElementById("ai-insight-country").textContent = country;
+    document.getElementById("ai-insight-summary").textContent = insight.summary || "데이터 없음";
     document.getElementById("ai-insight-target").textContent =
       "Target: " + (row.name_en || "-") + (row.name_ko ? " (" + row.name_ko + ")" : "");
+    document.getElementById("ai-insight-engine").textContent =
+      (insight.footer && insight.footer.engine) || "Predator Engine";
 
-    const chipsWrap = document.getElementById("ai-insight-chips");
-    chipsWrap.innerHTML = "";
-    const chips = [
-      { label: "Export Gap", value: BOF.fmtPct(row.export_gap_pp) + "p" },
-      { label: "YoY 성장률", value: BOF.fmtPct(row.growth.yoy_pct) },
-      { label: "경쟁국 Top3 합계", value: (row.competitors.top3_share_pct ?? "-") + "%" },
-    ];
-    chips.forEach((c) => {
-      const badge = document.createElement("span");
-      badge.className = "badge";
-      badge.textContent = c.label + " " + c.value;
-      chipsWrap.appendChild(badge);
+    const kpiWrap = document.getElementById("ai-insight-kpis");
+    kpiWrap.innerHTML = "";
+    (insight.key_indicators || []).forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "ai-kpi-card" + (item.key === "yoy_pct" && Number(item.value) > 0 ? " positive" : "");
+      const value = item.key === "market_size_usd"
+        ? BOF.fmtMoney(item.value, BOF.state.currency, BOF.state.fxRate)
+        : item.value === null || item.value === undefined
+          ? "데이터 없음"
+          : (item.signed ? BOF.fmtPct(Number(item.value)).replace("%", item.unit === "%p" ? "%p" : "%") : Number(item.value).toFixed(Math.abs(Number(item.value)) < 1 ? 3 : 1) + (item.unit || ""));
+      card.innerHTML = "<span class='ai-kpi-label'></span><strong class='ai-kpi-value'></strong>";
+      card.querySelector(".ai-kpi-label").textContent = item.label || "-";
+      card.querySelector(".ai-kpi-value").textContent = value;
+      kpiWrap.appendChild(card);
     });
 
-    renderInsightReference(insight.reference);
-    renderInsightList("ai-insight-contacts-block", "ai-insight-contacts", insight.contacts, (c) =>
-      (c.type ? "[" + c.type + "] " : "") + (c.name || "") + (c.note ? " — " + c.note : "")
-    );
-    renderInsightList("ai-insight-timeline-block", "ai-insight-timeline", insight.prep_timeline, (t) =>
-      (t.due ? t.due + " — " : "") + (t.milestone || "")
-    );
-    renderInsightRisks(insight.risks);
-    renderInsightList("ai-insight-gov-block", "ai-insight-gov", insight.gov_programs, (g) =>
-      (g.name || "") + (g.note ? " — " + g.note : "")
-    );
+    renderInsightCards("ai-why-market", insight.why_this_market, (item) => {
+      return { title: item.title, metric: item.metric, text: item.text, icon: "01" };
+    });
+    renderInsightCards("ai-export-attractiveness", insight.export_attractiveness, (item) => {
+      return { title: item.title, metric: item.icon || "↗", text: item.text, icon: item.icon || "↗" };
+    });
+    renderInsightCards("ai-market-watch", insight.market_watch, (item) => {
+      return { title: item.title, metric: item.fact, text: item.impact, icon: "!" };
+    });
+    document.getElementById("ai-market-watch-empty").classList.toggle("d-none", !!(insight.market_watch || []).length);
 
-    const limitationEl = document.getElementById("ai-insight-limitation");
-    if (insight.limitation) {
-      limitationEl.textContent = "한계점: " + insight.limitation;
-      limitationEl.classList.remove("d-none");
-    } else {
-      limitationEl.classList.add("d-none");
-    }
+    const interpretation = document.getElementById("ai-interpretation");
+    interpretation.innerHTML = "";
+    (insight.ai_interpretation || []).forEach((paragraph) => {
+      const p = document.createElement("p");
+      p.textContent = paragraph;
+      interpretation.appendChild(p);
+    });
+    document.getElementById("ai-key-conclusion").textContent = insight.key_conclusion || "데이터 없음";
+  }
+
+  function renderInsightCards(targetId, items, mapper) {
+    const wrap = document.getElementById(targetId);
+    wrap.innerHTML = "";
+    (items || []).forEach((raw) => {
+      const item = mapper(raw || {});
+      const card = document.createElement("article");
+      card.className = "ai-market-mini-card";
+      const icon = document.createElement("span");
+      icon.className = "ai-mini-icon";
+      icon.textContent = item.icon || "•";
+      const title = document.createElement("h4");
+      title.textContent = item.title || "확인되지 않음";
+      const metric = document.createElement("strong");
+      metric.className = "ai-mini-metric";
+      metric.textContent = item.metric || "";
+      const text = document.createElement("p");
+      text.textContent = item.text || "확인되지 않음";
+      card.append(icon, title, metric, text);
+      wrap.appendChild(card);
+    });
   }
 
   // 레퍼런스(선례) 블록 — 선례가 있으면 사례를, 없으면 "왜 없는지" 사유를 보여준다 (§3.4.2 #4).
@@ -487,6 +516,9 @@
     renderRankingTable();
     const row = BOF.findTarget(BOF.state.selectedIso3);
     if (row) renderHud(row);
+    if (row && detailCache[BOF.state.selectedIso3]) {
+      renderAiInsight(detailCache[BOF.state.selectedIso3].insight, row);
+    }
   }
 
   function renderRankingTable() {
@@ -581,6 +613,37 @@
   function updateExportLinks(hs6) {
     els.exportCsvLink.href = "/api/export.csv?hs=" + encodeURIComponent(hs6);
     els.exportHtmlLink.href = "/api/export.html?hs=" + encodeURIComponent(hs6);
+  }
+
+  // 메인 화면에서 검색한 HS 코드를 임베드된 TradeMap 행사 대시보드에도 전달한다.
+  function syncTradeMapHs(hs6) {
+    const frame = els.tradeMapFrame;
+    if (!frame || !hs6) return;
+
+    const apply = () => {
+      try {
+        const win = frame.contentWindow;
+        const input = win.document.getElementById("hsInput");
+        const search = win.document.getElementById("hsSearch");
+        if (!input) return;
+        input.value = hs6;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        if (typeof win.hsChanged === "function") win.hsChanged();
+        else if (search) search.click();
+      } catch (err) {
+        console.warn("[BOF] TradeMap HS 동기화 실패:", err);
+      }
+    };
+
+    try {
+      if (frame.contentDocument && frame.contentDocument.readyState === "complete" && frame.contentDocument.getElementById("hsInput")) {
+        apply();
+      } else {
+        frame.addEventListener("load", apply, { once: true });
+      }
+    } catch (err) {
+      frame.addEventListener("load", apply, { once: true });
+    }
   }
 
   // Word 보고서는 국가 1개 단위라 hs6뿐 아니라 선택된 국가(selectedIso3)도 필요하다 —
