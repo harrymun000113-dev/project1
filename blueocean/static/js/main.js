@@ -28,7 +28,97 @@
     baseYearBadge: document.getElementById("rank-base-year-badge"),
     portfolioBanner: document.getElementById("portfolio-advice-banner"),
     portfolioText: document.getElementById("portfolio-advice-text"),
+    analysisView: document.getElementById("analysis-view"),
+    trademapView: document.getElementById("trademap-view"),
+    trademapIframe: document.getElementById("trademap-iframe"),
+    trademapTabLink: document.getElementById("trademap-tab-link"),
+    dashboardTabLink: document.getElementById("dashboard-tab-link"),
+    trademapBack: document.getElementById("trademap-back"),
   };
+
+  // ── TradeMap 패널 (헤더/히어로는 유지, 아랫부분만 같은 페이지에서 전환) ──
+  let trademapLoaded = false;
+
+  function sendHsToTradeMap() {
+    if (!trademapLoaded || !BOF.state.hs6 || !els.trademapIframe.contentWindow) return;
+    els.trademapIframe.contentWindow.postMessage(
+      { source: "blue-ocean-finder", type: "hs-search", hs: BOF.state.hs6 },
+      window.location.origin
+    );
+  }
+
+  function showTradeMap() {
+    els.analysisView.classList.add("d-none");
+    els.trademapView.classList.remove("d-none");
+    if (!els.trademapIframe.src) {
+      els.trademapIframe.addEventListener(
+        "load",
+        () => {
+          trademapLoaded = true;
+          sendHsToTradeMap();
+        },
+        { once: true }
+      );
+      els.trademapIframe.src = "/trademap";
+    } else {
+      sendHsToTradeMap();
+    }
+  }
+
+  function showAnalysis() {
+    els.trademapView.classList.add("d-none");
+    els.analysisView.classList.remove("d-none");
+  }
+
+  els.trademapTabLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    showTradeMap();
+  });
+  els.dashboardTabLink.addEventListener("click", () => showAnalysis());
+  els.trademapBack.addEventListener("click", showAnalysis);
+  BOF.on("hs:changed", sendHsToTradeMap);
+
+  // ── 모달 닫기 안전장치 (평가기준/수식 명세) ──────────────────────────
+  // data-bs-dismiss 버튼이 Bootstrap 인스턴스 초기화 문제 등으로 반응하지 않을 때,
+  // 새로고침 없이도 항상 닫히도록 수동으로도 모달/백드롭을 제거한다.
+  function forceCloseModal(modalEl) {
+    if (!modalEl) return;
+    // Bootstrap의 hide()는 transitionend 이벤트를 기다리다 걸리면 영영 안 끝날 수 있으므로
+    // (실제로 이 증상의 원인이었다) best-effort로만 호출하고, 실제 DOM 정리는 항상
+    // 아래에서 동기적으로·무조건 수행한다. 이미 닫힌 모달에 또 호출해도 안전(idempotent)하다.
+    try {
+      const inst = window.bootstrap && bootstrap.Modal.getInstance(modalEl);
+      if (inst) inst.hide();
+    } catch (e) {
+      // 무시하고 아래 수동 정리로 진행
+    }
+    modalEl.classList.remove("show");
+    modalEl.removeAttribute("style"); // Bootstrap이 남겼을 수 있는 inline display:block 제거
+    modalEl.setAttribute("aria-hidden", "true");
+    modalEl.removeAttribute("aria-modal");
+    document.body.classList.remove("modal-open");
+    document.body.style.removeProperty("overflow");
+    document.body.style.removeProperty("padding-right");
+    document.querySelectorAll(".modal-backdrop").forEach((b) => b.remove());
+  }
+
+  document.addEventListener("click", (e) => {
+    const dismissBtn = e.target.closest('[data-bs-dismiss="modal"]');
+    if (dismissBtn) {
+      forceCloseModal(dismissBtn.closest(".modal"));
+      return;
+    }
+    // 바깥(백드롭) 클릭으로 닫기: 모달 오버레이 자체를 직접 클릭했을 때만 (다이얼로그 내부 클릭 제외)
+    if (e.target.classList.contains("modal") && e.target.classList.contains("show")) {
+      forceCloseModal(e.target);
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      document.querySelectorAll(".modal.show").forEach(forceCloseModal);
+    }
+  });
 
   // ── 초기화 ───────────────────────────────────────────────────────────
   window.BOFGlobe.init(els.globeCanvas);
@@ -135,8 +225,17 @@
     }
   }
 
+  // fetch()는 기본적으로 타임아웃이 없어서, 서버가 요청 도중 재시작되는 등으로 응답이
+  // 영영 안 오면 폴링 전체가 새로고침 전까지 무한 대기에 빠진다 — 그 방지용 래퍼.
+  const FETCH_TIMEOUT_MS = 10000;
+  function fetchWithTimeout(url, ms) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms || FETCH_TIMEOUT_MS);
+    return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
+  }
+
   function fetchAnalyze(hs6, token) {
-    return fetch("/api/analyze?hs=" + encodeURIComponent(hs6))
+    return fetchWithTimeout("/api/analyze?hs=" + encodeURIComponent(hs6))
       .then((resp) => resp.json().then((body) => ({ status: resp.status, body })))
       .then(({ status, body }) => {
         if (status === 202 && body.job_id) {
@@ -150,6 +249,8 @@
   }
 
   function pollJob(jobId, hs6Normalized, token) {
+    const MAX_RETRIES = 5; // 타임아웃/네트워크 순단이 연속 이 횟수 넘게 나야 진짜로 포기한다
+    let retries = 0;
     return new Promise((resolve, reject) => {
       const tick = () => {
         if (token !== activeSearchToken) {
@@ -158,9 +259,10 @@
           reject(new Error("superseded"));
           return;
         }
-        fetch("/api/jobs/" + jobId)
+        fetchWithTimeout("/api/jobs/" + jobId)
           .then((resp) => resp.json().then((body) => ({ status: resp.status, body })))
           .then(({ status, body }) => {
+            retries = 0; // 정상 응답을 받았으면 재시도 카운트 리셋
             if (status === 202) {
               setTimeout(tick, 1200);
               return;
@@ -172,10 +274,75 @@
             if (hs6Normalized) body.meta = Object.assign({}, body.meta, { hs6_normalized: true });
             resolve(body);
           })
-          .catch(reject);
+          .catch((err) => {
+            // 타임아웃·연결 끊김(개발 서버 재시작 등)은 작업 실패로 바로 단정하지 않고
+            // 잠깐 쉬었다가 같은 job_id로 재시도한다. 반복해서 실패하면 그때 포기한다.
+            if (token !== activeSearchToken) {
+              reject(err);
+              return;
+            }
+            retries += 1;
+            if (retries > MAX_RETRIES) {
+              reject(err);
+              return;
+            }
+            setTimeout(tick, 2000);
+          });
       };
       tick();
     });
+  }
+
+  // ── 분석 완료 음성 안내 ───────────────────────────────────────────────
+  // 분석이 몇 분씩 걸릴 수 있어(§tariff/trends 크롤링), 다른 작업 하다가도 끝난 걸
+  // 바로 알 수 있게 완료 시 TTS로 알려준다. 음성 합성을 지원 안 하는 환경이면 조용히 무시.
+
+  // 브라우저마다 설치된 음성 목록이 다르고, 크롬 계열은 getVoices()가 비동기로(첫 호출 시
+  // 빈 배열) 채워지는 경우가 많아 voiceschanged 이벤트가 온 뒤에도 다시 찾을 수 있게 캐싱한다.
+  let cachedKoreanVoice = null;
+  let koreanVoiceResolved = false;
+
+  // 이름에 여성 목소리로 알려진 것부터 우선순위를 둔다 (Windows: Heami/SunHi,
+  // macOS/iOS: Yuna, Chrome: Google 한국의 — 셋 다 기본이 여성 음성이다).
+  const FEMALE_VOICE_HINTS = ["heami", "sunhi", "yuna", "google 한국", "female", "여성"];
+
+  function pickKoreanVoice() {
+    if (!window.speechSynthesis) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    const korean = voices.filter((v) => (v.lang || "").toLowerCase().startsWith("ko"));
+    if (!korean.length) return null;
+    const byHint = korean.find((v) =>
+      FEMALE_VOICE_HINTS.some((hint) => (v.name || "").toLowerCase().includes(hint))
+    );
+    return byHint || korean[0];
+  }
+
+  if (window.speechSynthesis) {
+    window.speechSynthesis.addEventListener("voiceschanged", () => {
+      cachedKoreanVoice = pickKoreanVoice();
+      koreanVoiceResolved = true;
+    });
+  }
+
+  function announceDone(text) {
+    try {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel(); // 이전에 남아있던 안내가 있으면 정리하고 새로 말한다
+      if (!koreanVoiceResolved) {
+        cachedKoreanVoice = pickKoreanVoice();
+        koreanVoiceResolved = true; // 아직 못 찾았어도 다음 voiceschanged에서 다시 채워짐
+      }
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "ko-KR";
+      if (cachedKoreanVoice) utter.voice = cachedKoreanVoice;
+      // 상큼·발랄한 톤: 높은 피치 + 통통 튀는 빠르기
+      utter.pitch = 1.4;
+      utter.rate = 1.12;
+      utter.volume = 1.0;
+      window.speechSynthesis.speak(utter);
+    } catch (e) {
+      console.warn("[BOF] 음성 안내 실패:", e);
+    }
   }
 
   function applyAnalyzeResult(hs6, data) {
@@ -188,6 +355,12 @@
 
     const top20 = data.top20 || [];
     const firstIso3 = top20.length ? [...top20].sort((a, b) => a.rank - b.rank)[0].iso3 : null;
+
+    announceDone(
+      top20.length
+        ? "wow!! HS " + hs6 + " 분석이 드디어 끝났어요!! 결과 확인해 보세요!!"
+        : "HS " + hs6 + " 분석은 끝났는데, 아쉽게도 데이터가 없어요."
+    );
 
     BOF.setState({ hs6, data, selectedIso3: firstIso3 });
     BOF.emit("hs:changed", data);

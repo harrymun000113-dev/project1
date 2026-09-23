@@ -15,14 +15,26 @@ from typing import Callable
 log = logging.getLogger(__name__)
 
 _jobs: dict[str, dict] = {}
+_pending_by_key: dict[str, str] = {}  # 같은 key(예: hs6)로 이미 뜬 pending job이 있으면 재사용
 _lock = threading.Lock()
 _JOB_TTL = 3600  # 완료된 작업 결과를 메모리에 남겨두는 시간
 
 
-def start(compute: Callable[[], dict]) -> str:
-    job_id = uuid.uuid4().hex
+def start(compute: Callable[[], dict], key: str | None = None) -> str:
+    """`key`가 주어지고 그 key로 아직 끝나지 않은 job이 있으면, 새 스레드를 띄우지 않고
+    그 job_id를 그대로 돌려준다. 같은 HS코드를 결과가 나오기 전에 다시 검색했을 때
+    (§흔한 UX: "안 되는 줄 알고 또 눌렀다") 백그라운드 job이 계속 쌓여 서로 외부 API
+    레이트리밋을 나눠 쓰며 전부 느려지는 문제를 막기 위함이다."""
     with _lock:
+        if key is not None:
+            existing = _pending_by_key.get(key)
+            if existing and existing in _jobs and _jobs[existing]["status"] == "pending":
+                return existing
+
+        job_id = uuid.uuid4().hex
         _jobs[job_id] = {"status": "pending", "result": None, "error": None, "created_at": time.time()}
+        if key is not None:
+            _pending_by_key[key] = job_id
 
     def _run():
         try:
@@ -33,6 +45,11 @@ def start(compute: Callable[[], dict]) -> str:
             log.exception("job %s failed", job_id)
             with _lock:
                 _jobs[job_id].update(status="error", error=str(e))
+        finally:
+            if key is not None:
+                with _lock:
+                    if _pending_by_key.get(key) == job_id:
+                        _pending_by_key.pop(key, None)
 
     threading.Thread(target=_run, daemon=True, name=f"analyze-job-{job_id[:8]}").start()
     _gc()

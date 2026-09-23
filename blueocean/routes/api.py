@@ -100,7 +100,7 @@ def analyze():
         cached["meta"] = {**cached.get("meta", {}), "hs6_normalized": normalized}
         return jsonify(cached)
 
-    job_id = jobs.start(lambda: _run_cached(hs6))
+    job_id = jobs.start(lambda: _run_cached(hs6), key=f"analyze:{hs6}")
     return jsonify(status="pending", job_id=job_id, hs6=hs6, hs6_normalized=normalized), 202
 
 

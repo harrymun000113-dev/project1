@@ -91,10 +91,12 @@ body {
   width: calc(100% * var(--hero-box-w-ratio));
   min-height: var(--hero-box-h);
 }
-.ai-insight { background: var(--panel); border: 1px solid var(--border); height: 100%; }
+.ai-insight { background: var(--panel); border: 1px solid var(--border); color: var(--text); height: 100%; }
 .live-scan-badge { background: var(--accent); font-size: 0.65rem; }
 .ai-insight-body { font-size: 0.95rem; }
 .ai-insight-chips .badge { background: var(--panel-2); border: 1px solid var(--border); font-weight: 500; }
+/* Bootstrap의 .text-muted는 라이트 테마 기준 색이라 이 다크 카드 안에서는 거의 안 보인다 */
+.ai-insight .text-muted { color: var(--text-muted) !important; }
 @media (max-width: 991px) { .ai-insight-wrap { width: 100%; min-height: auto; } }
 
 /* AI Insight 콘텐츠 블록 (§3.4.2, v2.5) */
@@ -127,6 +129,10 @@ body {
 .fx-change-badge.up { background: var(--success); }
 .fx-change-badge.down { background: var(--danger); }
 .blue-ocean-quadrant-badge { background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 0.72rem; margin-right: 4px; }
+
+/* ── TradeMap panel (in-page, replaces #analysis-view when active) ───── */
+.trademap-frame-wrap { position: relative; width: 100%; height: calc(100vh - 230px); min-height: 600px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.trademap-frame-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
 
 /* ── Ranking table ──────────────────────────────────────────────────── */
 .rank-sort-select { max-width: 150px; background: var(--panel-2); color: var(--text); border-color: var(--border); }

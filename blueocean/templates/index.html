@@ -6,18 +6,36 @@
   {% include "components/_header.html" %}
 </header>
 
+{# 모달은 sticky 헤더(자체 stacking context, z-index:1020) 밖에 둬야 한다 —
+   header 안에 있으면 모달 backdrop(z-index:1050)이 header 서브트리 전체보다
+   위에 그려져서 모달 내용의 닫기 버튼이 클릭을 못 받는다. #}
+{% include "components/_score_spec_modal.html" %}
+
 <main class="container-xl app-main">
   <section id="hero" class="row g-4 my-2">
     {% include "components/_hero.html" %}
   </section>
 
-  <section id="ai-insight-wrap" class="ai-insight-section">
-    {% include "components/_ai_insight.html" %}
-  </section>
+  <div id="analysis-view">
+    <section id="ai-insight-wrap" class="ai-insight-section">
+      {% include "components/_ai_insight.html" %}
+    </section>
 
-  <section id="dashboard" class="row g-4 align-items-stretch my-4">
-    {% include "components/_dashboard.html" %}
-  </section>
+    <section id="dashboard" class="row g-4 align-items-stretch my-4">
+      {% include "components/_dashboard.html" %}
+    </section>
+  </div>
+
+  <div id="trademap-view" class="d-none my-3">
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <button id="trademap-back" type="button" class="btn btn-sm btn-outline-secondary">
+        ← 분석 대시보드로 돌아가기
+      </button>
+    </div>
+    <div class="trademap-frame-wrap">
+      <iframe id="trademap-iframe" title="TradeMap" loading="lazy"></iframe>
+    </div>
+  </div>
 </main>
 
 <div id="toast-root" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
