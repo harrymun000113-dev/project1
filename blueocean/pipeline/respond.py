@@ -9,7 +9,7 @@ from datetime import datetime, timezone, timedelta
 
 import pandas as pd
 
-from ..services.hs_meta import describe_hs6
+from ..services.hs_meta import describe_hs6, describe_hs6_ko
 from .scoring import score_breakdown
 
 KST = timezone(timedelta(hours=9))
@@ -140,6 +140,7 @@ def build_analyze_response(hs6: str, T: int, korea_world_share_pct: float, top20
                             funnel_counts: dict, world_market_size_usd: float,
                             portfolio_advice: dict | None = None) -> dict:
     hs_desc = describe_hs6(hs6)
+    hs_desc_ko = describe_hs6_ko(hs6)
 
     if not top20.empty:
         # 팝오버(§3.9.1)에 필요한 전년도 값도 함께 채워 넣는다.
@@ -156,6 +157,7 @@ def build_analyze_response(hs6: str, T: int, korea_world_share_pct: float, top20
         "meta": {
             "hs6": hs6,
             "hs_desc": hs_desc,
+            "hs_desc_ko": hs_desc_ko,
             "base_year": T,
             "korea_world_share_pct": _num(korea_world_share_pct, 2),
             "count": len(top20_json),

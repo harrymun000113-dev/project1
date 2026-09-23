@@ -34,6 +34,10 @@
     trademapTabLink: document.getElementById("trademap-tab-link"),
     dashboardTabLink: document.getElementById("dashboard-tab-link"),
     trademapBack: document.getElementById("trademap-back"),
+    newsLoading: document.getElementById("news-loading"),
+    newsEmpty: document.getElementById("news-empty"),
+    newsError: document.getElementById("news-error"),
+    newsList: document.getElementById("news-list"),
   };
 
   // ── TradeMap 패널 (헤더/히어로는 유지, 아랫부분만 같은 페이지에서 전환) ──
@@ -374,6 +378,7 @@
     window.BOFCharts.renderBubble(els.bubbleCanvas, top20, firstIso3);
     updateExportLinks(hs6);
     updateExportDocxLink();  // 결과가 0건이면 이전 검색의 링크가 남아있지 않도록 여기서도 갱신
+    loadNews(hs6);
 
     if (firstIso3) {
       onTargetSelected(firstIso3);
@@ -748,6 +753,72 @@
         });
       })
       .catch((e) => console.warn("[BOF] score-spec 요청 실패:", e));
+  }
+
+  // ── 관련 뉴스 (HS 코드 기반, Google News RSS) ──────────────────────────
+  // 이 패널은 국가 선택이 아니라 hs6 단위로만 갱신된다(portfolio-advice-banner와 같은 층위).
+  // /api/news/hs-code는 공식 보장이 없는 외부 RSS에 의존하므로(README 참고), 네트워크
+  // 지연·실패가 나머지 대시보드 렌더링을 막지 않도록 완전히 독립적으로 처리한다.
+  function setNewsState(state) {
+    els.newsLoading.classList.toggle("d-none", state !== "loading");
+    els.newsEmpty.classList.toggle("d-none", state !== "empty");
+    els.newsError.classList.toggle("d-none", state !== "error");
+  }
+
+  function renderNewsList(articles) {
+    els.newsList.innerHTML = "";
+    articles.forEach((a) => {
+      const li = document.createElement("li");
+      li.className = "news-item";
+
+      const link = document.createElement("a");
+      link.href = a.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer"; // 외부 링크에 window.opener를 넘기지 않는다
+      link.className = "news-item-title";
+      link.textContent = a.title || "(제목 없음)"; // textContent만 사용 — RSS 값을 HTML로 삽입하지 않음
+
+      const extIcon = document.createElement("span");
+      extIcon.className = "news-external-icon";
+      extIcon.setAttribute("aria-label", "외부 링크로 새 탭에서 열림");
+      extIcon.textContent = " ↗";
+      link.appendChild(extIcon);
+
+      const meta = document.createElement("div");
+      meta.className = "news-item-meta text-muted small";
+      meta.textContent = [a.source, (a.published_at || "").slice(0, 10)].filter(Boolean).join(" · ");
+
+      li.append(link, meta);
+      els.newsList.appendChild(li);
+    });
+  }
+
+  function loadNews(hs6) {
+    els.newsList.innerHTML = "";
+    setNewsState("loading");
+    els.newsLoading.textContent = "관련 뉴스를 불러오는 중…";
+
+    fetchWithTimeout("/api/news/hs-code/" + encodeURIComponent(hs6))
+      .then((resp) => resp.json().then((body) => ({ status: resp.status, body })))
+      .then(({ status, body }) => {
+        if (BOF.state.hs6 !== hs6) return; // 그 사이 다른 HS코드로 검색이 넘어갔다
+        if (status >= 400) {
+          setNewsState("error");
+          return;
+        }
+        const articles = body.articles || [];
+        if (!articles.length) {
+          setNewsState("empty");
+          return;
+        }
+        setNewsState(null);
+        renderNewsList(articles);
+      })
+      .catch((e) => {
+        if (BOF.state.hs6 !== hs6) return;
+        console.warn("[BOF] 뉴스 조회 실패:", e);
+        setNewsState("error");
+      });
   }
 
   // ── Export 링크 ──────────────────────────────────────────────────────

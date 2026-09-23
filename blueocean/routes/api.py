@@ -12,12 +12,13 @@ from .. import reports
 from ..pipeline import funnel, insight
 from ..pipeline.funnel import NoDataError
 from ..pipeline.scoring import SCORE_SPEC
-from ..services import fx, jobs
+from ..services import fx, jobs, news
 from ..services.cache import get_or_compute, peek
 from ..services.comtrade import ComtradeError, imports as comtrade_imports
 from ..services.countries import load_countries
-from ..services.hs_meta import describe_hs6
-from ..utils import normalize_hs
+from ..services.hs_meta import describe_hs6, describe_hs6_ko
+from ..services.news import NewsParseError, NewsUpstreamError
+from ..utils import normalize_hs, normalize_hs6_strict
 
 log = logging.getLogger(__name__)
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -34,7 +35,7 @@ def _empty_result(hs6: str) -> dict:
 
     return {
         "meta": {
-            "hs6": hs6, "hs_desc": describe_hs6(hs6), "base_year": None,
+            "hs6": hs6, "hs_desc": describe_hs6(hs6), "hs_desc_ko": describe_hs6_ko(hs6), "base_year": None,
             "korea_world_share_pct": None, "count": 0,
             "funnel": {"stage1": 0, "stage2": 0, "stage3": 0},
             "stale": False,
@@ -156,6 +157,40 @@ def _target_row_for_insight(hs6: str, iso3: str, countries: pd.DataFrame) -> dic
     }
 
 
+@bp.get("/insight")
+def insight_endpoint():
+    """새 대시보드 디자인(`blue-ocean-insight-addon`)의 `BLUE_OCEAN_INSIGHT_ENDPOINT`용 어댑터.
+
+    실제 AI Insight 생성 로직(`pipeline/insight.generate`)은 그대로 재사용하고, 프런트가
+    기대하는 얕은 스키마(summary/ai_interpretation/data_confidence)로만 다시 감싼다.
+    "Why This Market"/"Export Attractiveness"/"Market Watch" 카드와 결론 문구는 프런트의
+    `buildFallback(c)`가 이미 실제 국가 데이터(top20 row)만으로 만들어내므로 여기서는
+    일부러 채우지 않는다 — 없는 필드는 프런트가 알아서 그 fallback으로 대체한다.
+    """
+    hs6, _ = normalize_hs(request.args.get("hs", ""))
+    if not hs6:
+        return _bad_hs()
+    iso3 = (request.args.get("iso3") or "").upper()
+    if not iso3:
+        return jsonify(error={"code": "BAD_REQUEST", "message": "국가(iso3)를 지정하세요."}), 400
+
+    countries = load_countries()
+    if iso3 not in countries.index:
+        return jsonify(error={"code": "NOT_FOUND", "message": "알 수 없는 국가 코드입니다."}), 404
+
+    row = _target_row_for_insight(hs6, iso3, countries)
+    result = insight.generate(hs6, row)
+
+    paragraphs = [p for p in (result.get("why_market"), result.get("limitation")) if p]
+    return jsonify({
+        "summary": result.get("why_market") or "",
+        "ai_interpretation": paragraphs,
+        "data_confidence": {
+            "label": "샘플/오프라인 데이터 기준" if config.DEMO_OPENAI else "AI 분석 결과 · 실데이터 기준",
+        },
+    })
+
+
 @bp.get("/fx/latest")
 def fx_latest():
     try:
@@ -249,6 +284,52 @@ def export_docx():
         download_name=f"blue_ocean_{hs6}_{iso3}.docx",
         mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     )
+
+
+def _news_int_param(name: str, default: int) -> int:
+    """유효하지 않은/빈 값은 400 대신 기본값으로 안전하게 대체한다 — 범위 clamp는
+    `news.search_news` 안에서 한다(§D "days/limit은 제한하세요", 거부하라고 하지 않았다)."""
+    raw = request.args.get(name)
+    if not raw:
+        return default
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return default
+
+
+def _news_response(hs_code_raw: str):
+    """HS 코드 기반 Google News RSS 검색 (§H). 공식 보장 없는 외부 RSS라 실패는 항상
+    502(UPSTREAM_UNAVAILABLE)로만 표현되고, 절대 500/전체 장애로 번지지 않는다."""
+    hs6 = normalize_hs6_strict(hs_code_raw)
+    if not hs6:
+        return jsonify(error={"code": "BAD_HS", "message": "HS CODE는 6자리 숫자여야 합니다."}), 400
+
+    days = _news_int_param("days", config.NEWS_DAYS_DEFAULT)
+    limit = _news_int_param("limit", config.NEWS_LIMIT_DEFAULT)
+    product_name = request.args.get("product_name")
+
+    try:
+        result = news.search_news(hs6, days=days, limit=limit, product_name=product_name)
+    except (NewsUpstreamError, NewsParseError) as e:
+        log.warning("뉴스 검색 실패 (hs=%s): %s", hs6, e)
+        return jsonify(error={"code": "UPSTREAM_UNAVAILABLE", "message": "뉴스 조회 중 오류가 발생했습니다."}), 502
+
+    return jsonify(result)
+
+
+@bp.get("/news/hs-code/<hs_code>")
+def news_by_hs_code(hs_code: str):
+    return _news_response(hs_code)
+
+
+@bp.get("/news")
+def news_by_query():
+    """`/news/hs-code/<hs_code>`와 같은 로직을 hs를 경로가 아니라 쿼리스트링(`?hs=`)으로
+    받는 버전. 새 대시보드 디자인의 `window.BLUE_OCEAN_NEWS_ENDPOINT`처럼, 엔드포인트를
+    고정 문자열로 두고 `URL.searchParams.set('hs', ...)`으로만 값을 채우는 프런트 코드를
+    위한 것 — 그런 코드는 hs를 경로 세그먼트에 넣을 수 없다."""
+    return _news_response(request.args.get("hs", ""))
 
 
 @bp.get("/score-spec")
