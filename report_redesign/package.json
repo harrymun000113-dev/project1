@@ -1,0 +1,12 @@
+{
+  "name": "blue-ocean-report-redesign",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Blue Ocean Finder 리포트 신규 디자인(인디고/네이비) 샘플 — blueocean/reports.py 병합용",
+  "scripts": {
+    "build": "node build_report.js"
+  },
+  "dependencies": {
+    "docx": "^9.7.1"
+  }
+}
