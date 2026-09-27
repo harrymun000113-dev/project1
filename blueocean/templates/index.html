@@ -388,7 +388,188 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 .product-bar-label{font-size:9px;color:#90a2c5;letter-spacing:.5px}
 .product-bar-filled strong{color:#eaf6ff;font-size:14px;font-weight:800;background:#123258;padding:5px 12px;border-radius:8px;border:1px solid #1685ff66}
 .product-bar-sep{color:#4a5f8a}
-</style></head><body><div class="shell"><aside class="sidebar"><a class="brand" href="#" onclick="navigatePage('home');resetToDefault();return false"><span class="brand-mark">◈</span><span>Blue Ocean<small>F I N D E R</small></span></a><nav>
+</style>
+<style id="bo-light-pastel-theme">
+/* 인트로 화면(핑크→퍼플→블루 파스텔)과 톤을 맞춘 밝은 테마.
+   기존 다크 테마 규칙들을 이 블록에서 !important로 전부 덮어써서, 앞선 블록들의
+   순서/특이도와 무관하게 항상 이 값이 최종 적용되게 한다. */
+:root{color-scheme:light!important;--muted:#5c6b8a!important;--line:rgba(90,110,160,.16)!important}
+html,body{background:radial-gradient(ellipse at 85% 0%,#f3c9ee 0,transparent 55%),radial-gradient(ellipse at 8% 100%,#c3d9f9 0,transparent 55%),linear-gradient(150deg,#ecdcf6 0%,#dde1f7 40%,#d8e7fb 75%,#eaf1fb 100%)!important;color:#1c2b4a!important}
+.shell{background:transparent!important;border-color:transparent!important;box-shadow:none!important;padding:18px!important;zoom:1.12}
+.sidebar{background:rgba(255,255,255,.55)!important;backdrop-filter:blur(22px) saturate(160%)!important;-webkit-backdrop-filter:blur(22px) saturate(160%)!important;border:1px solid rgba(255,255,255,.7)!important;border-radius:26px!important;box-shadow:0 20px 45px rgba(120,90,200,.16)!important}
+.brand{border-bottom-color:#e6e6f5!important}
+.brand small{color:#7480a0!important}
+.nav-label{color:#8894b5!important}
+.nav-item{color:#5b6786!important}
+.nav-item.active,.sidebar .nav-item.active,.sidebar .nav-item:hover{background:#eef2ff!important;color:#16213f!important}
+.nav-icon{background:#eef2ff!important;color:#1685ff!important}
+.active .nav-icon{background:#1685ff!important;color:#fff!important}
+.side-note{background:radial-gradient(at 0 0,#eaf1ff,#f7f4fd 80%)!important;border-color:#cfd8f2!important}
+.side-note p{color:#5c6b8a!important}
+.side-note button{background:#1685ff14!important;color:#1c2b4a!important}
+.topbar{background:#f8f7fce6!important;border-bottom-color:#e7e9f5!important}
+.crumb{color:#7d8bab!important}
+.export-button{background:#1685ff12!important;border-color:#1685ff44!important;color:#0d5bc4!important}
+.currency{background:#ffffff!important;border-color:#e3e6f5!important}
+.metric{background:rgba(255,255,255,.6)!important;backdrop-filter:blur(18px) saturate(160%)!important;-webkit-backdrop-filter:blur(18px) saturate(160%)!important;border:1px solid rgba(255,255,255,.7)!important;border-radius:22px!important;box-shadow:0 16px 34px rgba(120,90,200,.14)!important}
+.metric-label{color:#6b7793!important}
+.metric-note{color:#0e9f86!important}
+.panel{background:rgba(255,255,255,.58)!important;backdrop-filter:blur(20px) saturate(160%)!important;-webkit-backdrop-filter:blur(20px) saturate(160%)!important;border:1px solid rgba(255,255,255,.7)!important;border-radius:24px!important;box-shadow:0 20px 44px rgba(120,90,200,.16)!important}
+.panel h3{color:#182541!important}
+.globePanel{background:rgba(255,255,255,.58)!important;backdrop-filter:blur(20px) saturate(160%)!important;-webkit-backdrop-filter:blur(20px) saturate(160%)!important;display:flex!important;flex-direction:column!important;justify-content:flex-start!important;align-items:stretch!important;gap:6px;height:305px!important;min-height:305px!important;max-height:305px!important;overflow:hidden!important}
+.tariff-panel-title{margin:0!important;font-size:15px!important;font-weight:800!important;letter-spacing:-.2px;display:flex;align-items:center;gap:6px}
+.globePanel .section-eyebrow{margin-bottom:0!important}
+.tariff-barrier-panel{padding:0!important}
+.tariff-barrier-body{gap:8px!important}
+#quickTargetRow{margin-top:auto}
+.ntb-more-btn{flex-shrink:0;align-self:flex-start;margin-top:4px;font-size:10px;font-weight:700;color:#0d5bc4;background:#1685ff14;border:1px solid #1685ff3d;border-radius:20px;padding:5px 11px}
+.ntb-more-btn:hover{background:#1685ff22}
+.ntb-modal-list{max-height:52vh}
+.tariff-barrier-empty{color:#6b7793!important}
+.tariff-rate-row{background:#eef4ff!important;border-color:#cfe0fb!important}
+.tariff-rate-label{color:#5c729e!important}
+.tariff-rate-value{color:#16305c!important}
+.tariff-type-pill{background:#1685ff14!important;color:#0d5bc4!important;border-color:#1685ff3d!important}
+.ntb-heading{color:#5c729e!important}
+.ntb-heading span{color:#16305c!important}
+.ntb-list li{background:#f5f8ff!important;border-color:#dde6f8!important;color:#2c3c5c!important}
+.ntb-empty,.tariff-fetched-note{color:#8592ac!important}
+.score-panel>p{color:#6b7793!important}
+.score-ring{background:conic-gradient(from 220deg,#13cdb3 calc(var(--score)*.8%),#e7ecf7 0,#e7ecf7 80%,transparent 0)!important}
+.score-ring:before{background:#ffffff!important}
+.score-ring small{color:#7b88a5!important}
+.score-foot{color:#0e9f86!important}
+.filter-inner{background:#ffffff!important;border-color:#e6e9f7!important}
+.analysis-column .insightPanel{background:linear-gradient(145deg,#ffffff,#f6f3fd 60%,#f2f5fd)!important;border-color:#e3e2f4!important}
+.insightPanel h3,.insightPanel h4{color:#16213f!important}
+.section-eyebrow{color:#6f81ac!important}
+.tiny-context{color:#5c729e!important;border-color:#cfd9f0!important}
+.opportunity-pill{color:#0e9f77!important;background:#0e9f7714!important;border-color:#0e9f7744!important}
+.country-pill,.outline-pill{color:#0d5bc4!important;border-color:#cfe0fb!important;background:#eef4ff!important}
+.insight-summary{color:#26365a!important}
+.insight-source{color:#7d8bab!important}
+.insight-kpi{background:#f4f7ff!important;border-color:#dde6f8!important}
+.insight-kpi small{color:#6b7793!important}
+.insight-kpi strong{color:#16213f!important}
+.insight-kpi strong.good{color:#0e9f77!important}
+.insight-kpi strong.blue{color:#0d5bc4!important}
+.insight-kpi strong.warn{color:#b9761a!important}
+.insight-divider,.insight-section+.insight-section,.section-head{border-color:#e3e8f8!important}
+.insight-section-head p,.section-head p{color:#6b7793!important}
+.watch-caption{color:#b9761a!important}
+.insight-mini{border-color:#dde3f5!important;background:linear-gradient(145deg,#f7f9ff,#f1f0fb)!important}
+.insight-mini .mini-head,.insight-mini .mini-label{color:#16213f!important}
+.insight-mini .mini-value{color:#0e9f77!important}
+.insight-mini .mini-value.blue{color:#0d5bc4!important}
+.insight-mini .mini-value.purple{color:#7b5ce0!important}
+.insight-mini p{color:#4c5a7a!important}
+.insight-mini .mini-meta{color:#7d8bab!important}
+.insight-interpretation{background:linear-gradient(145deg,#f5f3fd66,#eef2fb66)!important;border-color:#dde3f5!important}
+.opinion-body,.opinion-body p{color:#2c3c5c!important}
+.conclusion-line{border-color:#9fd8c9!important;background:#0e9f7714!important}
+.conclusion-line span{color:#0e9f77!important}
+.conclusion-line strong{color:#173225!important}
+.insight-footer{color:#7d8bab!important}
+.news-empty{background:#f4f7ff!important;border-color:#c9d8f5!important}
+.news-empty-icon{color:#1685ff!important}
+.news-empty strong{color:#16213f!important}
+.news-empty span:last-child{color:#6b7793!important}
+.news-item{background:#f6f8ff!important;border-color:#dde6f8!important}
+.news-item-thumb{background:#e7edfa!important;border-color:#dde6f8!important}
+.news-item strong{color:#16213f!important}
+.news-item p{color:#4c5a7a!important}
+.news-item small{color:#5c86b3!important}
+.news-foot{color:#7d8bab!important}
+.app-toast{background:#16213f!important;border-color:#1685ff88!important}
+.insight-toggle{color:#0d5bc4!important;background:linear-gradient(110deg,#eaf2ff,#f1eefb)!important;border-color:#c9d8f5!important}
+.insight-toggle:hover{background:#dbe8ff!important;border-color:#1685ff88!important}
+.insight-toggle .toggle-icon{color:#0e9f77!important}
+.insight-toggle .toggle-chevron{color:#5c729e!important}
+.insight-lead-status{color:#8592ac!important;border-top-color:#e3e8f8!important}
+.page-intro{background:linear-gradient(120deg,#ffffff,#f4f2fc)!important;border-color:#e3e2f4!important}
+.page-intro h2{color:#16213f!important}
+.page-intro p{color:#5c6b8a!important}
+.page-home-btn{background:#eef4ff!important;border-color:#bcd4f7!important;color:#0d5bc4!important}
+.page-context{color:#5c729e!important}
+.secondary-page .schedulePanel #tradeShowList>div{border-color:#e3e8f8!important;background:#f8f9fe!important}
+.secondary-page .schedulePanel #tradeShowList p{color:#26365a!important}
+.page-data-notice{color:#7d8bab!important}
+.hs-search-go{background:#1685ff!important;color:#fff!important}
+.ranking-count{color:#0d8bb0!important;background:#eaf7fb!important;border-color:#bfe4f0!important}
+.ranking-data-notice{color:#6b7793!important}
+.demo-row-badge{color:#9a6b12!important;border-color:#e0b46b4d!important;background:#fbf1da88!important}
+.rankingPanel .ranking-table-wrap{scrollbar-color:#b7c6ea #eef1fb!important}
+.rankingPanel tr:hover{background:#1685ff0d!important}
+.world-map-bg{background-color:#eef2fb!important;background-image:radial-gradient(#c7d3ec99 .7px,transparent .7px)!important}
+.panel [class*='text-slate-9'],.panel [class*='text-slate-8'],.panel [class*='text-slate-7'],.filters [class*='text-slate-7'],.filters [class*='text-slate-8']{color:#1c2b4a!important}
+[class*='text-slate-6'],[class*='text-slate-5']{color:#5c6b8a!important}
+[class*='text-slate-4']{color:#7d8bab!important}
+[class*='text-sky-6'],[class*='text-sky-7'],[class*='text-sky-8'],[class*='text-sky-9']{color:#0d6fe0!important}
+[class*='text-rose-']{color:#c23566!important}
+[class*='bg-white'],[class*='bg-slate-50'],[class*='bg-slate-100']{background-color:#ffffff!important;background-image:none!important}
+[class*='bg-sky-50'],[class*='bg-rose-50']{background:#1685ff10!important}
+[class*='border-slate-'],[class*='border-sky-'],[class*='border-rose-'],[class*='border-indigo-'],[class*='divide-slate-']>*{border-color:#e3e8f8!important}
+input,select{background:#ffffff!important;color:#1c2b4a!important;border:1px solid #d4dbef!important}
+option{background:#fff!important}
+input::placeholder{color:#9aa6c2!important}
+#criteriaModal,#algoModal,#expoModal{background:#0b1730aa!important}
+#criteriaModal>div,#algoModal>div,#expoModal>div{background:#ffffff!important;color:#26365a!important}
+#criteriaModal [class*='text-slate-8'],#algoModal [class*='text-slate-8'],#expoModal [class*='text-slate-8']{color:#16213f!important}
+.footer{color:#8592ac!important}
+.footer a{color:#0d5bc4!important}
+.product-bar-label{color:#5c729e!important}
+.product-bar-filled strong{color:#0d5bc4!important;background:#eaf2ff!important;border-color:#1685ff44!important}
+.product-bar-sep{color:#9aa6c2!important}
+</style>
+<style id="bo-intro-overlay-styles">
+.intro-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease;overflow:hidden;background:linear-gradient(160deg,#f4cfe6 0%,#dcc9f5 32%,#bcd6f5 62%,#87CEEB 100%)}
+.intro-overlay iframe{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;border:0}
+.intro-sky-wash{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(165deg,rgba(244,191,222,.75) 0%,rgba(224,193,245,.6) 30%,rgba(190,205,245,.35) 55%,rgba(190,205,245,0) 74%);mix-blend-mode:normal}
+.intro-cloud{position:absolute;z-index:2;pointer-events:none;opacity:.96;animation:introCloudDrift 14s ease-in-out infinite}
+.intro-cloud,.intro-cloud::before,.intro-cloud::after{background:radial-gradient(circle at 32% 26%,#ffffff 0%,#f6f9fd 42%,#e2eaf7 78%,#cdd9ee 100%)}
+.intro-cloud::before,.intro-cloud::after{content:"";position:absolute;border-radius:50%}
+.intro-cloud-a{top:8%;left:52%;width:150px;height:56px;border-radius:50px;box-shadow:0 14px 26px rgba(120,110,160,.24),inset -8px -10px 16px rgba(150,165,205,.32),inset 6px 8px 12px rgba(255,255,255,.95);animation-duration:16s}
+.intro-cloud-a::before{width:80px;height:80px;top:-40px;left:14px;box-shadow:inset -7px -9px 14px rgba(150,165,205,.3),inset 5px 7px 10px rgba(255,255,255,.95)}
+.intro-cloud-a::after{width:64px;height:64px;top:-30px;left:78px;box-shadow:inset -6px -8px 12px rgba(150,165,205,.3),inset 4px 6px 9px rgba(255,255,255,.95)}
+.intro-cloud-b{top:20%;left:66%;width:118px;height:44px;border-radius:40px;box-shadow:0 12px 22px rgba(120,110,160,.22),inset -7px -9px 14px rgba(150,165,205,.32),inset 5px 7px 10px rgba(255,255,255,.95);animation-duration:19s;animation-delay:-4s}
+.intro-cloud-b::before{width:62px;height:62px;top:-30px;left:10px;box-shadow:inset -6px -8px 12px rgba(150,165,205,.3),inset 4px 6px 9px rgba(255,255,255,.95)}
+.intro-cloud-b::after{width:50px;height:50px;top:-22px;left:58px;box-shadow:inset -5px -6px 10px rgba(150,165,205,.3),inset 3px 5px 8px rgba(255,255,255,.95)}
+.intro-cloud-c{top:14%;right:8%;width:132px;height:50px;border-radius:44px;box-shadow:0 13px 24px rgba(120,110,160,.22),inset -7px -9px 15px rgba(150,165,205,.32),inset 5px 7px 11px rgba(255,255,255,.95);animation-duration:17s;animation-delay:-9s}
+.intro-cloud-c::before{width:70px;height:70px;top:-34px;left:12px;box-shadow:inset -6px -8px 13px rgba(150,165,205,.3),inset 4px 6px 9px rgba(255,255,255,.95)}
+.intro-cloud-c::after{width:56px;height:56px;top:-26px;left:66px;box-shadow:inset -5px -7px 11px rgba(150,165,205,.3),inset 4px 5px 8px rgba(255,255,255,.95)}
+@keyframes introCloudDrift{0%{transform:translate(0,0)}50%{transform:translate(26px,-14px)}100%{transform:translate(0,0)}}
+.intro-overlay.intro-hidden{opacity:0;pointer-events:none}
+.intro-brand{position:absolute;top:60px;left:130px;z-index:3;color:#1685ff;font-size:104px;font-weight:800;line-height:1.08;letter-spacing:-3px;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;animation:introSway 4s ease-in-out infinite;text-shadow:0 4px 18px rgba(22,133,255,.25)}
+@keyframes introSway{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}}
+.intro-boat-start{position:absolute;left:56%;top:74%;transform:translate(-50%,-50%) scale(.35);z-index:3;color:#fff;font-size:34px;font-weight:800;letter-spacing:4px;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-shadow:0 2px 14px rgba(22,60,120,.45);cursor:pointer;opacity:0;pointer-events:none;transition:opacity .65s cubic-bezier(.34,1.56,.64,1),transform .65s cubic-bezier(.34,1.56,.64,1),top .65s cubic-bezier(.34,1.56,.64,1);background:none;border:0;padding:6px 18px}
+.intro-boat-start.intro-boat-start-show{top:56%;opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+@media(max-width:580px){.intro-brand{top:18px;left:18px;font-size:44px}.intro-boat-start{font-size:20px;letter-spacing:2px}}
+</style>
+</head><body>
+<div class="intro-overlay" id="introOverlay">
+<iframe id="introFrame" src="https://my.spline.design/animatedpaperboat-IJA6Y3ZvwbHZy4kVr2rtYgQd/" title="Blue Ocean Finder intro" allow="fullscreen" loading="eager"></iframe>
+<div class="intro-sky-wash"></div>
+<div class="intro-cloud intro-cloud-a"></div>
+<div class="intro-cloud intro-cloud-b"></div>
+<div class="intro-cloud intro-cloud-c"></div>
+<div class="intro-brand">Blue Ocean<br/>Finder</div>
+<button type="button" class="intro-boat-start" id="introBoatStart" onclick="window.__dismissIntro && window.__dismissIntro()">START</button>
+</div>
+<script>
+(function(){
+  // Blue Ocean Finder 시작 화면 — Spline 배/파도 장면(공개 뷰어 임베드) 위에 은은한
+  // 그라데이션과 CSS 구름을 얹어 항상 일정하게 보이도록 하고, 3.5초 후 갑판 뒤에 숨어있던
+  // START가 갑판 위로 튀어오르듯 나타난다. 누르면 오버레이가 걷히고 대시보드가 드러난다.
+  const overlay = document.getElementById('introOverlay');
+  const boatStart = document.getElementById('introBoatStart');
+  window.__dismissIntro = function(){
+    overlay.classList.add('intro-hidden');
+    setTimeout(() => { overlay.hidden = true; }, 550);
+  };
+  setTimeout(() => { boatStart.classList.add('intro-boat-start-show'); }, 2000);
+})();
+</script>
+<div class="shell"><aside class="sidebar"><a class="brand" href="#" onclick="navigatePage('home');resetToDefault();return false"><span class="brand-mark">◈</span><span>Blue Ocean<small>F I N D E R</small></span></a><nav>
 <div class="nav-label">WORKSPACE</div>
 <a class="nav-item active" href="#/home" data-nav-page="home" onclick="navigatePage('home');return false"><span class="nav-icon">⌂</span><span>홈</span></a>
 <a class="nav-item" href="#trendPanel" data-nav-section="trendPanel" onclick="goToDashboardSection('trendPanel');return false"><span class="nav-icon">⌁</span><span>시장 추이</span></a>
@@ -401,9 +582,9 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 <div class="nav-label">ANALYSIS TOOLS</div>
 
 <button class="nav-item secondary" onclick="openModal('algoModal')"><span class="nav-icon">◇</span><span>점수 산출 방식</span></button>
-</nav></aside><div class="content"><header class="topbar" id="topOverview"><div><div class="crumb">Workspace / Overview</div><h1>글로벌 무역 대시보드</h1></div><div class="top-actions"><div class="search-box"><input aria-label="HS Code로 시장 검색" class="w-full pl-8 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 text-slate-700 placeholder-slate-400 transition" id="globalSearchInput" inputmode="numeric" maxlength="10" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" onkeydown="if(event.key==='Enter'){event.preventDefault();submitHsCodeSearch()}" placeholder="HS Code 숫자 6자리만 입력 (마침표 없이)" title="점(.) 없이 숫자 6자리만 입력 후 Enter" type="text"/><button class="hs-search-go" type="button" onclick="submitHsCodeSearch()" aria-label="HS Code 검색 실행" title="HS Code 검색">⌕</button></div><div class="currency"><button class="px-2 py-0.5 text-[11px] font-semibold rounded-md bg-white text-sky-700 shadow-xs transition" id="btnUSD" onclick="setCurrency('USD')">USD ($)</button><button class="px-2 py-0.5 text-[11px] font-medium text-slate-500 hover:text-slate-800 transition" id="btnKRW" onclick="setCurrency('KRW')">KRW (₩)</button></div></div></header><div class="intro"><div class="product-bar" id="currentProductBar"><span class="product-bar-empty" id="productBarEmpty">다음 수출 시장의 가능성을 한눈에 확인하세요. HS 코드를 검색해 보세요.</span><span class="product-bar-filled" id="productBarFilled" hidden><span class="product-bar-label">검색 코드</span><strong id="productBarCode">—</strong><span class="product-bar-sep">·</span><span class="product-bar-label">이름</span><strong id="productBarName">—</strong></span></div><span class="sample">● LIVE DATA</span></div><section class="metrics"><div class="metric"><div><div class="metric-label">선택 시장 규모</div><div class="metric-value" id="metricMarket">—</div><div class="metric-note">해당 품목 수입시장</div></div><span class="metric-icon">▥</span></div><div class="metric"><div><div class="metric-label">수요 잠재력</div><div class="metric-value" id="metricPotential">—</div><div class="metric-note">100점 기준</div></div><span class="metric-icon">↗</span></div><div class="metric"><div><div class="metric-label">수출 기회 격차</div><div class="metric-value" id="metricGap">—</div><div class="metric-note">Export Gap</div></div><span class="metric-icon">◎</span></div><div class="metric"><div><div class="metric-label">분석 해외시장</div><div class="metric-value" id="metricCount">00</div><div class="metric-note">선택 품목 기준</div></div><span class="metric-icon">◈</span></div></section><section class="hero-grid" id="globeHeroSection"><div class="panel globePanel" id="globePanel"><div class="globe-label">TRADE BARRIERS / 관세·비관세 장벽</div>
+</nav></aside><div class="content"><header class="topbar" id="topOverview"><div><div class="crumb">Workspace / Overview</div><h1>글로벌 무역 대시보드</h1></div><div class="top-actions"><div class="search-box"><input aria-label="HS Code로 시장 검색" class="w-full pl-8 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 text-slate-700 placeholder-slate-400 transition" id="globalSearchInput" inputmode="numeric" maxlength="10" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" onkeydown="if(event.key==='Enter'){event.preventDefault();submitHsCodeSearch()}" placeholder="HS Code 숫자 6자리만 입력 (마침표 없이)" title="점(.) 없이 숫자 6자리만 입력 후 Enter" type="text"/><button class="hs-search-go" type="button" onclick="submitHsCodeSearch()" aria-label="HS Code 검색 실행" title="HS Code 검색">⌕</button></div><div class="currency"><button class="px-2 py-0.5 text-[11px] font-semibold rounded-md bg-white text-sky-700 shadow-xs transition" id="btnUSD" onclick="setCurrency('USD')">USD ($)</button><button class="px-2 py-0.5 text-[11px] font-medium text-slate-500 hover:text-slate-800 transition" id="btnKRW" onclick="setCurrency('KRW')">KRW (₩)</button></div></div></header><div class="intro"><div class="product-bar" id="currentProductBar"><span class="product-bar-empty" id="productBarEmpty">다음 수출 시장의 가능성을 한눈에 확인하세요. HS 코드를 검색해 보세요.</span><span class="product-bar-filled" id="productBarFilled" hidden><span class="product-bar-label">검색 코드</span><strong id="productBarCode">—</strong><span class="product-bar-sep">·</span><span class="product-bar-label">이름</span><strong id="productBarName">—</strong></span></div><span class="sample">● LIVE DATA</span></div><section class="metrics"><div class="metric"><div><div class="metric-label">선택 시장 규모</div><div class="metric-value" id="metricMarket">—</div><div class="metric-note">해당 품목 수입시장</div></div><span class="metric-icon">▥</span></div><div class="metric"><div><div class="metric-label">수요 잠재력</div><div class="metric-value" id="metricPotential">—</div><div class="metric-note">100점 기준</div></div><span class="metric-icon">↗</span></div><div class="metric"><div><div class="metric-label">수출 기회 격차</div><div class="metric-value" id="metricGap">—</div><div class="metric-note">Export Gap</div></div><span class="metric-icon">◎</span></div><div class="metric"><div><div class="metric-label">분석 해외시장</div><div class="metric-value" id="metricCount">00</div><div class="metric-note">선택 품목 기준</div></div><span class="metric-icon">◈</span></div></section><section class="hero-grid" id="globeHeroSection"><div class="panel globePanel" id="globePanel"><div class="section-eyebrow">TRADE BARRIERS</div><h3 class="tariff-panel-title">🛃 관세·비관세 장벽</h3>
 <!-- 선택 국가의 관세율·비관세장벽 (KITA TradeNavi 크롤링, blueocean/services/tariff.py) -->
-<div class="absolute inset-0 z-0 tariff-barrier-panel" id="tariffBarrierPanel">
+<div class="relative flex-1 min-h-0 z-0 tariff-barrier-panel" id="tariffBarrierPanel">
 <div class="tariff-barrier-empty" id="tariffBarrierEmpty">국가를 선택하면 해당 국가의 관세율·비관세장벽 정보를 보여줍니다.</div>
 <div class="tariff-barrier-body" id="tariffBarrierBody" hidden>
 <div class="tariff-rate-row">
@@ -414,6 +595,7 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 <div class="ntb-heading">비관세장벽 <span id="ntbCount">0</span>건</div>
 <ul class="ntb-list" id="ntbList"></ul>
 <div class="ntb-empty" id="ntbEmpty" hidden>확인된 비관세장벽이 없습니다.</div>
+<button type="button" class="ntb-more-btn" id="ntbMoreBtn" onclick="openNtbModal()" hidden>비관세장벽 목록 더보기 →</button>
 </div>
 <div class="tariff-fetched-note" id="tariffFetchedNote"></div>
 </div>
@@ -671,7 +853,19 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 <div class="news-list" id="industryNewsList"><div class="news-empty"><span class="news-empty-icon">▤</span><strong>산업 뉴스 연동 대기</strong><span>현재 HTML에는 실시간 뉴스 데이터가 연결되어 있지 않습니다.<br/>백엔드에서 국가·품목별 기사와 출처를 전달하면 이 영역에 표시됩니다.</span></div></div>
 <div class="news-foot">기사 제목 · 발표일 · 출처를 확인한 정보만 노출합니다.</div>
 </section>
-</section><footer class="footer"><span>© Blue Ocean Finder · Global trade intelligence</span><span>Blue Ocean Finder · 실시간 분석 데이터 기준</span></footer></div></div><div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4" id="algoModal">
+</section><footer class="footer"><span>© Blue Ocean Finder · Global trade intelligence</span><span>Blue Ocean Finder · 실시간 분석 데이터 기준</span></footer></div></div><div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4" id="ntbModal">
+<div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 card-shadow" style="max-height:80vh;display:flex;flex-direction:column">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+<h3 class="text-base font-extrabold text-slate-800">🛃 <span id="ntbModalTitle">비관세장벽</span></h3>
+<button class="text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 cursor-pointer" onclick="closeModal('ntbModal')">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<ul class="ntb-list ntb-modal-list" id="ntbModalList" style="overflow-y:auto"></ul>
+<div class="tariff-fetched-note" id="ntbModalNote" style="margin-top:12px"></div>
+</div>
+</div>
+<div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4" id="algoModal">
 <div class="bg-white border border-slate-200 rounded-3xl max-w-xl w-full p-6 card-shadow">
 <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
 <h3 class="text-base font-extrabold text-slate-800">📐 Blue Ocean Score 공식 명세</h3>
@@ -1327,6 +1521,7 @@ function zoomGlobe(step) {
 
       const list = document.getElementById('ntbList');
       const ntbEmpty = document.getElementById('ntbEmpty');
+      const moreBtn = document.getElementById('ntbMoreBtn');
       document.getElementById('ntbCount').textContent = ntbItems.length;
       list.replaceChildren();
       ntbEmpty.hidden = ntbItems.length > 0;
@@ -1335,13 +1530,35 @@ function zoomGlobe(step) {
         li.textContent = text;
         list.appendChild(li);
       });
+      moreBtn.hidden = ntbItems.length === 0;
+      moreBtn.textContent = `비관세장벽 ${ntbItems.length}건 전체 보기 →`;
 
       const note = document.getElementById('tariffFetchedNote');
       const baseNote = country.tariff_fetched_at ? `KITA 트레이드내비 기준 · ${country.tariff_fetched_at.slice(0, 10)} 수집` : 'KITA 트레이드내비 기준';
-      note.textContent = EU_ISO3.has(country.id)
+      const fullNote = EU_ISO3.has(country.id)
         ? `${baseNote} · EU 회원국은 한-EU FTA·EU 공동규정이 전역에 동일 적용되어 다른 EU국과 값이 같을 수 있습니다`
         : baseNote;
+      note.textContent = fullNote;
+
+      // 더보기 모달에도 같은 데이터를 미리 채워둔다 — 열릴 때마다 다시 그릴 필요 없이 즉시 표시.
+      document.getElementById('ntbModalTitle').textContent = `${country.name_kr} 비관세장벽 (${ntbItems.length}건)`;
+      const modalList = document.getElementById('ntbModalList');
+      modalList.replaceChildren();
+      ntbItems.forEach(text => {
+        const li = document.createElement('li');
+        li.textContent = text;
+        modalList.appendChild(li);
+      });
+      if (!ntbItems.length) {
+        const li = document.createElement('li');
+        li.className = 'ntb-empty';
+        li.textContent = '확인된 비관세장벽이 없습니다.';
+        modalList.appendChild(li);
+      }
+      document.getElementById('ntbModalNote').textContent = fullNote;
     }
+
+    function openNtbModal() { openModal('ntbModal'); }
 
     // ── 국가 상세(다개년 시계열 + AI Insight 재료) 실데이터 로딩 ────────────
     // 같은 국가를 다시 선택했을 때 재요청하지 않도록 hs6+iso3 조합으로 캐싱한다.
