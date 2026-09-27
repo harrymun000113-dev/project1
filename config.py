@@ -157,6 +157,8 @@ NEWS_LIMIT_DEFAULT = 10
 NEWS_LIMIT_MIN = 1
 NEWS_LIMIT_MAX = 50
 NEWS_PRODUCT_NAME_MAX_LEN = 80  # 사용자가 넘기는 product_name/추가 키워드 길이 제한
+NEWS_IMAGE_TIMEOUT_SEC = float(os.getenv("NEWS_IMAGE_TIMEOUT_SEC", "3"))
+NEWS_IMAGE_FETCH_LIMIT = 4  # 프런트가 실제로 보여주는 기사 수만큼만 원문 썸네일을 가져온다
 # 검색식 생성 로직을 바꿀 때마다 올린다 — 캐시 키에 포함시켜 예전 검색식으로 만든
 # 캐시된 결과가 새 로직 적용 후에도 TTL 동안 그대로 재사용되는 사고를 막는다
 # (config.MODE_SIGNATURE에 COMTRADE_SCHEMA_VERSION을 넣는 것과 같은 이유, §comtrade).

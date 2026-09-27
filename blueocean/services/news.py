@@ -14,10 +14,11 @@ URL 형식이나 응답 구조가 예고 없이 바뀌거나 요청이 일시적
 """
 from __future__ import annotations
 
+import json
 import logging
 import re
 from datetime import datetime, timezone
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 
 import feedparser
 import requests
@@ -30,6 +31,7 @@ from .hs_meta import industry_for_chapter, product_for_hs6
 log = logging.getLogger(__name__)
 
 NEWS_CACHE_DIR = config.CACHE_DIR / "news"
+NEWS_IMAGE_CACHE_DIR = config.CACHE_DIR / "news_images"
 
 # ── 검색식 품질 제한 (§D "지나치게 긴 검색식 방지") ─────────────────────────
 MAX_KEYWORD_LEN = 40
@@ -170,9 +172,13 @@ def _parse_entry(entry) -> dict | None:
         return None  # 필수 필드 누락 — 이 기사만 건너뛴다
 
     source = None
+    source_domain = None
     src = getattr(entry, "source", None)
     if src is not None:
         source = _clean_text(getattr(src, "title", None) or getattr(src, "value", None)) or None
+        source_home_url = getattr(src, "href", None)
+        if source_home_url:
+            source_domain = urlparse(source_home_url).netloc or None
 
     published_at = None
     published_parsed = getattr(entry, "published_parsed", None)
@@ -182,7 +188,8 @@ def _parse_entry(entry) -> dict | None:
         except (TypeError, ValueError):
             published_at = None
 
-    return {"title": _clean_text(raw_title), "url": link, "source": source, "published_at": published_at}
+    return {"title": _clean_text(raw_title), "url": link, "source": source,
+            "source_domain": source_domain, "published_at": published_at}
 
 
 def _fetch_rss(query: str, days: int) -> list[dict]:
@@ -221,6 +228,99 @@ def _fetch_rss_cached(
     요청이 바로 재시도할 수 있고, 캐시 장애가 전체 API 장애로 번지지 않는다.
     """
     return _fetch_rss(query, days)
+
+
+# ── 기사 썸네일(og:image) 조회 (§I) ──────────────────────────────────────
+def _extract_og_image(html: str) -> str | None:
+    """기사 원문 HTML에서 대표 이미지 메타 태그를 뽑는다. 못 찾으면 None(=프런트가 매체 로고로 대체)."""
+    soup = BeautifulSoup(html, "html.parser")
+    for attrs in ({"property": "og:image"}, {"property": "og:image:secure_url"}, {"name": "twitter:image"}):
+        tag = soup.find("meta", attrs=attrs)
+        content = tag.get("content") if tag else None
+        if content:
+            return content.strip()
+    return None
+
+
+_NEWS_REQUEST_HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; BlueOceanFinder/1.0; +news-search)"}
+
+
+def _google_news_decode_params(article_url: str, timeout: float) -> tuple[str, str, str] | None:
+    """news.google.com 기사 페이지에서 batchexecute 호출에 필요한 서명값을 뽑는다."""
+    resp = requests.get(article_url, timeout=timeout, headers=_NEWS_REQUEST_HEADERS)
+    if resp.status_code >= 400:
+        return None
+    div = BeautifulSoup(resp.text, "html.parser").select_one("c-wiz > div")
+    if div is None:
+        return None
+    article_id = div.get("data-n-a-id")
+    signature = div.get("data-n-a-sg")
+    timestamp = div.get("data-n-a-ts")
+    if not (article_id and signature and timestamp):
+        return None
+    return article_id, signature, timestamp
+
+
+def _decode_google_news_url(article_url: str, timeout: float) -> str | None:
+    """Google News RSS 링크(news.google.com/rss/articles/...)는 브라우저 JS가 내부
+    batchexecute RPC를 호출해야만 실제 기사 주소로 풀리는 리다이렉트다 — 그래서 이
+    링크를 그냥 requests로 조회하면 항상 Google의 안내 페이지에 머무른다. 그 JS가 하는
+    호출을 그대로 흉내내 실제 기사 URL을 얻는다.
+
+    공식 문서화된 API가 아니라 Google이 예고 없이 형식을 바꿀 수 있다(파일 상단 §H와
+    같은 이유) — 그래서 어느 단계든 실패하면 조용히 None을 돌려주고, 호출부가 예전처럼
+    (매체 로고 대체) 동작하게 둔다.
+    """
+    try:
+        params = _google_news_decode_params(article_url, timeout)
+        if params is None:
+            return None
+        article_id, signature, timestamp = params
+        inner = [
+            "garturlreq",
+            [["X", "X", ["X", "X"], None, None, 1, 1, "US:en", None, 1, None, None, None, None, None, 0, 1],
+             "X", "X", 1, [1, 1, 1], 1, 1, None, 0, 0, None, 0],
+            article_id, int(timestamp), signature,
+        ]
+        payload = json.dumps([[["Fbv4je", json.dumps(inner), None, "generic"]]])
+        resp = requests.post(
+            "https://news.google.com/_/DotsSplashUi/data/batchexecute",
+            headers={**_NEWS_REQUEST_HEADERS, "content-type": "application/x-www-form-urlencoded;charset=UTF-8"},
+            data={"f.req": payload}, timeout=timeout,
+        )
+        if resp.status_code >= 400:
+            return None
+        body = resp.text.split("\n\n", 1)[1]
+        real_url = json.loads(json.loads(body)[0][2])[1]
+        return real_url if isinstance(real_url, str) and real_url.startswith("http") else None
+    except Exception:
+        return None
+
+
+@disk_json_cache(NEWS_IMAGE_CACHE_DIR, config.TTL_NEWS, cache_if=lambda r: isinstance(r, dict))
+def _fetch_article_image_cached(url: str) -> dict:
+    """기사 원문(가능하면 Google 리다이렉트를 디코딩한 실제 언론사 URL)을 단발로 조회해
+    대표 이미지(og:image)를 얻는다. 실패는 전부 삼키고 image_url=None으로 돌려준다 —
+    이 조회 실패가 뉴스 목록 전체를 막으면 안 된다(파일 상단 원칙과 동일).
+    """
+    target_url = _decode_google_news_url(url, config.NEWS_IMAGE_TIMEOUT_SEC) or url
+    try:
+        resp = requests.get(
+            target_url, timeout=config.NEWS_IMAGE_TIMEOUT_SEC, allow_redirects=True,
+            headers=_NEWS_REQUEST_HEADERS,
+        )
+    except requests.RequestException:
+        return {"image_url": None}
+
+    # 디코딩이 실패해 여전히 Google 안내 페이지에 머문 경우 — 모든 기사에 같은 Google
+    # 기본 이미지가 잡히는 "가짜 대표 이미지"보다는 프런트의 매체 로고 대체가 낫다.
+    if resp.status_code >= 400 or urlparse(resp.url).netloc == "news.google.com":
+        return {"image_url": None}
+    try:
+        image_url = _extract_og_image(resp.text)
+    except Exception:
+        image_url = None
+    return {"image_url": image_url}
 
 
 # ── 중복 제거·정렬 (§F) ──────────────────────────────────────────────────
@@ -287,8 +387,10 @@ def search_news(hs6: str, *, days: int | None = None, limit: int | None = None,
     limited = deduped[:limit]
 
     matched_keywords = (keywords_used["industry"][:2] + keywords_used["product"][:2])[:4] or keywords_used["industry"][:4]
-    result_articles = [
-        {
+    result_articles = []
+    for i, art in enumerate(limited):
+        image_meta = _fetch_article_image_cached(art["url"]) if i < config.NEWS_IMAGE_FETCH_LIMIT else {}
+        result_articles.append({
             **art,
             "hs_code": hs6,
             "chapter": chapter,
@@ -296,9 +398,9 @@ def search_news(hs6: str, *, days: int | None = None, limit: int | None = None,
             "industry_en": industry["industry_en"],
             "product_name": product.get("ko") or product.get("en"),
             "matched_keywords": matched_keywords,
-        }
-        for art in limited
-    ]
+            "source_domain": art.get("source_domain"),
+            "image_url": image_meta.get("image_url"),
+        })
 
     return {
         "hs_code": hs6,

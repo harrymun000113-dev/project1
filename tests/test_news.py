@@ -249,6 +249,7 @@ def test_api_news_success_schema_and_limit(client, monkeypatch):
         )
 
     monkeypatch.setattr(news, "_fetch_rss_cached", fake_fetch)
+    monkeypatch.setattr(news, "_fetch_article_image_cached", lambda url: {"image_url": None, "domain": None})
     resp = client.get("/api/news/hs-code/850440?limit=1")
     assert resp.status_code == 200
     body = resp.get_json()
@@ -262,7 +263,8 @@ def test_api_news_success_schema_and_limit(client, monkeypatch):
     assert body["articles"][0]["url"] == "https://n.example/new"  # 최신 기사만 남아야 함
     art = body["articles"][0]
     for key in ("title", "url", "source", "published_at", "hs_code", "chapter",
-                "industry_ko", "industry_en", "product_name", "matched_keywords"):
+                "industry_ko", "industry_en", "product_name", "matched_keywords",
+                "image_url", "source_domain"):
         assert key in art
 
 
@@ -273,6 +275,7 @@ def test_api_news_falls_back_when_primary_strategy_has_no_results(client, monkey
         return _fake_articles(("https://n.example/fallback", None))
 
     monkeypatch.setattr(news, "_fetch_rss_cached", fake_fetch)
+    monkeypatch.setattr(news, "_fetch_article_image_cached", lambda url: {"image_url": None, "domain": None})
     resp = client.get("/api/news/hs-code/300490")
     body = resp.get_json()
     assert resp.status_code == 200
@@ -313,6 +316,7 @@ def test_api_news_query_param_variant_matches_path_variant(client, monkeypatch):
 
 def test_api_news_response_includes_items_alias_for_articles(client, monkeypatch):
     monkeypatch.setattr(news, "_fetch_rss_cached", lambda *a, **k: _fake_articles(("https://n.example/1", "2025-01-01T00:00:00+00:00")))
+    monkeypatch.setattr(news, "_fetch_article_image_cached", lambda url: {"image_url": None, "domain": None})
     resp = client.get("/api/news/hs-code/854143")
     body = resp.get_json()
     assert body["items"] == body["articles"]

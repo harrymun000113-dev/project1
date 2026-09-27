@@ -82,16 +82,6 @@
     overflow-y: visible !important;
   }
 
-  /* 3D 화면의 크기는 지구본 영역 안으로 제한 */
-  #threeGlobeContainer {
-    overflow: hidden;
-  }
-
-  #canvas3d {
-    display: block;
-    width: 100% !important;
-    height: 100% !important;
-  }
 </style>
 <style>
   html,
@@ -106,10 +96,23 @@
 html{background:#142442!important}
 body{background:radial-gradient(ellipse at 80% 10%,#253c78 0,transparent 45%),radial-gradient(ellipse at 20% 100%,#174d8e 0,transparent 45%),#142442!important}
 </style>
-<style id="sky-blue-globe-background">
-#globePanel,#threeGlobeContainer{background:#87CEEB!important}
-#globePanel .globe-label,#globePanel .globe-status{color:#234b70}
-</style><style id="blue-ocean-sketch-redesign">
+<style id="tariff-barrier-panel">
+.tariff-barrier-panel{padding:20px;display:flex;flex-direction:column}
+.tariff-barrier-empty{margin:auto;text-align:center;color:#9db8ee;font-size:11px;line-height:1.7;max-width:230px}
+.tariff-barrier-body{display:flex;flex-direction:column;gap:12px;height:100%;min-height:0}
+.tariff-rate-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px;border-radius:12px;background:#0d2352;border:1px solid #2a4870;flex-shrink:0}
+.tariff-rate-label{display:block;font-size:10px;color:#9db8ee}
+.tariff-rate-value{display:block;font-size:26px;font-weight:800;color:#eaf5ff;font-variant-numeric:tabular-nums;margin-top:2px}
+.tariff-type-pill{font-size:10px;font-weight:700;padding:4px 10px;border-radius:999px;background:#1685ff22;color:#7fc4ff;border:1px solid #2982ff55;white-space:nowrap}
+.ntb-section{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.ntb-heading{font-size:10px;color:#9db8ee;margin-bottom:6px;flex-shrink:0}
+.ntb-heading span{color:#eaf5ff;font-weight:700}
+.ntb-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.ntb-list li{font-size:11px;color:#d6e6ff;line-height:1.5;padding:8px 10px;border-radius:8px;background:#112848;border:1px solid #2a4870}
+.ntb-empty{font-size:10px;color:#7c93bb;padding:4px 2px}
+.tariff-fetched-note{font-size:9px;color:#7188ad;flex-shrink:0}
+</style>
+<style id="blue-ocean-sketch-redesign">
 /* Blue Ocean Finder · sketch-aligned dashboard (top hero intentionally unchanged) */
 html {scroll-padding-top:94px}
 .topbar {position:sticky;top:0;z-index:30;padding:14px 10px 16px;margin:-10px -5px 20px;background:#142442e8;backdrop-filter:blur(18px);border-bottom:1px solid rgba(138,175,226,.12)}
@@ -177,7 +180,9 @@ html {scroll-padding-top:94px}
 .news-list{display:flex;flex-direction:column;gap:10px;padding-top:12px}
 .news-empty{text-align:center;display:flex;align-items:center;flex-direction:column;gap:7px;padding:28px 13px;background:#142b4b;border-radius:12px;border:1px dashed #375c83}
 .news-empty-icon{font-size:26px;color:#6dbafb}.news-empty strong{font-size:12px;color:#d6e9ff}.news-empty span:last-child{font-size:10px;color:#93b1d1;line-height:1.7}
-.news-item{padding:12px;border-radius:10px;background:#112848;border:1px solid #2a4870;display:block}
+.news-item{padding:12px;border-radius:10px;background:#112848;border:1px solid #2a4870;display:flex;align-items:center;gap:12px}
+.news-item-body{flex:1;min-width:0}
+.news-item-thumb{width:64px;height:64px;flex-shrink:0;border-radius:8px;object-fit:cover;background:#1c3a63;border:1px solid #2a4870}
 .news-item strong{display:block;font-size:11px;color:#eaf5ff;line-height:1.5}
 .news-item p{font-size:10px;color:#a9c1dd!important;line-height:1.6;margin:5px 0!important}
 .news-item small{font-size:9px;color:#70acd9}.news-foot{font-size:9px;color:#89a5c7;margin-top:13px}
@@ -244,13 +249,14 @@ body[data-view="news"] .content>.intro,body[data-view="news"] .content>.metrics,
 .secondary-page .news-item{padding:18px}
 .secondary-page .news-item strong{font-size:13px}
 .secondary-page .news-item p{font-size:11px}
+.secondary-page .news-item-thumb{width:84px;height:84px}
 .page-data-notice{font-size:10px;color:#8da7c9;margin:13px 6px}
 @media(max-width:680px){.page-intro{padding:19px;align-items:flex-start;flex-direction:column}.page-home-btn{width:100%}.secondary-page>.panel{padding:16px}.secondary-page .news-list{grid-template-columns:1fr}.secondary-page .schedulePanel #tradeShowList>div{grid-template-columns:1fr}}
 </style><style id="bo-top20-ranking-search-styles">
 /* HS-code input: enter or tap the icon, no longer a country-name filter. */
-.search-box{display:flex;align-items:center;position:relative;min-width:235px}
-.search-box #globalSearchInput{width:235px!important;padding:11px 40px 11px 13px!important}
-.hs-search-go{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:30px;height:30px;border:0;border-radius:8px;background:#155c9e;color:#eaf7ff;font-size:23px;line-height:1;display:grid;place-items:center}
+.search-box{display:flex;align-items:center;position:relative;min-width:340px}
+.search-box #globalSearchInput{width:340px!important;height:44px!important;padding:0 48px 0 18px!important;font-size:13px!important;box-sizing:border-box!important}
+.hs-search-go{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:9px;background:#155c9e;color:#eaf7ff;font-size:19px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
 .ranking-count{display:inline-flex;vertical-align:middle;font-size:9px;font-weight:750;margin-left:6px;color:#74d0ed;background:#0e3957;border:1px solid #2b6f98;padding:3px 6px;border-radius:20px}
 .ranking-data-notice{font-size:9px!important;color:#80aacf!important;margin:5px 0 0!important;line-height:1.5!important}
 .demo-row-badge{font-size:8px;font-weight:700;color:#f5cf8c;border:1px solid #a27a374d;background:#6a52252e;padding:1px 4px;border-radius:5px;white-space:nowrap}
@@ -295,11 +301,17 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 .report-cover-team{margin-top:12px;font-size:11px;font-weight:800;color:#fff}
 .report-cover{aspect-ratio:210/297}
 @media print{
+  /* 표지를 A4 전체에 꽉 채우려고 예전엔 음수 마진으로 페이지 여백 밖까지 표지를
+     "삐져나오게" 했는데, 부모 .report-paper의 overflow:hidden에 그 삐져나온
+     부분이 그대로 잘려서 인쇄 미리보기에서 표지 왼쪽이 잘려 보였다(§인쇄 표지 잘림).
+     대신 표지가 있는 첫 페이지만 여백을 0으로 만들고, 표지를 정확히 210×297mm로
+     채운다 — 음수 마진/overflow 클리핑 없이 확실하게 전체 페이지를 덮는다. */
+  @page :first{margin:0}
   .report-cover{
     aspect-ratio:auto;
+    width:210mm;
     height:297mm;
-    width:calc(100% + 30mm);
-    margin:-14mm -15mm 0;
+    margin:0;
     box-sizing:border-box;
     page-break-after:always;
     border-radius:0;
@@ -348,6 +360,11 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 @media(max-width:580px){.report-paper-head,.report-paper-body{padding:18px}.report-paper-meta{padding:12px 18px}.report-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.report-paper-head h2{font-size:21px}}
 @media print{
   @page{size:A4;margin:14mm 15mm}
+  /* :root의 color-scheme:dark(다크 테마 전용) 때문에, html/body를 흰 배경으로 덮어써도
+     크롬 인쇄 엔진이 페이지 여백(진짜 콘텐츠가 없는 @page margin 영역)을 자체적으로
+     검게 채워버린다 — 실제 PDF로 저장해보면 표지 다음 페이지들 테두리가 새까맣게
+     나오는 원인이 이것이었다(§인쇄 여백 검은색). 인쇄 시에는 라이트 스킴을 강제한다. */
+  :root{color-scheme:light!important}
   html,body{background:#fff!important;color:#111!important;overflow:visible!important}
   body .shell{display:block!important;max-width:none!important;margin:0!important;padding:0!important;background:#fff!important;border:0!important;box-shadow:none!important}
   body .sidebar,body .topbar,body .footer,body .report-page>.page-intro,body .report-page>.page-context,body .report-options,body .report-page .page-home-btn{display:none!important}
@@ -384,10 +401,22 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 <div class="nav-label">ANALYSIS TOOLS</div>
 
 <button class="nav-item secondary" onclick="openModal('algoModal')"><span class="nav-icon">◇</span><span>점수 산출 방식</span></button>
-</nav></aside><div class="content"><header class="topbar" id="topOverview"><div><div class="crumb">Workspace / Overview</div><h1>글로벌 무역 대시보드</h1></div><div class="top-actions"><div class="search-box"><input aria-label="HS Code로 시장 검색" class="w-full pl-8 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 text-slate-700 placeholder-slate-400 transition" id="globalSearchInput" inputmode="numeric" maxlength="10" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" onkeydown="if(event.key==='Enter'){event.preventDefault();submitHsCodeSearch()}" placeholder="HS Code로 시장 검색..." title="6자리 HS Code 입력 후 Enter" type="text"/><button class="hs-search-go" type="button" onclick="submitHsCodeSearch()" aria-label="HS Code 검색 실행" title="HS Code 검색">⌕</button></div><div class="currency"><button class="px-2 py-0.5 text-[11px] font-semibold rounded-md bg-white text-sky-700 shadow-xs transition" id="btnUSD" onclick="setCurrency('USD')">USD ($)</button><button class="px-2 py-0.5 text-[11px] font-medium text-slate-500 hover:text-slate-800 transition" id="btnKRW" onclick="setCurrency('KRW')">KRW (₩)</button></div></div></header><div class="intro"><div class="product-bar" id="currentProductBar"><span class="product-bar-empty" id="productBarEmpty">다음 수출 시장의 가능성을 한눈에 확인하세요. HS 코드를 검색해 보세요.</span><span class="product-bar-filled" id="productBarFilled" hidden><span class="product-bar-label">검색 코드</span><strong id="productBarCode">—</strong><span class="product-bar-sep">·</span><span class="product-bar-label">이름</span><strong id="productBarName">—</strong></span></div><span class="sample">● LIVE DATA</span></div><section class="metrics"><div class="metric"><div><div class="metric-label">선택 시장 규모</div><div class="metric-value" id="metricMarket">—</div><div class="metric-note">해당 품목 수입시장</div></div><span class="metric-icon">▥</span></div><div class="metric"><div><div class="metric-label">수요 잠재력</div><div class="metric-value" id="metricPotential">—</div><div class="metric-note">100점 기준</div></div><span class="metric-icon">↗</span></div><div class="metric"><div><div class="metric-label">수출 기회 격차</div><div class="metric-value" id="metricGap">—</div><div class="metric-note">Export Gap</div></div><span class="metric-icon">◎</span></div><div class="metric"><div><div class="metric-label">분석 해외시장</div><div class="metric-value" id="metricCount">00</div><div class="metric-note">선택 품목 기준</div></div><span class="metric-icon">◈</span></div></section><section class="hero-grid" id="globeHeroSection"><div class="panel globePanel" id="globePanel"><div class="globe-label">GLOBAL NETWORK / 글로벌 시장 탐색</div><div class="globe-status" id="globeStatus">3D 지구본 불러오는 중…</div>
-<!-- Top Overlay Header inside Globe Canvas Container -->
-<div class="absolute inset-0 z-0" id="threeGlobeContainer">
-<canvas id="canvas3d" style="display:block; width:100%; height:100%;"></canvas>
+</nav></aside><div class="content"><header class="topbar" id="topOverview"><div><div class="crumb">Workspace / Overview</div><h1>글로벌 무역 대시보드</h1></div><div class="top-actions"><div class="search-box"><input aria-label="HS Code로 시장 검색" class="w-full pl-8 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 text-slate-700 placeholder-slate-400 transition" id="globalSearchInput" inputmode="numeric" maxlength="10" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" onkeydown="if(event.key==='Enter'){event.preventDefault();submitHsCodeSearch()}" placeholder="HS Code 숫자 6자리만 입력 (마침표 없이)" title="점(.) 없이 숫자 6자리만 입력 후 Enter" type="text"/><button class="hs-search-go" type="button" onclick="submitHsCodeSearch()" aria-label="HS Code 검색 실행" title="HS Code 검색">⌕</button></div><div class="currency"><button class="px-2 py-0.5 text-[11px] font-semibold rounded-md bg-white text-sky-700 shadow-xs transition" id="btnUSD" onclick="setCurrency('USD')">USD ($)</button><button class="px-2 py-0.5 text-[11px] font-medium text-slate-500 hover:text-slate-800 transition" id="btnKRW" onclick="setCurrency('KRW')">KRW (₩)</button></div></div></header><div class="intro"><div class="product-bar" id="currentProductBar"><span class="product-bar-empty" id="productBarEmpty">다음 수출 시장의 가능성을 한눈에 확인하세요. HS 코드를 검색해 보세요.</span><span class="product-bar-filled" id="productBarFilled" hidden><span class="product-bar-label">검색 코드</span><strong id="productBarCode">—</strong><span class="product-bar-sep">·</span><span class="product-bar-label">이름</span><strong id="productBarName">—</strong></span></div><span class="sample">● LIVE DATA</span></div><section class="metrics"><div class="metric"><div><div class="metric-label">선택 시장 규모</div><div class="metric-value" id="metricMarket">—</div><div class="metric-note">해당 품목 수입시장</div></div><span class="metric-icon">▥</span></div><div class="metric"><div><div class="metric-label">수요 잠재력</div><div class="metric-value" id="metricPotential">—</div><div class="metric-note">100점 기준</div></div><span class="metric-icon">↗</span></div><div class="metric"><div><div class="metric-label">수출 기회 격차</div><div class="metric-value" id="metricGap">—</div><div class="metric-note">Export Gap</div></div><span class="metric-icon">◎</span></div><div class="metric"><div><div class="metric-label">분석 해외시장</div><div class="metric-value" id="metricCount">00</div><div class="metric-note">선택 품목 기준</div></div><span class="metric-icon">◈</span></div></section><section class="hero-grid" id="globeHeroSection"><div class="panel globePanel" id="globePanel"><div class="globe-label">TRADE BARRIERS / 관세·비관세 장벽</div>
+<!-- 선택 국가의 관세율·비관세장벽 (KITA TradeNavi 크롤링, blueocean/services/tariff.py) -->
+<div class="absolute inset-0 z-0 tariff-barrier-panel" id="tariffBarrierPanel">
+<div class="tariff-barrier-empty" id="tariffBarrierEmpty">국가를 선택하면 해당 국가의 관세율·비관세장벽 정보를 보여줍니다.</div>
+<div class="tariff-barrier-body" id="tariffBarrierBody" hidden>
+<div class="tariff-rate-row">
+<div class="tariff-rate-main"><span class="tariff-rate-label">적용 관세율</span><span class="tariff-rate-value" id="tariffRateValue">—</span></div>
+<span class="tariff-type-pill" id="tariffTypePill">—</span>
+</div>
+<div class="ntb-section">
+<div class="ntb-heading">비관세장벽 <span id="ntbCount">0</span>건</div>
+<ul class="ntb-list" id="ntbList"></ul>
+<div class="ntb-empty" id="ntbEmpty" hidden>확인된 비관세장벽이 없습니다.</div>
+</div>
+<div class="tariff-fetched-note" id="tariffFetchedNote"></div>
+</div>
 </div>
 <!-- Bottom Overlay Target Quick Select Buttons Row -->
 <div class="relative z-10 flex flex-wrap items-center gap-1.5 bg-white/80 backdrop-blur-md p-1.5 rounded-xl border border-slate-200/80 w-fit self-center" id="quickTargetRow">
@@ -482,17 +511,17 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 </div>
 </div>
 <!-- Table Container -->
-<div class="overflow-x-auto flex-1 ranking-table-wrap">
-<table class="w-full text-left text-xs">
+<div class="overflow-x-auto flex-1 ranking-table-wrap pr-2">
+<table class="w-full text-left text-xs" style="table-layout:fixed">
 <thead class="text-[10px] text-slate-400 border-b border-slate-100 bg-slate-50/50">
 <tr>
-<th class="py-2 px-1 text-center font-semibold">Rank</th>
-<th class="py-2 px-2 font-semibold">Country</th>
-<th class="py-2 px-1 text-center font-semibold text-slate-700">Score</th>
-<th class="py-2 px-1 text-right font-semibold">Potential</th>
-<th class="py-2 px-1 text-right font-semibold">Penetration</th>
-<th class="py-2 px-1 text-center font-semibold">Competitor</th>
-<th class="py-2 px-1 text-center font-semibold">KOTRA</th>
+<th class="py-2 px-2 text-center font-semibold whitespace-nowrap" style="width:6%">순위</th>
+<th class="py-2 px-2 font-semibold whitespace-nowrap" style="width:22%">국가</th>
+<th class="py-2 px-2 text-center font-semibold text-slate-700 whitespace-nowrap" style="width:14.4%">점수</th>
+<th class="py-2 px-2 text-center font-semibold whitespace-nowrap" style="width:14.4%">수요 잠재력</th>
+<th class="py-2 px-2 text-center font-semibold whitespace-nowrap" style="width:14.4%">한국 점유율</th>
+<th class="py-2 px-2 text-center font-semibold whitespace-nowrap" style="width:14.4%">경쟁국 점유율</th>
+<th class="py-2 px-2 text-center font-semibold whitespace-nowrap" style="width:14.4%">전체시장규모</th>
 </tr>
 </thead>
 <tbody class="divide-y divide-slate-100 text-slate-700" id="rankingTableBody">
@@ -502,7 +531,7 @@ body[data-view="report"] .content>.analysis-grid{display:none!important}
 </div>
 <!-- Bottom Metric Note -->
 <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 px-1 font-mono">
-<span>Selected Market Size:</span>
+<span>선택 시장 규모:</span>
 <span class="font-bold text-sky-700 text-xs" id="targetPotentialAmount">—</span>
 </div>
 </div><div class="panel matrixPanel" id="matrixPanel"><div class="section-eyebrow">ANALYSIS / OPPORTUNITY MAP</div>
@@ -755,6 +784,7 @@ document.addEventListener('click',e=>{if(e.target.id?.endsWith('Modal'))closeMod
         tariff_rate_pct: row.barriers ? row.barriers.tariff_rate_pct : null,
         tariff_type: row.barriers ? row.barriers.tariff_type : null,
         ntb_items: row.barriers ? (row.barriers.ntb_items || []) : [],
+        tariff_fetched_at: row.barriers ? row.barriers.fetched_at : null,
         score_breakdown: row.score_breakdown || null,
         role_desc: '',
         trend_years: [], import_trend: [], korea_export_trend: [], gap_trend: [],
@@ -1224,18 +1254,16 @@ function zoomGlobe(step) {
         tr.onkeydown = e => { if(e.key==='Enter' || e.key===' ') {e.preventDefault();lockHunterTarget(item.id);} };
 
         tr.innerHTML = `
-          <td class="py-2 px-1 text-center text-slate-400 font-mono">${index + 1}</td>
+          <td class="py-2 px-2 text-center text-slate-400 font-mono">${index + 1}</td>
           <td class="py-2 px-2 flex items-center gap-1.5 font-medium text-slate-800">
             <span class="text-sm">${item.flag}</span>
             <span class="truncate">${item.name}</span>
           </td>
-          <td class="py-2 px-1 text-center font-bold text-slate-700 font-mono">${numOrDash(item.score,0)}</td>
-          <td class="py-2 px-1 text-right text-slate-600 font-mono">${numOrDash(item.potential,2)}</td>
-          <td class="py-2 px-1 text-right text-slate-600 font-mono">${numOrDash(item.penetration,1)}%</td>
-          <td class="py-2 px-1 text-center text-slate-500" title="상위 3개국 합산 점유율">${item.competitors!=null?numOrDash(item.competitors,1)+'%':'—'}</td>
-          <td class="py-2 px-1 text-center">
-            <button onclick="event.stopPropagation(); showKotraNotice('${item.name}');" class="px-2 py-0.5 text-[10px] bg-slate-100 hover:bg-sky-100 text-slate-700 hover:text-sky-700 rounded font-medium border border-slate-200 transition cursor-pointer">KOTRA</button>
-          </td>
+          <td class="py-2 px-2 text-center font-bold text-slate-700 font-mono whitespace-nowrap">${numOrDash(item.score,0)}</td>
+          <td class="py-2 px-2 text-center text-slate-600 font-mono whitespace-nowrap">${numOrDash(item.potential,2)}</td>
+          <td class="py-2 px-2 text-center text-slate-600 font-mono whitespace-nowrap">${numOrDash(item.penetration,1)}%</td>
+          <td class="py-2 px-2 text-center text-slate-500 whitespace-nowrap" title="상위 3개국 합산 점유율">${item.competitors!=null?numOrDash(item.competitors,1)+'%':'—'}</td>
+          <td class="py-2 px-2 text-center text-slate-600 font-mono whitespace-nowrap">${formatMoney(item.market_size_usd)}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -1266,6 +1294,53 @@ function zoomGlobe(step) {
         btn.innerHTML = `<span>${c.flag} ${c.name_kr}</span><span class="text-[10px] font-mono ${isSelected?'text-rose-600':'text-slate-500'}">${numOrDash(c.export_gap,1)}%p</span>`;
         wrap.appendChild(btn);
       });
+    }
+
+    // EU 회원국(27개, ISO3) — 한-EU FTA 세율과 식품·화학물질 등 규제(NTB)가 EU 전역에
+    // 공통 적용되는 경우가 많아, 이 그룹 안에서는 국가를 바꿔도 값이 실제로 동일하게
+    // 나올 수 있다. 사용자가 이를 "안 바뀌는 버그"로 오인하지 않도록 패널에 안내한다.
+    const EU_ISO3 = new Set([
+      'AUT','BEL','BGR','HRV','CYP','CZE','DNK','EST','FIN','FRA','DEU','GRC','HUN','IRL',
+      'ITA','LVA','LTU','LUX','MLT','NLD','POL','PRT','ROU','SVK','SVN','ESP','SWE',
+    ]);
+
+    // 선택 국가의 관세율·비관세장벽 — KITA TradeNavi 크롤링 결과(barriers, §5.4)를
+    // mapAnalyzeRowToCountry()가 이미 country.tariff_rate_pct/tariff_type/ntb_items로
+    // 옮겨 놓았으므로, 여기서는 그 값을 그대로 표시만 한다(추가 API 호출 없음).
+    function renderTariffBarrierPanel(country) {
+      const empty = document.getElementById('tariffBarrierEmpty');
+      const body = document.getElementById('tariffBarrierBody');
+      if (!country) { empty.hidden = false; body.hidden = true; return; }
+
+      const hasTariff = typeof country.tariff_rate_pct === 'number';
+      const ntbItems = Array.isArray(country.ntb_items) ? country.ntb_items : [];
+      if (!hasTariff && !ntbItems.length) {
+        empty.hidden = false; empty.textContent = `${country.name_kr}의 관세율·비관세장벽 데이터를 아직 확인하지 못했습니다.`;
+        body.hidden = true;
+        return;
+      }
+      empty.hidden = true; body.hidden = false;
+
+      document.getElementById('tariffRateValue').textContent = hasTariff ? `${country.tariff_rate_pct.toFixed(1)}%` : '확인 안 됨';
+      const typePill = document.getElementById('tariffTypePill');
+      typePill.textContent = country.tariff_type === 'FTA' ? 'FTA 협정세율' : country.tariff_type === 'MFN' ? 'MFN(최혜국) 세율' : '세율 구분 미상';
+
+      const list = document.getElementById('ntbList');
+      const ntbEmpty = document.getElementById('ntbEmpty');
+      document.getElementById('ntbCount').textContent = ntbItems.length;
+      list.replaceChildren();
+      ntbEmpty.hidden = ntbItems.length > 0;
+      ntbItems.forEach(text => {
+        const li = document.createElement('li');
+        li.textContent = text;
+        list.appendChild(li);
+      });
+
+      const note = document.getElementById('tariffFetchedNote');
+      const baseNote = country.tariff_fetched_at ? `KITA 트레이드내비 기준 · ${country.tariff_fetched_at.slice(0, 10)} 수집` : 'KITA 트레이드내비 기준';
+      note.textContent = EU_ISO3.has(country.id)
+        ? `${baseNote} · EU 회원국은 한-EU FTA·EU 공동규정이 전역에 동일 적용되어 다른 EU국과 값이 같을 수 있습니다`
+        : baseNote;
     }
 
     // ── 국가 상세(다개년 시계열 + AI Insight 재료) 실데이터 로딩 ────────────
@@ -1335,6 +1410,7 @@ function zoomGlobe(step) {
         document.getElementById('hudExportGapVal').innerText = typeof country.export_gap === 'number' ? `${country.export_gap>=0?'+':''}${country.export_gap.toFixed(1)}%p` : '—';
 
         renderQuickTargets(currentData.countries, countryId);
+        renderTariffBarrierPanel(country);
 
         document.getElementById('aiInsightTargetName').innerText = `Target: ${country.name} (${country.name_kr})`;
         document.getElementById('targetPotentialAmount').innerText = formatMoney(country.market_size_usd);
@@ -1524,23 +1600,7 @@ function submitHsCodeSearch() {
     });
 }
 </script>
-<script type="module">
-  
-
-  const canvas = document.getElementById("canvas3d");
-
-  try {
-    const { Application } = await import("https://unpkg.com/@splinetool/runtime/build/runtime.js");
-    const app = new Application(canvas, { htmlContentMode: "inline" });
-    await app.load(
-      "https://prod.spline.design/VKO6ZK1B2QLpBv-1/scene.splinecode"
-    );
-    app.setBackgroundColor('#87CEEB');
-    document.getElementById('globeStatus').hidden = true;
-  } catch (error) {
-    document.getElementById("globeStatus").textContent = "3D 화면을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.";
-  }
-</script><div aria-live="polite" class="app-toast" hidden="" id="appToast" role="status"></div><script id="blue-ocean-insight-addon">
+<div aria-live="polite" class="app-toast" hidden="" id="appToast" role="status"></div><script id="blue-ocean-insight-addon">
 /* Enhanced AI Insight panel. A standalone HTML file uses grounded SAMPLE data only.
    To activate real OpenAI insights from Flask, define window.BLUE_OCEAN_INSIGHT_ENDPOINT
    as an endpoint accepting ?hs=854140&iso3=MEX and returning validated JSON.
@@ -1612,7 +1672,9 @@ function submitHsCodeSearch() {
   catch(e){if(seq===requestSeq)el('insightSourceTag').textContent='실제 AI 분석을 불러오지 못해 샘플 안내를 표시합니다.'}
  }
  function noNewsState(){el('industryNewsList').innerHTML='<div class="news-empty"><span class="news-empty-icon">▤</span><strong>검증된 뉴스 데이터 미연결</strong><span>국가·HS 품목별 뉴스 백엔드가 연결되면 기사 제목, 발표일, 출처를 보여줍니다. 확인되지 않은 기사는 생성하지 않습니다.</span></div>'}
- function renderNews(items,c){const holder=el('industryNewsList');holder.replaceChildren();const valid=(Array.isArray(items)?items:[]).filter(v=>v&&typeof v.title==='string'&&typeof v.url==='string'&&/^https?:\/\//i.test(v.url)&&v.source&&v.published_at).slice(0,4);if(!valid.length){noNewsState();return}for(const v of valid){const a=document.createElement('a');a.className='news-item';a.href=v.url;a.target='_blank';a.rel='noopener noreferrer';const strong=document.createElement('strong');strong.textContent=v.title;const summary=document.createElement('p');summary.textContent=v.summary||'관련 상세 내용은 원문을 확인하세요.';const small=document.createElement('small');small.textContent=`${v.source} · ${v.published_at}`;a.append(strong,summary,small);holder.append(a)}}
+ function newsLogoUrl(domain){return domain?`https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64`:''}
+ function newsDomainFromUrl(url){try{return new URL(url).hostname}catch(e){return ''}}
+ function renderNews(items,c){const holder=el('industryNewsList');holder.replaceChildren();const valid=(Array.isArray(items)?items:[]).filter(v=>v&&typeof v.title==='string'&&typeof v.url==='string'&&/^https?:\/\//i.test(v.url)&&v.source&&v.published_at).slice(0,4);if(!valid.length){noNewsState();return}for(const v of valid){const a=document.createElement('a');a.className='news-item';a.href=v.url;a.target='_blank';a.rel='noopener noreferrer';const body=document.createElement('div');body.className='news-item-body';const strong=document.createElement('strong');strong.textContent=v.title;const summary=document.createElement('p');summary.textContent=v.summary||'관련 상세 내용은 원문을 확인하세요.';const small=document.createElement('small');small.textContent=`${v.source} · ${v.published_at}`;body.append(strong,summary,small);const logoUrl=newsLogoUrl(v.source_domain||newsDomainFromUrl(v.url));const thumbSrc=v.image_url||logoUrl;if(thumbSrc){const img=document.createElement('img');img.className='news-item-thumb';img.alt='';img.loading='lazy';img.src=thumbSrc;img.onerror=function(){if(logoUrl&&this.src!==logoUrl){this.onerror=null;this.src=logoUrl}else{this.remove()}};a.append(body,img)}else{a.append(body)}holder.append(a)}}
  async function loadNews(c){const seq=++newsRequestSeq;el('newsCountryTag').textContent=`${c.name_kr} · HS ${currentHsCode}`;noNewsState();const endpoint=window.BLUE_OCEAN_NEWS_ENDPOINT;if(!endpoint||location.protocol==='file:')return;try{const url=new URL(endpoint,location.href);url.searchParams.set('hs',currentHsCode);url.searchParams.set('iso3',c.id);const r=await fetch(url,{credentials:'same-origin',headers:{Accept:'application/json'}});if(!r.ok)throw Error();const d=await r.json();if(seq!==newsRequestSeq||c.id!==selectedCountryId)return;renderNews(d.items||d.news||d,c)}catch(e){if(seq===newsRequestSeq)noNewsState()}}
  // Hook existing selection instead of replacing existing data/chart/quick-target behavior.
  const baseSelectCountry=selectCountry;
