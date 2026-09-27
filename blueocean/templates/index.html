@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko"><head>
 <meta charset="utf-8"/>
@@ -46,6 +47,56 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+{% extends "base.html" %}
+{% block title %}Blue Ocean Finder — 수출 타깃국 정밀 분석{% endblock %}
+
+{% block content %}
+<header class="app-header sticky-top">
+  {% include "components/_header.html" %}
+</header>
+
+{# 모달은 sticky 헤더(자체 stacking context, z-index:1020) 밖에 둬야 한다 —
+   header 안에 있으면 모달 backdrop(z-index:1050)이 header 서브트리 전체보다
+   위에 그려져서 모달 내용의 닫기 버튼이 클릭을 못 받는다. #}
+{% include "components/_score_spec_modal.html" %}
+
+<main class="container-xl app-main">
+  <section id="hero" class="row g-4 my-2">
+    {% include "components/_hero.html" %}
+  </section>
+
+  <div id="analysis-view">
+    <section id="ai-insight-wrap" class="ai-insight-section">
+      {% include "components/_ai_insight.html" %}
+    </section>
+
+  <section id="dashboard" class="row g-4 align-items-stretch my-4">
+    {% include "components/_dashboard.html" %}
+  </section>
+
+  <section id="event-dashboard" class="event-dashboard-section my-5">
+    <div class="event-dashboard-heading d-flex align-items-end justify-content-between gap-3 mb-3">
+      <div>
+        <span class="section-kicker">TRADEMAP EVENT INTELLIGENCE</span>
+        <h2 class="h4 mb-1">박람회·무역행사 캘린더</h2>
+        <p class="text-muted small mb-0">HS 코드와 산업·국가 조건을 기준으로 박람회 및 무역행사를 탐색합니다.</p>
+      </div>
+      <a class="btn btn-sm btn-outline-secondary" href="#hero">위로 가기</a>
+    </div>
+    <div class="event-dashboard-frame">
+      <iframe id="trademap-dashboard-frame"
+        src="{{ url_for('pages.trademap_dashboard') }}"
+        title="TradeMap 박람회 및 무역행사 대시보드"
+        loading="lazy"></iframe>
+    </div>
+  </section>
+
+    <section id="dashboard" class="row g-4 align-items-stretch my-4">
+      {% include "components/_dashboard.html" %}
+    </section>
+  </div>
+
 
     .card-shadow {
       box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
@@ -2012,6 +2063,8 @@ function submitHsCodeSearch() {
         conclusionEl.textContent=`${g.desc} (AI Insight 상세 분석을 불러오는 중입니다 — 홈 화면에서 이 국가를 한 번 선택하면 여기에도 반영됩니다.)`;
       }
     }
+
+</main>
 
     // A. 산출 근거 — build_report.js/보고서 PDF와 동일한 6개 행 구성, 전부 실데이터.
     const basisBody=byId('reportBasisBody');
