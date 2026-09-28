@@ -9,7 +9,7 @@ import json
 import logging
 
 import config
-from ..services import openai_client
+from ..services import openai_client, research
 from ..services.cache import disk_json_cache
 
 log = logging.getLogger(__name__)
@@ -97,6 +97,38 @@ def _key_indicators(row: dict) -> list[dict]:
     ]
 
 
+def market_watch(row: dict) -> list[dict]:
+    barriers = row.get("barriers") or {}
+    items = barriers.get("ntb_items") or []
+    tariff = barriers.get("tariff_rate_pct")
+    competition = (row.get("competitors") or {}).get("top3_share_pct")
+    fx = row.get("fx") or {}
+    watch = []
+    if tariff is not None or items:
+        fact = f"조회 관세율 {_display(tariff, '%')} · 확인된 비관세장벽 {len(items)}건."
+        if items:
+            fact += " " + " / ".join(str(item) for item in items[:2])
+        if barriers.get("fetched_at"):
+            fact += f" (수집일 {str(barriers['fetched_at'])[:10]})"
+        watch.append({"title": "관세·인증·통관 확인", "fact": fact,
+                      "impact": "조회된 장벽의 적용 대상과 증빙 요건을 바이어·통관 담당자에게 확인하세요. 관세가 0%여도 비관세 요건은 별도입니다.", "source_id": None})
+    else:
+        watch.append({"title": "진입요건 자료 확인 필요", "fact": "현재 분석에 관세·비관세장벽 자료가 없습니다.",
+                      "impact": "장벽이 없다는 뜻은 아닙니다. 계약 전에 해당 품목의 관세·인증 요건을 확인하세요.", "source_id": None})
+    facts, impacts = [], []
+    if competition is not None:
+        facts.append(f"한국 제외 상위 3개 공급국의 합산 점유율 {_display(competition, '%')}.")
+        impacts.append("기존 공급국의 가격·유통채널과 비교해 차별화 조건을 검토하세요.")
+    if fx.get("change_3y_pct") is not None:
+        facts.append(f"현지 통화의 원화 환산가치 3년 변화 {_display(fx['change_3y_pct'], '%', True)}.")
+        impacts.append("과거 환율 변화는 미래 예측이 아니며, 계약 통화·결제 시점에 따른 손익을 점검하세요.")
+    if row.get("data_flags"):
+        facts.append("일부 보조지표에 결측 또는 대체 소스가 포함되어 있습니다.")
+    watch.append({"title": "경쟁·환율 점검", "fact": " ".join(facts) or "경쟁·환율 지표가 확보되지 않았습니다.",
+                  "impact": " ".join(impacts) or "자료가 확보되기 전에는 위험이 낮다고 단정하지 마세요.", "source_id": None})
+    return watch
+
+
 def _stub(hs6: str, row: dict) -> dict:
     country = row.get("name_ko") or row.get("name_en") or "선택 국가"
     growth = row.get("growth") or {}
@@ -119,12 +151,7 @@ def _stub(hs6: str, row: dict) -> dict:
         {"title": "낮은 한국산 점유율", "icon": "◎", "text": "현지 점유율이 낮다면 전문 유통사와 신규 거래처를 대상으로 시장개척을 검토할 수 있습니다.", "evidence": ["korea_share_pct"]},
         {"title": "무역환경 확인", "icon": "△", "text": "관세율과 비관세 장벽은 실제 적용 조건을 확인한 뒤 수출전략에 반영해야 합니다.", "evidence": ["barriers"]},
     ]
-    barriers = row.get("barriers") or {}
-    watch = []
-    if barriers.get("tariff_rate_pct") is not None or barriers.get("ntb_count"):
-        watch.append({"title": "관세·비관세 장벽", "fact": f"관세율 {_display(barriers.get('tariff_rate_pct'), '%')} / 비관세 장벽 {barriers.get('ntb_count', 0)}건", "impact": "실제 HS 세번과 수입요건을 확인해야 합니다.", "source_id": None})
-    if row.get("data_flags"):
-        watch.append({"title": "데이터 확인 필요", "fact": "일부 보조지표에 결측 또는 대체 소스 플래그가 있습니다.", "impact": "계약 전 최신 자료로 재검증하는 것이 안전합니다.", "source_id": None})
+    watch = market_watch(row)
     interpretation = [summary, "한국산 점유율과 Export Gap은 추가 진입 여지를 판단하는 참고 근거입니다.", "중소기업은 현지 바이어와 유통구조를 확인하면서 소량 테스트로 접근하는 편이 현실적입니다.", "관세와 경쟁국 집중도는 가격·차별화 전략과 함께 검토해야 합니다.", "주요 제약요인은 별도 확인 후 최종 진출 여부를 판단해야 합니다."]
     return {
         "headline": "AI Market Insight", "summary": summary, "key_indicators": _key_indicators(row),
@@ -169,4 +196,11 @@ def generate(hs6: str, row: dict) -> dict:
             result["sources"] = ai["sources"]
     # 숫자와 Python 계산 결과는 모델 응답으로 덮어쓰지 않는다.
     result["key_indicators"] = _key_indicators(row)
+    # Risk cards must always reflect the supplied metrics, including on AI failure.
+    result["market_watch"] = market_watch(row)
+    # External facts stay next to their provider-issued source citations.
+    # Never mix uncited external prose into the numeric KPI or risk calculation.
+    external = research.search(hs6, row.get("iso3", ""), row.get("name_ko") or row.get("name_en") or "")
+    result["external_research"] = external
+    result["sources"] = [source for fact in external.get("facts", []) for source in fact["sources"]]
     return result

@@ -55,6 +55,13 @@ def test_run_end_to_end_demo_mode_produces_valid_json():
     for row in result["top20"]:
         assert row["market_size_usd"] is None or row["market_size_usd"] >= config.HARD_CUT_USD
 
+    from blueocean.services import comtrade
+    reported = comtrade.imports("854140", reporter="all", partner=config.KOREA_COMTRADE_CODE,
+                                years=[result["meta"]["base_year"]])
+    amounts = reported.groupby("reporter_iso3")["value"].sum()
+    for row in result["top20"]:
+        assert row["korea_import_usd"] == amounts.get(row["iso3"], None)
+
     # NaN이 그대로 새어나가면 json.dumps가 무한값을 문자열 "NaN"으로 뱉는데, 이는 표준 JSON이
     # 아니라 프론트에서 JSON.parse가 깨진다 -> allow_nan=False로 왕복 가능한지 검증한다.
     raw = json.dumps(result, allow_nan=False)

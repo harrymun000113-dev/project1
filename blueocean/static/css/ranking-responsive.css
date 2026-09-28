@@ -1,0 +1,28 @@
+/* Respond to the actual card width, including browser zoom. */
+#rankingPanel{container-type:inline-size;container-name:ranking;min-width:0}
+#rankingPanel>.ranking-table-wrap{width:100%;max-width:100%;min-width:0;padding-right:0;scrollbar-gutter:stable}
+#rankingPanel .ranking-table-wrap table{width:100%;min-width:0;max-width:100%;table-layout:fixed}
+#rankingPanel th,#rankingPanel td{min-width:0;white-space:normal!important;overflow-wrap:anywhere;word-break:normal;padding-left:4px!important;padding-right:4px!important;line-height:1.5}
+#rankingPanel td.ranking-country{display:table-cell}
+.ranking-country-name{display:inline-flex;align-items:center;gap:5px;max-width:100%;vertical-align:middle}
+.ranking-country-name>span:last-child{min-width:0;white-space:normal;overflow-wrap:anywhere}
+#rankingPanel .ranking-heading{flex-wrap:wrap;gap:8px}
+#rankingPanel .ranking-heading>div{min-width:0;max-width:100%}
+#rankingPanel .ranking-summary{flex-wrap:wrap;gap:4px 12px}
+#rankingPanel #targetPotentialAmount{overflow-wrap:anywhere;min-width:0}
+@container ranking (max-width:460px){
+  #rankingPanel .ranking-table-wrap table{display:block;height:auto!important}
+  #rankingPanel thead{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  #rankingPanel tbody{display:block;width:100%}
+  #rankingPanel tbody tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;height:auto!important;padding:12px 8px;border-bottom:1px solid #dce5f5}
+  #rankingPanel tbody td{display:block!important;text-align:left;padding:0!important;font-size:12px}
+  #rankingPanel tbody td:before{content:attr(data-label);display:block;color:#7183a4;font-size:10px;font-weight:400;margin-bottom:3px}
+  #rankingPanel tbody td:nth-child(2),#rankingPanel tbody td:nth-child(7){grid-column:span 2}
+  #rankingPanel tbody td[colspan]{grid-column:1/-1;padding:18px 8px!important;text-align:center}
+  #rankingPanel tbody td[colspan]:before{display:none}
+}
+@container ranking (max-width:250px){
+  #rankingPanel tbody tr{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  #rankingPanel tbody td:nth-child(2){grid-column:auto}
+  #rankingPanel tbody td:nth-child(7){grid-column:1/-1}
+}

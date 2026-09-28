@@ -545,7 +545,11 @@ input::placeholder{color:#9aa6c2!important}
 .intro-boat-start.intro-boat-start-show{top:56%;opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
 @media(max-width:580px){.intro-brand{top:18px;left:18px;font-size:44px}.intro-boat-start{font-size:20px;letter-spacing:2px}}
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ranking-responsive.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/share-diagnosis.css') }}">
 </head><body>
+<script src="{{ url_for('static', filename='js/official-research.js') }}"></script>
+<script src="{{ url_for('static', filename='js/report-share-diagnosis.js') }}"></script>
 <div class="intro-overlay" id="introOverlay">
 <iframe id="introFrame" src="https://my.spline.design/animatedpaperboat-IJA6Y3ZvwbHZy4kVr2rtYgQd/" title="Blue Ocean Finder intro" allow="fullscreen" loading="eager"></iframe>
 <div class="intro-sky-wash"></div>
@@ -660,7 +664,7 @@ input::placeholder{color:#9aa6c2!important}
 <div class="insight-divider"></div>
 <section class="insight-section"><div class="insight-section-head"><div><h4><span class="heading-icon pink">◎</span>Why This Market?</h4><p>이 국가가 유망시장으로 선정된 핵심 이유입니다.</p></div><span class="outline-pill">TOP 3 선정 근거</span></div><div class="insight-three" id="insightWhyCards"></div></section>
 <section class="insight-section"><div class="insight-section-head"><div><h4><span class="heading-icon sky">◇</span>Export Attractiveness</h4><p>한국 중소기업의 수출 관점에서 해석한 주요 매력입니다.</p></div></div><div class="insight-three" id="insightAttractCards"></div></section>
-<section class="insight-section"><div class="insight-section-head"><div><h4><span class="heading-icon amber">⚠</span>Market Watch <span class="watch-caption">수출 전 체크</span></h4><p>확인된 수출 변수와 관련 이슈만 간결하게 표시합니다.</p></div><span class="outline-pill">실제 자료 확인 후 갱신</span></div><div class="insight-two" id="insightWatchCards"></div></section>
+<section class="insight-section"><div class="insight-section-head"><div><h4><span class="heading-icon amber">⚠</span>Market Watch <span class="watch-caption">수출 전 체크</span></h4><p>확인된 수출 변수와 관련 이슈만 간결하게 표시합니다.</p></div><span class="outline-pill">선택 국가 데이터 기준</span></div><div class="insight-two" id="insightWatchCards"></div></section><section id="insightExternalResearch" hidden></section>
 
 <div class="insight-footer"><span id="aiInsightTargetName">Target: —</span><span id="insightDataNotes">샘플 데이터 · 실시간 AI/뉴스 미연동</span></div></div></div><div class="panel trendPanel" id="trendPanel"><div class="section-eyebrow">ANALYSIS / EXPORT GAP</div>
 <div class="flex items-center justify-between mb-1.5">
@@ -674,7 +678,7 @@ input::placeholder{color:#9aa6c2!important}
 <canvas id="trendChart"></canvas>
 </div>
 </div></div><div class="analysis-column analysis-column-right"><div class="panel rankingPanel" id="rankingPanel"><div class="section-eyebrow">ANALYSIS / RANKING</div>
-<div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-2">
+<div class="ranking-heading flex items-center justify-between pb-2 border-b border-slate-100 mb-2">
 <div>
 <h3 class="font-extrabold text-sm text-slate-800">유망시장 순위 <span class="ranking-count" id="rankingCount">TOP 20</span></h3>
 <p class="text-[10px] text-slate-400 mt-0.5">국가를 선택하면 AI Insight와 차트가 함께 변경됩니다.</p><p class="ranking-data-notice" id="rankingDataNotice">샘플 데이터 · 추가 국가 및 수치는 화면 시연용 예시입니다.</p>
@@ -697,7 +701,7 @@ input::placeholder{color:#9aa6c2!important}
 <th class="py-2 px-2 font-semibold whitespace-nowrap" style="width:22%">국가</th>
 <th class="py-2 px-2 text-center font-semibold text-slate-700 whitespace-nowrap" style="width:14.4%">점수</th>
 <th class="py-2 px-2 text-center font-semibold whitespace-nowrap" style="width:14.4%">수요 잠재력</th>
-<th class="py-2 px-2 text-center font-semibold whitespace-nowrap" style="width:14.4%">한국 점유율</th>
+<th class="py-2 px-2 text-center font-semibold whitespace-nowrap" style="width:14.4%" title="해당 국가의 이 HS 품목 전체 수입액 중 한국산 비중">한국산 점유율</th>
 <th class="py-2 px-2 text-center font-semibold whitespace-nowrap" style="width:14.4%">경쟁국 점유율</th>
 <th class="py-2 px-2 text-center font-semibold whitespace-nowrap" style="width:14.4%">전체시장규모</th>
 </tr>
@@ -708,7 +712,7 @@ input::placeholder{color:#9aa6c2!important}
 </table>
 </div>
 <!-- Bottom Metric Note -->
-<div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 px-1 font-mono">
+<div class="ranking-summary mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 px-1 font-mono">
 <span>선택 시장 규모:</span>
 <span class="font-bold text-sky-700 text-xs" id="targetPotentialAmount">—</span>
 </div>
@@ -787,9 +791,9 @@ input::placeholder{color:#9aa6c2!important}
       <section class="report-paper-section"><h3><span class="sec-num">3</span>리스크 및 진입장벽</h3>
         <table class="report-risk-table"><thead><tr><th>점검 항목</th><th>심각도</th><th>설명</th></tr></thead><tbody id="reportRiskBody"></tbody></table>
       </section>
-      <section class="report-paper-section"><h3><span class="sec-num">4</span>한국 기업 진출 선례</h3>
-        <p class="report-muted" style="margin-top:0">확인된 진출 사례가 없는 경우 지어내지 않고 아래와 같이 표시합니다.</p>
-        <div class="report-limitation" id="reportPrecedentBox">확인된 진출 사례 없음 — 현재 이 항목은 실제 웹 검색·뉴스 데이터에 연결되어 있지 않습니다.</div>
+      <section class="report-paper-section"><h3><span class="sec-num">4</span>한국산 점유율 구조·원인 분석</h3>
+        <p class="report-muted" style="margin-top:0">공식 무역통계의 비교 결과와 출처가 확인되는 외부 자료만 표시합니다. AI는 공식 원문의 확인된 내용을 요약하며, 근거 없는 원인 추정은 제외합니다.</p>
+        <div id="reportShareDiagnosis" aria-live="polite">분석할 국가와 HS 품목을 선택해 주세요.</div>
       </section>
       <section class="report-paper-section"><h3><span class="sec-num">5</span>다음 액션 체크리스트</h3>
         <table class="report-risk-table"><thead><tr><th>단계</th><th>내용</th><th>설명</th></tr></thead><tbody>
@@ -811,7 +815,7 @@ input::placeholder{color:#9aa6c2!important}
         <div class="report-limitation">위 판단은 본 리포트에 제시된 데이터만을 근거로 한 요약이며, 최종 진출 결정은 팀 내 추가 검토를 거쳐 확정해야 합니다.</div>
       </section>
       <section class="report-paper-section"><h3><span class="sec-num">8</span>데이터 한계</h3>
-        <p style="margin-top:0">관세율 데이터는 조회 시점 기준이며 향후 변경될 수 있습니다. "한국 기업 진출 선례"는 실시간 검색 결과에 의존하지 않으므로 위와 같이 항상 미확인으로 표시됩니다. 물류일수 등 일부 보조 지표는 확보되지 않아 계산에서 제외되었습니다.</p>
+        <p style="margin-top:0">관세율은 조회 시점 기준이며 변경될 수 있습니다. 외부 자료에는 원문 링크와 조회일을 표시합니다. 점유율 분석에는 계산으로 확인되는 비교 결과와 출처가 있는 사실만 포함하며, 원인이 확인되지 않은 취향·인지도·유통 독점 등의 설명은 제외합니다.</p>
       </section>
       <section class="report-paper-section"><h3><span class="sec-num">A</span>산출 근거</h3>
         <table class="report-risk-table"><thead><tr><th>산출 지표</th><th>값 / 산식</th></tr></thead><tbody id="reportBasisBody"></tbody></table>
@@ -944,7 +948,15 @@ document.addEventListener('click',e=>{if(e.target.id?.endsWith('Modal'))closeMod
     // .toFixed()를 곧바로 호출하면 실데이터의 null(계산 실패·결측)에서 예외가 난다 —
     // 이 화면 전체에서 숫자 포맷은 항상 이 헬퍼를 거친다.
     function numOrDash(v, digits) {
-      return (typeof v === 'number' && Number.isFinite(v)) ? v.toFixed(digits) : '—';
+      if (typeof v !== 'number' || !Number.isFinite(v)) return '—';
+      if (v === 0) return (0).toFixed(digits);
+      let precision = digits;
+      let text = v.toFixed(precision);
+      // Retain the usual precision unless it would hide a nonzero value.
+      while (Number(text) === 0 && precision < 100) {
+        text = v.toFixed(++precision);
+      }
+      return Number(text) === 0 ? v.toExponential(1) : text;
     }
 
     // /api/analyze의 top20 행(row) -> 이 화면이 기대하는 국가 객체로 변환.
@@ -963,6 +975,7 @@ document.addEventListener('click',e=>{if(e.target.id?.endsWith('Modal'))closeMod
         potential: row.potential,
         supply_score: row.supply_score,
         penetration: row.korea_share_pct,
+        korea_import_usd: row.korea_import_usd,
         // 원래 디자인은 "경쟁국 개수"였으나 실데이터에는 그 지표가 없다 — 대신 실제로
         // 계산되는 "상위 3개국 합산 점유율(%)"을 같은 칸에 보여준다(renderTable 참고).
         competitors: row.competitors ? row.competitors.top3_share_pct : null,
@@ -971,10 +984,12 @@ document.addEventListener('click',e=>{if(e.target.id?.endsWith('Modal'))closeMod
         export_gap: row.export_gap_pp,
         yoy_pct: row.growth ? row.growth.yoy_pct : null,
         cagr3_pct: row.growth ? row.growth.cagr3_pct : null,
+        base_year: row.growth ? row.growth.curr_year : null,
         tariff_rate_pct: row.barriers ? row.barriers.tariff_rate_pct : null,
         tariff_type: row.barriers ? row.barriers.tariff_type : null,
         ntb_items: row.barriers ? (row.barriers.ntb_items || []) : [],
         tariff_fetched_at: row.barriers ? row.barriers.fetched_at : null,
+        fx_change_3y_pct: row.fx ? row.fx.change_3y_pct : null,
         score_breakdown: row.score_breakdown || null,
         role_desc: '',
         trend_years: [], import_trend: [], korea_export_trend: [], gap_trend: [],
@@ -1229,6 +1244,16 @@ function zoomGlobe(step) {
       }
     }
 
+    function formatKoreaImport(amountUSD) {
+      if (!Number.isFinite(amountUSD)) return '—';
+      const amount = currentCurrency === 'KRW' ? amountUSD * usdToKrw : amountUSD;
+      if (!Number.isFinite(amount)) return '—';
+      const text = amount !== 0 && Math.abs(amount) < 0.005
+        ? numOrDash(amount, 2)
+        : amount.toLocaleString('en-US', { maximumFractionDigits: 2 });
+      return currentCurrency === 'KRW' ? `약 ₩${text}` : `$${text}`;
+    }
+
     function setCurrency(curr) {
       currentCurrency = curr;
       document.getElementById('btnUSD').className = curr === 'USD'
@@ -1478,16 +1503,16 @@ function zoomGlobe(step) {
         tr.onkeydown = e => { if(e.key==='Enter' || e.key===' ') {e.preventDefault();lockHunterTarget(item.id);} };
 
         tr.innerHTML = `
-          <td class="py-2 px-2 text-center text-slate-400 font-mono">${index + 1}</td>
-          <td class="py-2 px-2 flex items-center gap-1.5 font-medium text-slate-800">
-            <span class="text-sm">${item.flag}</span>
-            <span class="truncate">${item.name}</span>
+          <td data-label="순위" class="py-2 px-2 text-center text-slate-400 font-mono">${index + 1}</td>
+          <td data-label="국가" class="ranking-country py-2 px-2 font-medium text-slate-800">
+            <span class="ranking-country-name"><span class="text-sm">${item.flag}</span>
+            <span>${item.name}</span></span>
           </td>
-          <td class="py-2 px-2 text-center font-bold text-slate-700 font-mono whitespace-nowrap">${numOrDash(item.score,0)}</td>
-          <td class="py-2 px-2 text-center text-slate-600 font-mono whitespace-nowrap">${numOrDash(item.potential,2)}</td>
-          <td class="py-2 px-2 text-center text-slate-600 font-mono whitespace-nowrap">${numOrDash(item.penetration,1)}%</td>
-          <td class="py-2 px-2 text-center text-slate-500 whitespace-nowrap" title="상위 3개국 합산 점유율">${item.competitors!=null?numOrDash(item.competitors,1)+'%':'—'}</td>
-          <td class="py-2 px-2 text-center text-slate-600 font-mono whitespace-nowrap">${formatMoney(item.market_size_usd)}</td>
+          <td data-label="점수" class="py-2 px-2 text-center font-bold text-slate-700 font-mono whitespace-nowrap">${numOrDash(item.score,0)}</td>
+          <td data-label="수요 잠재력" class="py-2 px-2 text-center text-slate-600 font-mono whitespace-nowrap">${numOrDash(item.potential,2)}</td>
+          <td data-label="한국산 점유율" class="py-2 px-2 text-center text-slate-600 font-mono whitespace-nowrap">${numOrDash(item.penetration,1)}%</td>
+          <td data-label="경쟁국 점유율" class="py-2 px-2 text-center text-slate-500 whitespace-nowrap" title="상위 3개국 합산 점유율">${item.competitors!=null?numOrDash(item.competitors,1)+'%':'—'}</td>
+          <td data-label="전체시장규모" class="py-2 px-2 text-center text-slate-600 font-mono whitespace-nowrap">${formatMoney(item.market_size_usd)}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -1963,19 +1988,38 @@ function finishAnalyzeOverlay(success) {
  function pct(v, digits=1){return cleanNum(v)===null?'미확인':`${v>=0?'+':''}${v.toFixed(digits)}%`}
  function esc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
  function el(id){return document.getElementById(id)}
- function lastYears(c){const years=c.trend_years||[], imports=c.import_trend||[];const n=Math.min(years.length,imports.length);if(n<2)return {year:'기준연도 미확인',yoy:null,cagr:null};const cur=imports[n-1],prev=imports[n-2],old=n>=4?imports[n-4]:null;return{year:String(years[n-1]),yoy:prev>0?(cur/prev-1)*100:null,cagr:old>0?(Math.pow(cur/old,1/3)-1)*100:null}}
+ function lastYears(c){
+   const years=c.trend_years||[], values=c.import_trend||[];
+   const byYear=new Map(years.map((y,i)=>[Number(y),cleanNum(values[i])]));
+   const year=Number(c.base_year)||Number(currentMeta?.base_year)||Math.max(0,...years.map(Number));
+   const cur=byYear.get(year),prev=byYear.get(year-1),old=byYear.get(year-3);
+   const yoy=cleanNum(c.yoy_pct)??(cur!==null&&Number.isFinite(cur)&&prev>0?(cur/prev-1)*100:null);
+   const cagr=cleanNum(c.cagr3_pct)??(cur!==null&&Number.isFinite(cur)&&old>0?(Math.pow(cur/old,1/3)-1)*100:null);
+   return {year:year?String(year):'기준연도 없음',yoy,cagr};
+ }
  function card(icon,title,value,desc,meta='',tone=''){return `<article class="insight-mini"><div class="mini-head"><span class="mini-icon">${icon}</span><span>${esc(title)}</span></div>${value?`<strong class="mini-value ${tone}">${esc(value)}</strong>`:''}${meta?`<div class="mini-meta">${esc(meta)}</div>`:''}<p>${esc(desc)}</p></article>`}
  function watchCard(icon,title,body){return `<article class="insight-mini watch"><div class="mini-head"><span class="mini-icon">${icon}</span>${esc(title)}</div><p>${esc(body)}</p></article>`}
+ function buildMarketWatch(c){
+   const items=Array.isArray(c.ntb_items)?c.ntb_items:[];
+   const tariff=cleanNum(c.tariff_rate_pct), competition=cleanNum(c.competitors), fx=cleanNum(c.fx_change_3y_pct);
+   const barrier=tariff!==null||items.length
+     ? `조회 관세율 ${tariff===null?'미확인':numOrDash(tariff,2)+'%'} · 확인된 비관세장벽 ${items.length}건. ${items.slice(0,2).join(' / ')} 적용 대상과 증빙 요건을 확인하세요.${c.tariff_fetched_at?' (수집일 '+String(c.tariff_fetched_at).slice(0,10)+')':''}`
+     : '관세·비관세장벽 자료가 없습니다. 장벽이 없다는 의미는 아니므로 계약 전 품목별 인증·통관 요건을 확인하세요.';
+   const risks=[];
+   if(competition!==null)risks.push(`한국 제외 상위 3개 공급국의 합산 점유율 ${numOrDash(competition,2)}%. 기존 공급국의 가격·유통채널과 비교해 차별화 조건을 검토하세요.`);
+   if(fx!==null)risks.push(`현지 통화의 원화 환산가치 3년 변화 ${numOrDash(fx,2)}%. 과거 변화는 미래 예측이 아니며 계약 통화와 결제 시점에 따른 손익을 점검하세요.`);
+   return [{icon:'⚑',title:'관세·인증·통관 확인',body:barrier},{icon:'▤',title:'경쟁·환율 점검',body:risks.join(' ')||'경쟁·환율 자료가 확보되지 않았습니다. 자료가 없다는 이유로 위험이 낮다고 판단하지 마세요.'}];
+ }
  function buildFallback(c){
    const trend=lastYears(c), gap=cleanNum(c.export_gap), sh=cleanNum(c.penetration), n=cleanNum(c.competitors), score=cleanNum(c.score);
    const growth = trend.yoy===null?'연도별 성장률 데이터 확인 필요':trend.yoy>0?'최근 수입액이 전년보다 증가':'최근 수입액은 전년 대비 감소';
    const gapPositive=gap!==null && gap>0, lowShare=sh!==null && sh<5;
    const marketValue=typeof formatMoney==='function'?formatMoney(c.market_size_usd):'금액 미확인';
    const growthText=trend.yoy!==null?`${trend.year}년 수입액 기준 전년 대비 ${pct(trend.yoy)}이며, ${growth==='최근 수입액이 전년보다 증가'?'시장 확대 흐름이 확인됩니다.':'최근의 성장 흐름을 추가 확인할 필요가 있습니다.'}`:'연도별 성장률은 원천 자료 연결 후 확인할 수 있습니다.';
-   const penetrationText=gapPositive?`한국산 현지 점유율 ${sh.toFixed(1)}%, Export Gap +${gap.toFixed(1)}%p로 세계시장 점유율 대비 해당 시장 침투가 낮습니다.`:`한국 점유율 ${sh===null?'미확인':sh.toFixed(1)+'%'} 및 Export Gap을 함께 검토해야 합니다.`;
+   const penetrationText=gapPositive?`한국산 현지 점유율 ${numOrDash(sh, 1)}%, Export Gap +${gap.toFixed(1)}%p로 세계시장 점유율 대비 해당 시장 침투가 낮습니다.`:`한국 점유율 ${sh===null?'미확인':numOrDash(sh, 1)+'%'} 및 Export Gap을 함께 검토해야 합니다.`;
    const why=[
       {icon:'↗', title:trend.yoy!==null&&trend.yoy>0?'성장하는 수입시장':'수입시장 규모 확인', value:trend.yoy===null||trend.yoy<=0?marketValue:pct(trend.yoy),meta:trend.yoy===null||trend.yoy<=0?'총수입시장 규모':`${trend.year}년 · YoY`,desc:trend.yoy===null?`수입시장 규모는 ${marketValue}로 집계된 샘플입니다.`:growthText},
-      {icon:'◎',title:lowShare?'한국산의 추가 침투 여지':'한국산 진출 현황',value:sh===null?'미확인':`${sh.toFixed(1)}%`,meta:'한국산 현지 점유율',desc:lowShare?'현재 한국산 점유율이 낮아 신규 거래처를 탐색할 여지가 있습니다.':'현지 한국산 점유율을 기반으로 추가 진출 방향을 검토할 수 있습니다.'},
+      {icon:'◎',title:lowShare?'한국산의 추가 침투 여지':'한국산 진출 현황',value:sh===null?'미확인':`${numOrDash(sh, 1)}%`,meta:'한국산 현지 점유율',desc:lowShare?'현재 한국산 점유율이 낮아 신규 거래처를 탐색할 여지가 있습니다.':'현지 한국산 점유율을 기반으로 추가 진출 방향을 검토할 수 있습니다.'},
       {icon:'◇',title:gapPositive?'세계시장 실적 대비 낮은 침투율':'추가 시장개척 여지 검토',value:gap===null?'미확인':`${gap>0?'+':''}${gap.toFixed(1)}%p`,meta:'Export Gap',desc:gapPositive?'한국의 세계시장 점유율과 현지 점유율 사이에 양(+)의 격차가 있습니다.':'글로벌 점유율 대비 현지 점유율을 함께 확인하는 것이 중요합니다.'}
    ];
    const attractions=[
@@ -1989,24 +2033,25 @@ function finishAnalyzeOverlay(success) {
       `${penetrationText} 이는 기존 수입수요를 대상으로 한국 제품의 새로운 거래처를 탐색할 때 참고할 수 있는 지표입니다. 다만 낮은 점유율만으로 실제 미충족 수요나 수출 성공이 보장되지는 않습니다.`,
       `수입시장 규모와 수요 잠재력, 현재 한국산의 진출 수준을 함께 보면 ${c.name_kr} 시장의 특성을 구체적으로 검토할 수 있습니다. 실제 진입 검토 단계에서는 주요 경쟁국의 개별 점유율과 품목별 관세·인증요건을 확인해야 합니다. 현재 파일의 관련 데이터는 샘플이므로 확정적인 진출 판단에 사용하지 마세요.`
    ];
-   return {summary,year:trend.year,kpis:[{label:'시장규모',value:marketValue},{label:'전년 대비 성장률',value:trend.yoy===null?'미확인':pct(trend.yoy),tone:trend.yoy>0?'good':''},{label:'3년 CAGR',value:trend.cagr===null?'미확인':pct(trend.cagr),tone:trend.cagr>0?'good':''},{label:'한국산 점유율',value:sh===null?'미확인':`${sh.toFixed(1)}%`},{label:'Export Gap',value:gap===null?'미확인':`${gap>0?'+':''}${gap.toFixed(1)}%p`,tone:'blue'},{label:'경쟁국 정보',value:n===null?'미확인':`${n}개 (샘플)`,tone:'warn'}],why,attractions,watch:[{icon:'⚑',title:'품목별 진입요건 확인',body:'실제 관세·인증·통관 규제는 현재 샘플에 연결되지 않았습니다. 확인된 자료 연결 후 요약됩니다.'},{icon:'▤',title:'최신 산업·물류 이슈',body:'검증된 실시간 기사 자료가 연결되지 않았습니다. 추정 뉴스는 표시하지 않습니다.'}],paras,conclusion:gapPositive?'기존 수입수요와 한국산의 상대적으로 낮은 현지 침투 수준을 바탕으로 추가 시장개척 가능성을 검토할 수 있습니다.':'시장 규모와 성장 흐름을 기반으로 수출 기회를 추가 검토할 수 있습니다.',label:'SAMPLE DATA · 수치 및 추세는 내장 샘플 기준'};
+   return {summary,year:trend.year,kpis:[{label:'시장규모',value:marketValue},{label:'전년 대비 성장률',value:trend.yoy===null?'미확인':pct(trend.yoy),tone:trend.yoy>0?'good':''},{label:'3년 CAGR',value:trend.cagr===null?'미확인':pct(trend.cagr),tone:trend.cagr>0?'good':''},{label:'한국산 점유율',value:sh===null?'미확인':`${numOrDash(sh, 1)}%`},{label:'Export Gap',value:gap===null?'미확인':`${gap>0?'+':''}${gap.toFixed(1)}%p`,tone:'blue'},{label:'경쟁국 Top3 점유율',value:n===null?'미확인':`${numOrDash(n, 2)}%`,note:'한국 제외 · 상위 3개국 합산',tone:'warn'}],why,attractions,watch:buildMarketWatch(c),paras,conclusion:gapPositive?'기존 수입수요와 한국산의 상대적으로 낮은 현지 침투 수준을 바탕으로 추가 시장개척 가능성을 검토할 수 있습니다.':'시장 규모와 성장 흐름을 기반으로 수출 기회를 추가 검토할 수 있습니다.',label:'수집된 분석 지표 기반 요약'};
  }
  function normalizeApiResult(raw, c){const r=raw?.insight||raw?.data||raw;if(!r || typeof r!=='object')throw Error('잘못된 응답 구조');
  const fallback=buildFallback(c);
- const parseCards=(items,n,base)=>Array.isArray(items)?items.slice(0,n).map((v,i)=>({icon:base[i]?.icon||'◇',title:String(v.title||v.heading||v.label||'핵심 근거'),value:v.value===undefined?'':String(v.value),meta:String(v.meta||v.evidence||''),desc:String(v.description||v.interpretation||v.text||'')})):base;
+ const parseCards=(items,n,base)=>Array.isArray(items)?items.slice(0,n).map((v,i)=>({icon:base[i]?.icon||'◇',title:String(v.title||v.heading||v.label||'핵심 근거'),value:v.value===undefined?'':String(v.value),meta:String(v.meta||v.evidence||''),desc:String(v.description||v.interpretation||v.text||[v.fact,v.impact].filter(Boolean).join(' ')||'')})):base;
  let p=r.ai_interpretation||r.interpretation||fallback.paras;
  if(typeof p==='string')p=p.split(/\n\s*\n/).filter(Boolean);if(!Array.isArray(p))p=fallback.paras;
  // Display raw KPIs only from Python/Flask, never from model-generated numbers.
- return {...fallback,summary:String(r.summary||fallback.summary),why:parseCards(r.why_this_market,3,fallback.why),attractions:parseCards(r.export_attractiveness,3,fallback.attractions),watch:parseCards(r.market_watch,2,fallback.watch),paras:p.map(String).slice(0,4),conclusion:String(r.key_conclusion||fallback.conclusion),label:String(r.data_confidence?.label||r.data_status||'연결된 분석 응답 · 수치 기준 검증 필요')};
+ return {...fallback,external_research:r.external_research,summary:String(r.summary||fallback.summary),why:parseCards(r.why_this_market,3,fallback.why),attractions:parseCards(r.export_attractiveness,3,fallback.attractions),watch:parseCards(r.market_watch,2,fallback.watch),paras:p.map(String).slice(0,4),conclusion:String(r.key_conclusion||fallback.conclusion),label:String(r.data_confidence?.label||r.data_status||'연결된 분석 응답 · 수치 기준 검증 필요')};
  }
  function render(result,c){
   el('insightCountryName').textContent=`${c.flag||''} ${c.name} · ${c.name_kr}`;
   el('aiInsightTargetName').textContent=`Target: ${c.name} (${c.name_kr}) · HS ${currentHsCode}`;
   el('aiInsightParagraph').textContent=result.summary;
   el('insightSourceTag').textContent=result.label;
+  window.renderOfficialResearch(el('insightExternalResearch'),result.external_research);
   el('insightDataNotes').textContent=`수입 추이 기준: ${result.year||'미확인'} · ${result.label}`;
   el('insightLeadStatus').textContent=`${result.label} · 수입 추이 기준 ${result.year||'미확인'}`;
-  el('insightKpis').innerHTML=result.kpis.map(k=>`<div class="insight-kpi"><small>${esc(k.label)}</small><strong class="${esc(k.tone||'')}">${esc(k.value)}</strong></div>`).join('');
+  el('insightKpis').innerHTML=result.kpis.map(k=>`<div class="insight-kpi"><small>${esc(k.label)}</small><strong class="${esc(k.tone||'')}">${esc(k.value)}</strong>${k.note?`<small>${esc(k.note)}</small>`:''}</div>`).join('');
   el('insightWhyCards').innerHTML=result.why.map(k=>card(k.icon,k.title,k.value,k.desc,k.meta,k.tone||'')).join('');
   el('insightAttractCards').innerHTML=result.attractions.map(k=>`<article class="insight-mini"><div class="mini-head"><span class="mini-icon">${esc(k.icon)}</span>${esc(k.title)}</div><p>${esc(k.desc)}</p></article>`).join('');
   el('insightWatchCards').innerHTML=result.watch.map(k=>watchCard(k.icon,k.title,k.body||k.desc)).join('');
@@ -2021,7 +2066,7 @@ function finishAnalyzeOverlay(success) {
   const endpoint=window.BLUE_OCEAN_INSIGHT_ENDPOINT;
   if(!endpoint||location.protocol==='file:')return;
   try{const url=new URL(endpoint,location.href);url.searchParams.set('hs',currentHsCode);url.searchParams.set('iso3',c.id);const res=await fetch(url,{credentials:'same-origin',headers:{Accept:'application/json'}});if(!res.ok)throw Error('HTTP '+res.status);const raw=await res.json();if(seq!==requestSeq||c.id!==selectedCountryId)return;render(normalizeApiResult(raw,c),c)}
-  catch(e){if(seq===requestSeq)el('insightSourceTag').textContent='실제 AI 분석을 불러오지 못해 샘플 안내를 표시합니다.'}
+  catch(e){if(seq===requestSeq)el('insightSourceTag').textContent='추가 AI 해석을 불러오지 못해 수집된 지표 기반 요약을 표시합니다.'}
  }
  function noNewsState(){el('industryNewsList').innerHTML='<div class="news-empty"><span class="news-empty-icon">▤</span><strong>검증된 뉴스 데이터 미연결</strong><span>국가·HS 품목별 뉴스 백엔드가 연결되면 기사 제목, 발표일, 출처를 보여줍니다. 확인되지 않은 기사는 생성하지 않습니다.</span></div>'}
  function newsLogoUrl(domain){return domain?`https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64`:''}
@@ -2071,12 +2116,13 @@ function finishAnalyzeOverlay(success) {
     }catch(e){console.warn('[BOF] 보고서 추이 차트 렌더링 실패:',e)}
   }
   function renderReportPreview(c){
+    window.loadReportShareDiagnosis(currentHsCode,c,currentMeta?.generated_at);
     if(!c)return;
     const byId=id=>document.getElementById(id);
     const data=currentDataset();
     const market=typeof formatMoney==='function'?formatMoney(c.market_size_usd):'확인되지 않음';
     const gap=typeof c.export_gap==='number'?`${c.export_gap>0?'+':''}${c.export_gap.toFixed(1)}%p`:'확인되지 않음';
-    const share=typeof c.penetration==='number'?`${c.penetration.toFixed(1)}%`:'확인되지 않음';
+    const share=typeof c.penetration==='number'?`${numOrDash(c.penetration, 1)}%`:'확인되지 않음';
     const score=Number.isFinite(c.score)?`${c.score}/100`:'확인되지 않음';
     const yoyText=typeof c.yoy_pct==='number'?`${c.yoy_pct>0?'+':''}${c.yoy_pct.toFixed(1)}%`:'확인되지 않음';
     const totalCount=(currentMeta&&currentMeta.funnel&&currentMeta.funnel.stage3)||(data&&data.countries?data.countries.length:null);
@@ -2104,7 +2150,7 @@ function finishAnalyzeOverlay(success) {
     const whyList=byId('reportWhyList');
     if(whyList){
       const items=[
-        `이 시장의 한국산 수입은 최근 1년 기준 ${yoyText}${typeof c.yoy_pct==='number'?(c.yoy_pct>0?' 증가했습니다.':' 감소했습니다.'):'.'}`,
+        `이 시장의 해당 품목 전체 수입은 최근 1년 기준 ${yoyText}${typeof c.yoy_pct==='number'?(c.yoy_pct>0?' 증가했습니다.':' 감소했습니다.'):'.'}`,
         `한국의 현지 점유율은 ${share}로, 세계 점유율 대비 ${gap}의 격차가 있어 ${(typeof c.export_gap==='number'&&c.export_gap>0)?'아직 개척되지 않은 여지가 있습니다.':'점유율 추이를 참고할 필요가 있습니다.'}`,
         `상위 3개 경쟁국이 시장의 ${c.competitors!=null?numOrDash(c.competitors,1)+'%':'확인되지 않은 비중'}를 차지하고 있습니다.`,
       ];

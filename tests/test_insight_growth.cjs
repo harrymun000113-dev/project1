@@ -1,0 +1,16 @@
+const fs = require('fs');
+const vm = require('vm');
+const assert = require('node:assert/strict');
+const html = fs.readFileSync('blueocean/templates/index.html', 'utf8');
+const code = html.slice(html.indexOf(' function lastYears(c){'), html.indexOf(' function card(icon,title,value'));
+const ctx = {currentMeta: {base_year: 2024}, cleanNum: v => typeof v === 'number' && Number.isFinite(v) ? v : null};
+vm.createContext(ctx);
+vm.runInContext(code, ctx);
+assert.equal(ctx.lastYears({yoy_pct: 12.5, cagr3_pct: 8}).yoy, 12.5);
+assert.equal(ctx.lastYears({yoy_pct: 0, cagr3_pct: 0}).cagr, 0);
+const sparse = ctx.lastYears({trend_years:[2021,2024], import_trend:[100,133.1]});
+assert.equal(sparse.yoy, null);
+assert.ok(Math.abs(sparse.cagr - 10) < 1e-8);
+assert.equal(ctx.lastYears({trend_years:[2023,2024], import_trend:[0,100]}).yoy, null);
+assert.equal(ctx.lastYears({trend_years:[2023,2024], import_trend:[100,0]}).yoy, -100);
+console.log('Insight growth checks passed');

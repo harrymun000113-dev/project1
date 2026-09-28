@@ -1,0 +1,12 @@
+#reportShareDiagnosis{font-size:11px;line-height:1.8;overflow-wrap:anywhere}
+#reportShareDiagnosis .share-context{font-weight:700;color:#3c4998}
+#reportShareDiagnosis h4{font-size:12px;font-weight:750;color:#263263;margin:0 0 8px}
+.share-evidence{padding:14px 16px;margin:12px 0;border:1px solid #dce1ef;border-radius:10px;background:#f8faff;break-inside:avoid}
+.share-observation{border-left:3px solid #4a67b5;padding:8px 12px;background:#edf2fc;color:#21335d}
+.share-limitation{color:#69758b;font-size:10px}
+.share-ai{border:1px solid #d3d7ef;border-radius:10px;padding:16px;background:#f6f4ff;margin:16px 0;break-inside:avoid}
+#reportShareDiagnosis a{color:#315cac;text-decoration:underline;text-underline-offset:3px}
+.share-source{padding:8px 0;border-bottom:1px solid #e3e8f0;break-inside:avoid}
+.share-source small{display:block;color:#73809a}
+#reportShareDiagnosis button{padding:8px 14px;border:1px solid #b9c8e4;border-radius:8px;background:#eef4ff}
+@media print{#reportShareDiagnosis{font-size:10px}.share-evidence,.share-ai{box-shadow:none}.share-source a:after{content:' (' attr(href) ')';font-size:8px;overflow-wrap:anywhere}}

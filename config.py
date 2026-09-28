@@ -26,6 +26,8 @@ KEXIM_API_KEY = os.getenv("KEXIM_API_KEY", "").strip()
 OPENAI_API_KEY = (os.getenv("OPENAI_API_KEY") or os.getenv("OPEN_API_KEY") or "").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 OPENAI_TIMEOUT_SEC = float(os.getenv("OPENAI_TIMEOUT_SEC", "20"))
+OPENAI_WEB_MODEL = os.getenv("OPENAI_WEB_MODEL", "gpt-4.1-mini")
+OPENAI_WEB_TIMEOUT_SEC = float(os.getenv("OPENAI_WEB_TIMEOUT_SEC", "60"))
 
 # ── Demo / offline mode ────────────────────────────────────────────────
 # "auto"  -> demo mode turns on automatically for any service whose key is

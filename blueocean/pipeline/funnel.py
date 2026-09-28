@@ -57,7 +57,11 @@ def stage1_market_frame(hs6: str, T: int, countries: pd.DataFrame) -> pd.DataFra
     for y in years:
         col = f"kor_{y}"
         if col not in m.columns:
-            m[col] = 0.0
+            m[col] = float("nan")
+    # Keep reported import amounts separate from the zero-filled scoring inputs.
+    m["korea_import_usd"] = m[f"kor_{T}"]
+    for y in years:
+        m[f"reported_kor_{y}"] = m[f"kor_{y}"]
     m[[f"kor_{y}" for y in years]] = m[[f"kor_{y}" for y in years]].fillna(0)
 
     m = m[m.index.isin(countries.index)].drop(index=config.KOREA_ISO3, errors="ignore")  # 실제 국가만, 한국 제외

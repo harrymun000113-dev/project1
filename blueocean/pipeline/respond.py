@@ -90,9 +90,16 @@ def _row_to_json(row: pd.Series) -> dict:
         # penetration_opportunity_score가 이 값이다 (§ scoring.py supply_score 주석 참고).
         "supply_score": _num(row.get("supply_score"), 1),
         "market_size_usd": _num(row.get("market_size"), 0),
-        # 3자리까지 보낸다 — 1% 미만 값(예: 0.261%)을 프론트가 2자리로 반올림된 값(0.26%)
-        # 대신 원래 정밀도로 표시할 수 있게 여유를 준다 (프론트 표시 자릿수는 state.js 참고).
-        "korea_share_pct": _num(row.get("korea_share_pct"), 3),
+        "korea_import_usd": _num(row.get("korea_import_usd")),
+        "korea_import_history": [
+            {"year": int(str(key).rsplit("_", 1)[1]),
+             "total_import_usd": _num(row.get("imp_" + str(key).rsplit("_", 1)[1])),
+             "korea_import_usd": _num(row.get(key))}
+            for key in sorted(row.index)
+            if str(key).startswith("reported_kor_")
+        ],
+        # Preserve small nonzero shares; display precision belongs to the UI.
+        "korea_share_pct": _num(row.get("korea_share_pct")),
         "export_gap_pp": _num(row.get("export_gap_pp"), 3),
         "growth": {
             "direction": _growth_direction(row.get("yoy_pct")),
@@ -104,7 +111,7 @@ def _row_to_json(row: pd.Series) -> dict:
             "curr_value_usd": _num(row.get("curr_value_usd"), 0),
         },
         "competitors": {
-            "top3_share_pct": _num(row.get("top3_share_pct"), 3),
+            "top3_share_pct": _num(row.get("top3_share_pct")),
             "top3": [
                 {
                     "iso3": t.get("iso3"),

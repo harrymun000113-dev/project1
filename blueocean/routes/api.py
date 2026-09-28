@@ -58,7 +58,8 @@ def _compute_analysis(hs6: str) -> dict:
 def _analyze_cache_key(hs6: str) -> str:
     # config.MODE_SIGNATURE를 넣어, 데모 모드로 만든 이전 결과가 API 키를 넣은 뒤에도
     # (또는 그 반대로) TTL 만료 전까지 그대로 재사용되는 일이 없게 한다.
-    return f"analyze:{hs6}:{config.MODE_SIGNATURE}"
+    # Refresh old responses that lack the directly reported Korean import amount.
+    return f"analyze:{hs6}:{config.MODE_SIGNATURE}:share-evidence-v4"
 
 
 def _run_cached(hs6: str) -> dict:
@@ -166,14 +167,7 @@ def _target_row_for_insight(hs6: str, iso3: str, countries: pd.DataFrame) -> dic
 
 @bp.get("/insight")
 def insight_endpoint():
-    """새 대시보드 디자인(`blue-ocean-insight-addon`)의 `BLUE_OCEAN_INSIGHT_ENDPOINT`용 어댑터.
-
-    실제 AI Insight 생성 로직(`pipeline/insight.generate`)은 그대로 재사용하고, 프런트가
-    기대하는 얕은 스키마(summary/ai_interpretation/data_confidence)로만 다시 감싼다.
-    "Why This Market"/"Export Attractiveness"/"Market Watch" 카드와 결론 문구는 프런트의
-    `buildFallback(c)`가 이미 실제 국가 데이터(top20 row)만으로 만들어내므로 여기서는
-    일부러 채우지 않는다 — 없는 필드는 프런트가 알아서 그 fallback으로 대체한다.
-    """
+    """Expose the current Insight schema, including evidence-backed risk cards."""
     hs6, _ = normalize_hs(request.args.get("hs", ""))
     if not hs6:
         return _bad_hs()
@@ -188,12 +182,10 @@ def insight_endpoint():
     row = _target_row_for_insight(hs6, iso3, countries)
     result = insight.generate(hs6, row)
 
-    paragraphs = [p for p in (result.get("why_market"), result.get("limitation")) if p]
     return jsonify({
-        "summary": result.get("why_market") or "",
-        "ai_interpretation": paragraphs,
+        **result,
         "data_confidence": {
-            "label": "샘플/오프라인 데이터 기준" if config.DEMO_OPENAI else "AI 분석 결과 · 실데이터 기준",
+            "label": "데모 무역 데이터 기준" if config.DEMO_COMTRADE else "수집된 무역 데이터 기준",
         },
     })
 
@@ -206,6 +198,46 @@ def fx_latest():
         log.warning("fx_latest 실패: %s", e)
         rate, source, as_of = None, None, None
     return jsonify(usd_krw=rate, source=source, as_of=as_of)
+
+
+@bp.get("/entry-precedents")
+def entry_precedents():
+    from ..services import precedents
+    hs6 = normalize_hs6_strict(request.args.get("hs", ""))
+    if not hs6:
+        return _bad_hs()
+    iso3 = request.args.get("iso3", "").upper()
+    countries = load_countries()
+    if iso3 not in countries.index:
+        return jsonify(error={"code": "NOT_FOUND", "message": "국가를 선택하세요."}), 404
+    country = countries.loc[iso3]
+    try:
+        return jsonify(precedents.search(hs6, iso3, str(country["name_ko"]), str(country["name_en"])))
+    except precedents.PrecedentSearchError as exc:
+        return jsonify(error={"code": "UPSTREAM_UNAVAILABLE", "message": str(exc)}), 502
+
+
+@bp.get("/share-diagnosis")
+def share_diagnosis():
+    from ..pipeline import share_diagnosis as diagnosis
+    hs6 = normalize_hs6_strict(request.args.get("hs", ""))
+    if not hs6:
+        return _bad_hs()
+    iso3 = request.args.get("iso3", "").upper()
+    countries = load_countries()
+    if iso3 not in countries.index:
+        return jsonify(error={"code": "NOT_FOUND", "message": "국가를 선택하세요."}), 404
+    cached = peek(_analyze_cache_key(hs6), ANALYZE_CACHE_DIR, config.TTL_ANALYZE)
+    row = next((r for r in (cached or {}).get("top20", []) if r["iso3"] == iso3), None)
+    if row is None:
+        return jsonify(error={"code": "ANALYSIS_REQUIRED", "message": "근거 데이터 갱신을 위해 HS 코드를 다시 분석해 주세요."}), 409
+    meta = cached.get("meta", {})
+    country = countries.loc[iso3]
+    source_row = {**row, "base_year": meta.get("base_year"), "generated_at": meta.get("generated_at"),
+                  "reporter_code": int(country["comtrade_code"]), "iso2": country["iso2"]}
+    job_id = jobs.start(lambda: diagnosis.generate(hs6, source_row),
+                        key=f"share-diagnosis:{hs6}:{iso3}:{meta.get('generated_at')}")
+    return jsonify(status="pending", job_id=job_id), 202
 
 
 @bp.get("/export.csv")
