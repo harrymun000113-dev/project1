@@ -4,6 +4,21 @@ HS 코드 6자리를 입력하면 국가별 수입시장 규모, 성장률, 한�
 
 이 README는 현재 실행 코드를 기준으로 작성했습니다. 초기 기획 문서와 설명이 다를 경우 현재 구현을 우선 확인하세요.
 
+## 기술 스택
+
+| 구분 | 사용 기술 |
+|---|---|
+| 언어 | Python 3.10+, JavaScript (ES6), HTML/CSS |
+| 백엔드 | Flask 3 (Blueprint 기반 라우팅, Jinja2 템플릿) |
+| 데이터 처리 | pandas, NumPy, PyArrow (Parquet 캐시) |
+| 외부 연동 | requests, BeautifulSoup4 (스크래핑), feedparser (RSS), yfinance (환율 보완), python-dotenv (환경설정) |
+| 프론트엔드 | Bootstrap 5.3, Tailwind CSS (CDN), Chart.js 4, Globe.gl + Three.js (3D 지구본), Spline (인트로 애니메이션), Pretendard·JetBrains Mono 폰트 |
+| AI | OpenAI API — Chat Completions(`gpt-4o-mini`), Responses API `web_search`(`gpt-4.1-mini`) |
+| 데이터 소스 | UN Comtrade API (무역 통계), SerpAPI Google Trends (관심도), 한국수출입은행 환율 API, KITA TradeNavi (관세·비관세장벽), Google News RSS (뉴스) |
+| 보고서 | python-docx (Word 보고서), 브라우저 인쇄 기반 PDF 저장, Node.js `docx` (보고서 디자인 샘플, `report_redesign/`) |
+| 테스트 | pytest (Python), Node.js 기반 JS 단위 테스트 (`tests/*.cjs`) |
+| 협업/버전관리 | Git, GitHub |
+
 ## 1. 설치 및 실행
 
 Python 3.10 이상을 사용하세요. 일반 앱 실행에는 Node.js가 필요하지 않습니다.
