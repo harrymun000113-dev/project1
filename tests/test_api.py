@@ -57,6 +57,25 @@ def test_fx_latest_never_errors_even_without_real_credentials(client):
     assert "usd_krw" in body
 
 
+def test_insight_endpoint_requires_iso3(client):
+    resp = client.get("/api/insight?hs=854140")
+    assert resp.status_code == 400
+    assert resp.get_json()["error"]["code"] == "BAD_REQUEST"
+
+
+def test_insight_endpoint_unknown_iso3(client):
+    resp = client.get("/api/insight?hs=854140&iso3=ZZZ")
+    assert resp.status_code == 404
+
+
+def test_insight_endpoint_success_schema(client):
+    resp = client.get("/api/insight?hs=854140&iso3=USA")
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert "summary" in body and "ai_interpretation" in body and "data_confidence" in body
+    assert isinstance(body["ai_interpretation"], list)
+
+
 def test_country_detail_unknown_iso3(client):
     resp = client.get("/api/country/ZZZ/detail?hs=854140")
     assert resp.status_code == 404
