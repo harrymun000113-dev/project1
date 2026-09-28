@@ -547,6 +547,7 @@ input::placeholder{color:#9aa6c2!important}
 </style>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/ranking-responsive.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/share-diagnosis.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/report-output.css') }}">
 </head><body>
 <script src="{{ url_for('static', filename='js/official-research.js') }}"></script>
 <script src="{{ url_for('static', filename='js/report-share-diagnosis.js') }}"></script>
@@ -755,10 +756,10 @@ input::placeholder{color:#9aa6c2!important}
       <div class="report-option-line"><span>HS Code</span><strong id="reportSideHs">—</strong></div>
       <div class="report-option-line"><span>Blue Ocean Score</span><strong id="reportSideScore">—</strong></div>
       <button class="report-print-btn" type="button" onclick="printReportPreview()">▧ 현재 미리보기 PDF로 저장</button>
-      <p class="report-help">버튼을 누르면 브라우저 인쇄 창이 열립니다. 대상에서 <b>PDF로 저장</b>을 선택하세요.</p>
+      <p class="report-help">미리보기와 같은 A4 보고서를 저장합니다. 인쇄 창에서 <b>PDF로 저장 · A4 · 배율 100% · 여백 없음</b>을 선택하고 머리글/바닥글을 꺼 주세요.</p>
       <div class="report-work-notice">이 보고서는 현재 선택한 국가의 실제 분석 결과(UN Comtrade·KITA·환율 API)를 기반으로 자동 생성됩니다. AI 서술 문장은 OpenAI 키가 설정된 경우에만 생성되고, 없으면 규칙 기반 문구로 대체됩니다.</div>
     </aside>
-    <article class="report-paper" id="reportPrintArea" aria-label="시장 분석 보고서 미리보기">
+    <div class="report-preview-viewport"><article class="report-paper" id="reportPrintArea" aria-label="시장 분석 보고서 미리보기">
       <div class="report-cover" id="reportCover">
         <div class="report-cover-eyebrow">유망시장 발굴 리포트</div>
         <div class="report-cover-title"><span>BLUE</span><span>OCEAN</span><span>REPORT</span></div>
@@ -822,7 +823,7 @@ input::placeholder{color:#9aa6c2!important}
       </section>
       </div>
       <footer class="report-paper-foot">Blue Ocean Finder Scoring Model · UN Comtrade·KITA·환율 API 기반 자동 생성 보고서 · 최종 수출 판단 전 팀 내 재검증이 필요합니다.</footer>
-    </article>
+    </article></div>
   </div>
 </section>
 <section aria-labelledby="expoPageTitle" class="secondary-page" id="expoPage" hidden>
@@ -2111,7 +2112,7 @@ function finishAnalyzeOverlay(success) {
       reportTrendChartInstance=new Chart(canvas.getContext('2d'),{
         type:'line',
         data:{labels:years,datasets:[{label:'한국산 수입액 (백만 달러)',data:values,borderColor:'#3C4998',backgroundColor:'#4A57B033',borderWidth:2,tension:.3,pointRadius:3,pointBackgroundColor:'#232C63',fill:true}]},
-        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8A93A3',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#8A93A3',font:{size:9}},grid:{color:'#DCE1E8'}}}}
+        options:{animation:false,responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8A93A3',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#8A93A3',font:{size:9}},grid:{color:'#DCE1E8'}}}}
       });
     }catch(e){console.warn('[BOF] 보고서 추이 차트 렌더링 실패:',e)}
   }
@@ -2209,11 +2210,7 @@ function finishAnalyzeOverlay(success) {
     }
   }
   window.refreshReportPreview=function(){renderReportPreview(currentRecord())};
-  window.printReportPreview=function(){
-    if(document.body.dataset.view!=='report')return;
-    window.refreshReportPreview();
-    window.print();
-  };
+  window.printReportPreview=()=>window.printCurrentReport();
   window.syncSecondaryPageContext=function(c){
     if(!c)return;
     const val=`${c.flag||''} ${c.name_kr} (${c.name}) · HS ${currentHsCode}`;
@@ -2293,4 +2290,4 @@ function finishAnalyzeOverlay(success) {
   addEventListener('popstate',()=>window.showBlueOceanPage(routeFromHash()));
   addEventListener('DOMContentLoaded',()=>window.showBlueOceanPage(routeFromHash(),{keepScroll:location.hash[1]!=='/'}));
 })();
-</script></body></html>
+</script><script src="{{ url_for('static', filename='js/report-output.js') }}"></script></body></html>

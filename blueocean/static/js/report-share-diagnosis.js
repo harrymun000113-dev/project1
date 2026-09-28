@@ -68,16 +68,21 @@
   window.loadReportShareDiagnosis = function (hs, country, generation) {
     const box = document.getElementById('reportShareDiagnosis');
     const key = [hs, country?.id, generation].join(':');
+    if (key === activeKey && box.dataset.state === 'ready') return;
     activeKey = key;
     if (!country || !/^\d{6}$/.test(hs)) { box.textContent = 'HS 코드를 분석하고 국가를 선택해 주세요.'; return; }
     box.textContent = '무역 데이터를 대조하고 외부 공식 자료의 원문·출처를 확인하고 있습니다…';
+    box.dataset.state = 'loading';
     if (!results.has(key)) {
       const pending = load(hs, country.id);
       results.set(key, pending);
       pending.catch(() => results.delete(key));
     }
-    results.get(key).then(data => { if (activeKey === key) render(box, data); }).catch(error => {
+    window.reportEvidenceReady = results.get(key).then(data => {
+      if (activeKey === key) { render(box, data); box.dataset.state = 'ready'; }
+    }).catch(error => {
       if (activeKey !== key) return;
+      box.dataset.state = 'error';
       box.replaceChildren(el('p', error.name === 'AbortError' ? '응답 시간이 초과되었습니다.' : error.message));
       const retry = el('button', '다시 조회'); retry.type = 'button';
       retry.onclick = () => window.loadReportShareDiagnosis(hs, country, generation);
