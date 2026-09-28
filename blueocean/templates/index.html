@@ -427,6 +427,17 @@ html,body{background:radial-gradient(ellipse at 85% 0%,#f3c9ee 0,transparent 55%
 .ntb-more-btn{flex-shrink:0;align-self:flex-start;margin-top:4px;font-size:10px;font-weight:700;color:#0d5bc4;background:#1685ff14;border:1px solid #1685ff3d;border-radius:20px;padding:5px 11px}
 .ntb-more-btn:hover{background:#1685ff22}
 .ntb-modal-list{max-height:52vh}
+#ntbList{overflow:hidden}
+.ntb-heading-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ntb-heading-row .ntb-heading-label{color:inherit!important;font-weight:400!important}
+.ntb-heading-row .ntb-more-btn{margin-top:0;padding:3px 10px}
+.globePanel .ntb-section{flex:0 0 auto}
+/* 출처 문구는 한 줄로 줄이고 전체 문장은 마우스를 올리면 보이게 한다 */
+.globePanel .tariff-fetched-note{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ntbList li{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;flex-shrink:0}
+#ntbList li:hover{border-color:#1685ff66!important}
+.globePanel .tariff-rate-row{padding:10px 14px!important}
+.globePanel .tariff-rate-value{font-size:22px!important}
 .tariff-barrier-empty{color:#6b7793!important}
 .tariff-rate-row{background:#eef4ff!important;border-color:#cfe0fb!important}
 .tariff-rate-label{color:#5c729e!important}
@@ -578,10 +589,9 @@ input::placeholder{color:#9aa6c2!important}
 <span class="tariff-type-pill" id="tariffTypePill">—</span>
 </div>
 <div class="ntb-section">
-<div class="ntb-heading">비관세장벽 <span id="ntbCount">0</span>건</div>
+<div class="ntb-heading ntb-heading-row"><span class="ntb-heading-label">비관세장벽 <span id="ntbCount">0</span>건</span><button type="button" class="ntb-more-btn" id="ntbMoreBtn" onclick="openNtbModal()" hidden>비관세장벽 목록 더보기 →</button></div>
 <ul class="ntb-list" id="ntbList"></ul>
 <div class="ntb-empty" id="ntbEmpty" hidden>확인된 비관세장벽이 없습니다.</div>
-<button type="button" class="ntb-more-btn" id="ntbMoreBtn" onclick="openNtbModal()" hidden>비관세장벽 목록 더보기 →</button>
 </div>
 <div class="tariff-fetched-note" id="tariffFetchedNote"></div>
 </div>
@@ -719,8 +729,8 @@ input::placeholder{color:#9aa6c2!important}
 <canvas id="blueOceanChart"></canvas>
 </div>
 <div class="mt-2 text-[10px] text-slate-400 flex justify-between px-1 font-mono">
-<span>0 ← Korea Penetration (%) → 100</span>
-<span>Target Market Potential (0~100)</span>
+<span id="matrixXCaption">0 ← Korea Penetration (%) → 100</span>
+<span id="matrixYCaption">Target Market Potential (0~100)</span>
 </div>
 </div></div></main><section id="reportPage" class="secondary-page report-page" hidden aria-labelledby="reportPageTitle">
   <div class="page-intro">
@@ -1238,19 +1248,28 @@ function zoomGlobe(step) {
 
       const ctx = document.getElementById('blueOceanChart').getContext('2d');
 
-      const chartPoints = dataList.filter(c => typeof c.penetration === 'number' && typeof c.potential === 'number').map(c => {
+      const plotted = dataList.filter(c => typeof c.penetration === 'number' && typeof c.potential === 'number');
+      // 시장규모(USD)의 절대값으로 반지름을 잡으면 전부 최대치로 붙어버리므로, 가장 큰 시장 대비 비율로 7~17px에 배치한다
+      const maxSize = Math.max(1, ...plotted.map(c => typeof c.market_size_usd === 'number' ? c.market_size_usd : 0));
+      const chartPoints = plotted.map(c => {
         const isSelected = c.id === selectedCountryId;
         const size = typeof c.market_size_usd === 'number' ? c.market_size_usd : 0;
         return {
           x: c.penetration,
           y: c.potential,
-          r: isSelected ? 22 : Math.max(Math.min(Math.sqrt(size) * 0.32, 18), 9),
+          r: isSelected ? 19 : 7 + 10 * Math.sqrt(size / maxSize),
           country: c,
           backgroundColor: isSelected ? 'rgba(239, 68, 68, 0.85)' : 'rgba(186, 230, 253, 0.65)',
           borderColor: isSelected ? '#ef4444' : '#38bdf8',
           borderWidth: isSelected ? 2.5 : 1
         };
       });
+
+      const axis = matrixAxisRange(chartPoints);
+      const xCap = document.getElementById('matrixXCaption');
+      const yCap = document.getElementById('matrixYCaption');
+      if (xCap) xCap.textContent = `0 ← Korea Penetration (%) → ${axis.xMax}`;
+      if (yCap) yCap.textContent = `Target Market Potential (${axis.yMin}~${axis.yMax})`;
 
       if (blueOceanChartInstance) blueOceanChartInstance.destroy();
 
@@ -1293,17 +1312,19 @@ function zoomGlobe(step) {
           },
           scales: {
             x: {
-              min: 0,
-              max: 100,
+              // 점유율 0%인 시장의 버블이 축에 반쯤 잘리지 않도록 왼쪽에 여백(음수 구간)을 두고, 그 구간 눈금은 숨긴다
+              min: -axis.xStep * 0.4,
+              max: axis.xMax,
+              afterBuildTicks: (scale) => { scale.ticks = scale.ticks.filter(t => t.value >= 0); },
               grid: { color: 'rgba(148,163,184,.12)', borderDash: [4, 4] },
-              ticks: { stepSize: 25, color: '#94a3b8', font: { size: 10 } },
+              ticks: { stepSize: axis.xStep, color: '#94a3b8', font: { size: 10 }, callback: (v) => `${+v.toFixed(2)}%` },
               title: { display: true, text: 'Korea Penetration (%)', color: '#9aaecb', font: { size: 10, weight: '600' } }
             },
             y: {
-              min: 0,
-              max: 100,
+              min: axis.yMin,
+              max: axis.yMax,
               grid: { color: 'rgba(148,163,184,.12)', borderDash: [4, 4] },
-              ticks: { stepSize: 25, color: '#94a3b8', font: { size: 10 } },
+              ticks: { stepSize: axis.yStep, color: '#94a3b8', font: { size: 10 } },
               title: { display: true, text: 'Target Market Potential (0~100)', color: '#9aaecb', font: { size: 10, weight: '600' } }
             }
           },
@@ -1319,6 +1340,29 @@ function zoomGlobe(step) {
       } catch (e) {
         console.warn('[BOF] 기회 매트릭스 차트 렌더링 실패(캔버스 미지원 환경 등):', e);
       }
+    }
+
+    // 기회 매트릭스 축 범위: 0~100 고정이면 실제 값(점유율 0~5%, 잠재력 30~70 등)이 한쪽 구석에 몰리므로
+    // 데이터 분포에 맞춰 보기 좋은 눈금 단위로 확대한다.
+    function matrixAxisRange(points) {
+      const niceStep = (span, ticks) => {
+        const raw = span / ticks;
+        const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+        const f = raw / mag;
+        return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * mag;
+      };
+      const xs = points.map(p => p.x), ys = points.map(p => p.y);
+      if (!xs.length) return { xMax: 100, xStep: 25, yMin: 0, yMax: 100, yStep: 25 };
+
+      const xStep = niceStep(Math.max(Math.max(...xs) * 1.2, 1), 4);
+      const xMax = Math.min(100, Math.ceil((Math.max(...xs) * 1.2 || xStep) / xStep) * xStep);
+
+      const lo = Math.min(...ys), hi = Math.max(...ys);
+      const pad = Math.max(5, (hi - lo) * 0.15);
+      const yStep = niceStep(Math.max(hi - lo + pad * 2, 10), 4);
+      const yMin = Math.max(0, Math.floor((lo - pad) / yStep) * yStep);
+      const yMax = Math.min(100, Math.ceil((hi + pad) / yStep) * yStep);
+      return { xMax: +xMax.toFixed(4), xStep, yMin, yMax, yStep };
     }
 
     function renderTrendChart(country) {
@@ -1511,13 +1555,16 @@ function zoomGlobe(step) {
       document.getElementById('ntbCount').textContent = ntbItems.length;
       list.replaceChildren();
       ntbEmpty.hidden = ntbItems.length > 0;
-      ntbItems.forEach(text => {
+      // 패널 높이가 고정이라 첫 1건만(최대 2줄) 보여주고, 나머지는 더보기 모달에서 본다.
+      if (ntbItems.length) {
         const li = document.createElement('li');
-        li.textContent = text;
+        li.textContent = ntbItems[0];
+        li.title = '클릭하면 전체 목록을 볼 수 있습니다';
+        li.onclick = openNtbModal;
         list.appendChild(li);
-      });
+      }
       moreBtn.hidden = ntbItems.length === 0;
-      moreBtn.textContent = `비관세장벽 ${ntbItems.length}건 전체 보기 →`;
+      moreBtn.textContent = ntbItems.length > 1 ? `나머지 ${ntbItems.length - 1}건 더보기 →` : '전체 내용 보기 →';
 
       const note = document.getElementById('tariffFetchedNote');
       const baseNote = country.tariff_fetched_at ? `KITA 트레이드내비 기준 · ${country.tariff_fetched_at.slice(0, 10)} 수집` : 'KITA 트레이드내비 기준';
@@ -1525,6 +1572,7 @@ function zoomGlobe(step) {
         ? `${baseNote} · EU 회원국은 한-EU FTA·EU 공동규정이 전역에 동일 적용되어 다른 EU국과 값이 같을 수 있습니다`
         : baseNote;
       note.textContent = fullNote;
+      note.title = fullNote;
 
       // 더보기 모달에도 같은 데이터를 미리 채워둔다 — 열릴 때마다 다시 그릴 필요 없이 즉시 표시.
       document.getElementById('ntbModalTitle').textContent = `${country.name_kr} 비관세장벽 (${ntbItems.length}건)`;
@@ -1793,16 +1841,117 @@ function submitHsCodeSearch() {
   const token = ++activeSearchToken;
   const tbody = document.getElementById('rankingTableBody');
   if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="padding:30px;text-align:center;color:#91a5c8">분석 중… (첫 조회는 다소 걸릴 수 있습니다)</td></tr>';
+  showAnalyzeOverlay(hs);
 
   fetchAnalyze(hs, token)
-    .then(data => { if (token === activeSearchToken) applyAnalyzeResult(hs, data); })
+    .then(data => {
+      if (token !== activeSearchToken) return;
+      applyAnalyzeResult(hs, data);
+      finishAnalyzeOverlay(true);
+    })
     .catch(err => {
       if (token !== activeSearchToken) return;
+      finishAnalyzeOverlay(false);
       console.error('[BOF] analyze 실패:', err);
-      toast('분석 중 오류가 발생했습니다: ' + (err && err.message ? err.message : '잠시 후 다시 시도해 주세요.'));
+      const msg = err && err.message ? err.message : '';
+      // 서버 메시지가 이미 "분석 중 오류가 발생했습니다."로 시작하면 앞말을 또 붙이지 않는다
+      toast(msg.startsWith('분석 중 오류') ? msg : '분석 중 오류가 발생했습니다: ' + (msg || '잠시 후 다시 시도해 주세요.'));
     });
 }
+
+// 검색 직후 화면 중앙에 지구본이 도는 로딩 카드를 띄우고, 완료되면 "분석이 완료됐습니다!!"를 잠깐 보여준 뒤 닫는다.
+const ANALYZE_DONE_MS = 1300;
+let analyzeOverlayTimer = null;
+function showAnalyzeOverlay(hs) {
+  const overlay = document.getElementById('analyzeOverlay');
+  if (!overlay) return;
+  clearTimeout(analyzeOverlayTimer);
+  const hsNode = document.getElementById('analyzeHs');
+  if (hsNode) hsNode.textContent = hs ? 'HS ' + hs : '';
+  overlay.classList.remove('is-done', 'is-leaving');
+  overlay.hidden = false;
+}
+function finishAnalyzeOverlay(success) {
+  const overlay = document.getElementById('analyzeOverlay');
+  if (!overlay || overlay.hidden) return;
+  clearTimeout(analyzeOverlayTimer);
+  const close = () => {
+    overlay.classList.add('is-leaving');
+    analyzeOverlayTimer = setTimeout(() => {
+      overlay.hidden = true;
+      overlay.classList.remove('is-done', 'is-leaving');
+    }, 250);
+  };
+  if (!success) { close(); return; }
+  overlay.classList.add('is-done');
+  analyzeOverlayTimer = setTimeout(close, ANALYZE_DONE_MS);
+}
 </script>
+<style id="analyze-overlay-style">
+  .analyze-overlay{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;
+    background:rgba(221,214,245,.42);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:analyzeFadeIn .2s ease-out}
+  .analyze-overlay[hidden]{display:none}
+  .analyze-overlay.is-leaving{opacity:0;transition:opacity .25s ease}
+  .analyze-card{width:300px;max-width:100%;padding:34px 26px 28px;border-radius:24px;text-align:center;
+    background:rgba(255,255,255,.72);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
+    border:1px solid rgba(255,255,255,.8);box-shadow:0 24px 60px rgba(120,90,200,.22);
+    font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;animation:analyzePop .28s cubic-bezier(.2,.9,.3,1.2)}
+  /* 지구본 + 바깥 회전 링(원본 로딩 스피너 자리) */
+  .analyze-stage{position:relative;width:150px;height:150px;margin:0 auto 22px}
+  .analyze-ring{position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(from 0deg,rgba(22,133,255,0) 0deg,rgba(22,133,255,.15) 120deg,#1685ff 330deg,rgba(22,133,255,0) 360deg);
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));
+    mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));
+    animation:analyzeSpin 1.1s linear infinite}
+  .analyze-globe{position:absolute;inset:15px;border-radius:50%;overflow:hidden;
+    box-shadow:0 12px 30px rgba(22,133,255,.32),0 0 0 4px rgba(255,255,255,.85)}
+  .analyze-globe img{width:100%;height:100%;display:block;animation:analyzeSpin 6s linear infinite}
+  /* 회전하지 않는 하이라이트/그림자 → 지구본이 입체로 보이게 */
+  .analyze-globe::after{content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.45) 0,rgba(255,255,255,0) 38%),radial-gradient(circle at 70% 78%,rgba(8,30,80,0) 45%,rgba(8,30,80,.35) 100%)}
+  .analyze-check{position:absolute;right:6px;bottom:6px;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:#12b886;color:#fff;box-shadow:0 6px 16px rgba(18,184,134,.4);border:3px solid #fff;transform:scale(0);transition:transform .3s cubic-bezier(.2,.9,.3,1.4)}
+  .analyze-title{margin:0;font-size:20px;font-weight:800;color:#182541;letter-spacing:-.3px}
+  .analyze-dots::after{content:'';display:inline-block;width:1.2em;text-align:left;animation:analyzeDots 1.2s steps(1,end) infinite}
+  .analyze-sub{margin:8px 0 0;font-size:13px;line-height:1.55;color:#5c6b8a}
+  .analyze-hs{display:inline-block;margin-bottom:10px;padding:3px 10px;border-radius:999px;background:rgba(22,133,255,.1);color:#1685ff;font:700 12px 'JetBrains Mono',monospace}
+  .analyze-hs:empty{display:none}
+  .analyze-bar{height:4px;margin:18px auto 0;width:160px;border-radius:99px;background:rgba(22,133,255,.12);overflow:hidden}
+  .analyze-bar::before{content:'';display:block;height:100%;width:40%;border-radius:inherit;background:linear-gradient(90deg,#4dabff,#1685ff);animation:analyzeBar 1.3s ease-in-out infinite}
+  .analyze-done{display:none}
+  /* 완료 상태 */
+  .analyze-overlay.is-done .analyze-ring{animation:none;background:#12b886;opacity:.9}
+  .analyze-overlay.is-done .analyze-globe img{animation-play-state:paused}
+  .analyze-overlay.is-done .analyze-check{transform:scale(1)}
+  .analyze-overlay.is-done .analyze-loading,.analyze-overlay.is-done .analyze-bar{display:none}
+  .analyze-overlay.is-done .analyze-done{display:block}
+  .analyze-overlay.is-done .analyze-title{color:#0f9f74}
+  @keyframes analyzeSpin{to{transform:rotate(360deg)}}
+  @keyframes analyzeDots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+  @keyframes analyzeBar{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
+  @keyframes analyzeFadeIn{from{opacity:0}}
+  @keyframes analyzePop{from{opacity:0;transform:translateY(8px) scale(.96)}}
+  @media (prefers-reduced-motion:reduce){.analyze-globe img{animation-duration:20s}.analyze-ring{animation-duration:3s}}
+</style>
+<div class="analyze-overlay" id="analyzeOverlay" hidden role="status" aria-live="polite">
+  <div class="analyze-card">
+    <div class="analyze-stage">
+      <div class="analyze-ring"></div>
+      <div class="analyze-globe"><img src="/static/img/loading-globe.png" alt="" width="120" height="120" loading="eager"/></div>
+      <div class="analyze-check" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    </div>
+    <div class="analyze-loading">
+      <div class="analyze-hs" id="analyzeHs"></div>
+      <p class="analyze-title">분석 중<span class="analyze-dots"></span></p>
+      <p class="analyze-sub">해외 시장 데이터를 모으고 있어요.<br/>첫 조회는 30초 정도 걸릴 수 있어요.</p>
+    </div>
+    <div class="analyze-bar"></div>
+    <div class="analyze-done">
+      <p class="analyze-title">분석이 완료됐습니다!!</p>
+      <p class="analyze-sub">결과를 확인해 보세요.</p>
+    </div>
+  </div>
+</div>
 <div aria-live="polite" class="app-toast" hidden="" id="appToast" role="status"></div><script id="blue-ocean-insight-addon">
 /* Enhanced AI Insight panel. A standalone HTML file uses grounded SAMPLE data only.
    To activate real OpenAI insights from Flask, define window.BLUE_OCEAN_INSIGHT_ENDPOINT

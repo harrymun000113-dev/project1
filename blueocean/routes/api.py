@@ -112,7 +112,9 @@ def job_status(job_id: str):
     if job["status"] == "pending":
         return jsonify(status="pending"), 202
     if job["status"] == "error":
-        return jsonify(error={"code": "INTERNAL", "message": "분석 중 오류가 발생했습니다."}), 500
+        # 디버그 모드에선 실제 예외 문구를 같이 내려줘야 브라우저 토스트만 보고도 원인을 알 수 있다
+        detail = f" ({job['error']})" if config.DEBUG and job.get("error") else ""
+        return jsonify(error={"code": "INTERNAL", "message": "분석 중 오류가 발생했습니다." + detail}), 500
     return jsonify(job["result"])
 
 
